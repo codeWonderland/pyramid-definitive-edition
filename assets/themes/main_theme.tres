@@ -1,0 +1,34 @@
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://dkcfibuwqlsb5"]
+
+[ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
+[ext_resource type="Texture2D" uid="uid://bakts8eoog0cj" path="res://assets/sprites/ui/icons/confirm.png" id="1_gvtt4"]
+[ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
+[ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_4fp8c"]
+
+[resource]
+BigTitle/base_type = &"Label"
+BigTitle/colors/font_shadow_color = Color(0, 0, 0, 1)
+BigTitle/constants/line_spacing = -16
+BigTitle/constants/outline_size = 16
+BigTitle/constants/shadow_offset_x = 8
+BigTitle/constants/shadow_offset_y = 8
+BigTitle/font_sizes/font_size = 64
+CheckBox/icons/checked = ExtResource("1_gvtt4")
+CheckBox/icons/unchecked = SubResource("ImageTexture_4fp8c")
+CheckBox/styles/disabled = ExtResource("2_axncs")
+CheckBox/styles/focus = ExtResource("2_axncs")
+CheckBox/styles/hover = ExtResource("2_axncs")
+CheckBox/styles/hover_pressed = ExtResource("2_axncs")
+CheckBox/styles/normal = ExtResource("2_axncs")
+CheckBox/styles/pressed = ExtResource("2_axncs")
+HBoxContainer/constants/separation = 8
+Label/constants/outline_size = 8
+Label/font_sizes/font_size = 32
+Label/fonts/font = ExtResource("1_3f3va")
+MarginContainer/constants/margin_bottom = 16
+MarginContainer/constants/margin_left = 16
+MarginContainer/constants/margin_right = 16
+MarginContainer/constants/margin_top = 16
+PanelContainer/styles/panel = ExtResource("2_lxams")

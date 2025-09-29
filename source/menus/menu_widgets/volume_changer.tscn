@@ -1,0 +1,206 @@
+[gd_scene load_steps=23 format=3 uid="uid://b736hrcerdck0"]
+
+[ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_op7tn"]
+[ext_resource type="Script" uid="uid://5ankxw8fjf2d" path="res://source/menus/menu_widgets/volume_changer.gd" id="1_s3o5y"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u1anv"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5yvf8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0ern8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wydvi"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k34jt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x4p1x"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k52ej"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3b82a"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf6be"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gcmpa"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lppoa"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wogaf"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r67ul"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b4qvd"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sm6gj"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8utw3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1w7bw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_peko8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e27gt"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hvg7i"]
+
+[node name="VolumeChanger" type="PanelContainer"]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -32.0
+offset_right = 798.0
+offset_bottom = 32.0
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_u1anv")
+script = ExtResource("1_s3o5y")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 8
+
+[node name="VolumeChanger" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/separation = 48
+
+[node name="Label" type="Label" parent="MarginContainer/VolumeChanger"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_op7tn")
+theme_override_font_sizes/font_size = 36
+text = "Volume"
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VolumeChanger"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VolumeChanger/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Decrease" type="Button" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+focus_neighbor_right = NodePath("../Increase")
+focus_neighbor_bottom = NodePath("../Increase")
+focus_next = NodePath("../Increase")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_op7tn")
+theme_override_font_sizes/font_size = 36
+theme_override_styles/normal = SubResource("StyleBoxEmpty_5yvf8")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_0ern8")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_wydvi")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_k34jt")
+text = "<"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Level1" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_x4p1x")
+
+[node name="Level2" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_k52ej")
+
+[node name="Level3" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_3b82a")
+
+[node name="Level4" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_nf6be")
+
+[node name="Level5" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_gcmpa")
+
+[node name="Level6" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_lppoa")
+
+[node name="Level7" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_wogaf")
+
+[node name="Level8" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_r67ul")
+
+[node name="Level9" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_b4qvd")
+
+[node name="Level10" type="Panel" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_sm6gj")
+
+[node name="Increase" type="Button" parent="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+focus_neighbor_left = NodePath("../Decrease")
+focus_neighbor_top = NodePath("../Decrease")
+focus_previous = NodePath("../Decrease")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_op7tn")
+theme_override_font_sizes/font_size = 36
+theme_override_styles/normal = SubResource("StyleBoxEmpty_8utw3")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_1w7bw")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_peko8")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_e27gt")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_hvg7i")
+text = ">"
+
+[connection signal="pressed" from="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/Decrease" to="." method="_on_decrease_pressed"]
+[connection signal="pressed" from="MarginContainer/VolumeChanger/MarginContainer/HBoxContainer2/Increase" to="." method="_on_increase_pressed"]

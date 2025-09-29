@@ -1,0 +1,54 @@
+[gd_scene load_steps=4 format=3 uid="uid://bhjmr1eb57wwh"]
+
+[ext_resource type="PackedScene" uid="uid://b736hrcerdck0" path="res://source/menus/menu_widgets/volume_changer.tscn" id="1_3wc24"]
+[ext_resource type="Script" uid="uid://bgk3380nlxdmi" path="res://source/menus/pause_menu.gd" id="1_j6agt"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_baocf"]
+
+[node name="PauseMenu" type="PanelContainer"]
+script = ExtResource("1_j6agt")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 48
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Options"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 32
+
+[node name="MusicVolume" parent="VBoxContainer/VBoxContainer" instance=ExtResource("1_3wc24")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 2
+volume_label_text = "Music Volume"
+
+[node name="SFXVolume" parent="VBoxContainer/VBoxContainer" instance=ExtResource("1_3wc24")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 2
+volume_label_text = "SFX Volume   "
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FullscreenToggle" type="CheckBox" parent="VBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("2_baocf")

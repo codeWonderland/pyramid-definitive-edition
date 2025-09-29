@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://rceyiejt6jtt"]
+
+[ext_resource type="Script" uid="uid://b2gavx5v47dwu" path="res://source/autoloads/audio_manager.gd" id="1_xuhyr"]
+[ext_resource type="AudioStream" uid="uid://dnnl3nlywba5g" path="res://assets/audio/bgm/lofi.wav" id="2_ry0q4"]
+
+[node name="AudioManager" type="Node"]
+script = ExtResource("1_xuhyr")
+
+[node name="BGM" type="AudioStreamPlayer2D" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("2_ry0q4")
+autoplay = true
+
+[node name="SFX" type="AudioStreamPlayer2D" parent="."]
+unique_name_in_owner = true
