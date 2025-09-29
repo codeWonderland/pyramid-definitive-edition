@@ -1,4 +1,6 @@
-extends Control
+class_name MainMenu extends Control
+
+var _settings_were_open: bool = false
 
 @onready var _title: Label = %Title
 @onready var _start_label: Label = %StartLabel
@@ -11,6 +13,19 @@ func _ready() -> void:
 	_setup_ui()
 	_settings_button.pressed.connect(_toggle_settings)
 	_exit_button.pressed.connect(_close_game)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed == true:
+		await get_tree().create_timer(0.2).timeout
+		if _pause_menu.visible:
+			return
+
+		if _settings_were_open:
+			_settings_were_open = false
+			return
+
+		_transition_scene()
 
 
 func _setup_ui() -> void:
@@ -46,6 +61,11 @@ func _toggle_settings() -> void:
 		return
 
 	_pause_menu.show()
+	_settings_were_open = true
+
+
+func _transition_scene() -> void:
+	get_tree().change_scene_to_packed(load("res://source/updater/updater.tscn"))
 
 
 func _close_game() -> void:

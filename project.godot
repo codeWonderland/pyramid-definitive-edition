@@ -13,6 +13,8 @@ config_version=5
 config/name="Pyramid Definitive Edition"
 run/main_scene="uid://ctf5sb112jkcq"
 config/features=PackedStringArray("4.5", "GL Compatibility")
+boot_splash/bg_color=Color(0.56078434, 0.8235294, 0.91764706, 1)
+boot_splash/image="uid://u52jchngj51e"
 config/icon="res://icon.svg"
 
 [autoload]
@@ -23,6 +25,7 @@ AudioManager="*res://source/autoloads/audio_manager.tscn"
 [gui]
 
 theme/custom="uid://dkcfibuwqlsb5"
+theme/custom_font="uid://cm0f7sh1s1552"
 
 [rendering]
 

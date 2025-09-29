@@ -44,7 +44,7 @@ func _sfx_volume_changed(new_volume: int) -> void:
 
 
 func _fullscreen_toggled() -> void:
-	UserSettingsManager.fullscreen = !UserSettingsManager.fullscreen
+	UserSettingsManager.update_fullscreen(!UserSettingsManager.fullscreen)
 
 
 func _close_settings() -> void:

@@ -1,6 +1,7 @@
-[gd_resource type="Theme" load_steps=6 format=3 uid="uid://dkcfibuwqlsb5"]
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://dkcfibuwqlsb5"]
 
 [ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
+[ext_resource type="StyleBox" uid="uid://1yr2oyhmdn6y" path="res://assets/themes/style_boxes/button.tres" id="1_axncs"]
 [ext_resource type="Texture2D" uid="uid://bakts8eoog0cj" path="res://assets/sprites/ui/icons/confirm.png" id="1_gvtt4"]
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
@@ -14,7 +15,15 @@ BigTitle/constants/line_spacing = -16
 BigTitle/constants/outline_size = 16
 BigTitle/constants/shadow_offset_x = 8
 BigTitle/constants/shadow_offset_y = 8
-BigTitle/font_sizes/font_size = 64
+BigTitle/font_sizes/font_size = 48
+Button/colors/font_outline_color = Color(0, 0, 0, 1)
+Button/constants/outline_size = 4
+Button/font_sizes/font_size = 32
+Button/styles/disabled = ExtResource("1_axncs")
+Button/styles/focus = ExtResource("1_axncs")
+Button/styles/hover = ExtResource("1_axncs")
+Button/styles/normal = ExtResource("1_axncs")
+Button/styles/pressed = ExtResource("1_axncs")
 CheckBox/icons/checked = ExtResource("1_gvtt4")
 CheckBox/icons/unchecked = SubResource("ImageTexture_4fp8c")
 CheckBox/styles/disabled = ExtResource("2_axncs")

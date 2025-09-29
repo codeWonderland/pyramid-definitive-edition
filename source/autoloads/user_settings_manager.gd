@@ -11,10 +11,10 @@ var config := ConfigFile.new()
 # settings
 var music_volume: float = 0.7
 var sfx_volume: float = 0.7
-var fullscreen: bool = false:
-	set(value):
-		fullscreen = value
-		_apply_fullscreen_setting()
+var fullscreen: bool = false
+
+# updater
+var latest_version: String = ""
 
 
 func _ready() -> void:
@@ -35,6 +35,17 @@ func update_sfx_volume(new_volume: float) -> void:
 	sfx_volume = _clean_volume(new_volume)
 	_save_config()
 	self.sfx_volume_updated.emit()
+
+
+func update_fullscreen(new_value: bool) -> void:
+	fullscreen = new_value
+	_apply_fullscreen_setting()
+	_save_config()
+
+
+func update_latest_version(new_value: String) -> void:
+	latest_version = new_value
+	_save_config()
 
 
 func volume_to_db(input_volume: float) -> int:
@@ -72,12 +83,18 @@ func _load_config() -> void:
 		fullscreen = config.get_value("settings", "fullscreen", false)
 		_apply_fullscreen_setting()
 
+	if config.has_section("updater"):
+		latest_version = config.get_value("updater", "latest_version", "")
+
 
 func _save_config() -> void:
 	# Settings
 	config.set_value("settings", "music_volume", music_volume)
 	config.set_value("settings", "sfx_volume", sfx_volume)
 	config.set_value("settings", "fullscreen", fullscreen)
+
+	# Updater
+	config.set_value("updater", "latest_version", latest_version)
 
 	config.save(SAVE_PATH)
 
