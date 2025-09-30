@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://2wfu0alphsyf"]
+
+[ext_resource type="Texture2D" uid="uid://cahirlfplrq8v" path="res://assets/sprites/testing/b1.png" id="1_tbm40"]
+[ext_resource type="Script" uid="uid://wv5four7kah3" path="res://source/menus/menu_widgets/pack_select_card.gd" id="2_6c50a"]
+
+[node name="PackSelectCard" type="TextureRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_tbm40")
+expand_mode = 3
+stretch_mode = 5
+script = ExtResource("2_6c50a")

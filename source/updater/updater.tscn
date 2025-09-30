@@ -66,6 +66,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Continue"
 
+[node name="Skip" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Skip Updates"
+
 [node name="Quit" type="Button" parent="VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 visible = false

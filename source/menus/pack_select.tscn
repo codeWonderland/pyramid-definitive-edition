@@ -1,7 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://3hc7e0masxw4"]
+[gd_scene load_steps=11 format=3 uid="uid://3hc7e0masxw4"]
 
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="1_0njbr"]
 [ext_resource type="Script" uid="uid://cbcx63u512vrk" path="res://source/menus/pack_select.gd" id="1_p0uw7"]
+[ext_resource type="Texture2D" uid="uid://277dathaiayc" path="res://assets/sprites/ui/buttons/back_button.png" id="3_wx4qi"]
+[ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_lqhju"]
+[ext_resource type="PackedScene" uid="uid://ild1rgpwgs05" path="res://source/menus/menu_widgets/pack_select_packs.tscn" id="5_lqhju"]
+[ext_resource type="PackedScene" uid="uid://b545m6djvjs8k" path="res://source/menus/menu_widgets/pack_select_selected_packs.tscn" id="6_u4vdn"]
+[ext_resource type="Texture2D" uid="uid://cfsxkp6q7qdk7" path="res://assets/sprites/ui/buttons/previous.png" id="7_gnfts"]
+[ext_resource type="Texture2D" uid="uid://ry3kmbg6ufb5" path="res://assets/sprites/ui/buttons/done_drafting.png" id="8_fha2b"]
+[ext_resource type="Texture2D" uid="uid://c4awvgp2ymbr3" path="res://assets/sprites/ui/buttons/next.png" id="9_be4yt"]
+[ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="10_gnfts"]
 
 [node name="PackSelect" type="Control"]
 layout_mode = 3
@@ -22,3 +30,116 @@ grow_vertical = 2
 texture = ExtResource("1_0njbr")
 expand_mode = 2
 stretch_mode = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBar" type="Control" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Back" type="TextureButton" parent="MarginContainer/TitleBar"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_bottom = 76.0
+texture_normal = ExtResource("3_wx4qi")
+
+[node name="Label" type="Label" parent="MarginContainer/TitleBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -133.5
+offset_top = -38.0
+offset_right = 133.5
+offset_bottom = 38.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"BigTitle"
+text = "Select Packs"
+
+[node name="Pause" type="TextureButton" parent="MarginContainer/TitleBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -76.0
+offset_bottom = 76.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+texture_normal = ExtResource("4_lqhju")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 24
+
+[node name="PackSelectPacks" parent="MarginContainer/VBoxContainer" instance=ExtResource("5_lqhju")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PackSelectSelectedPacks" parent="MarginContainer/VBoxContainer" instance=ExtResource("6_u4vdn")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="BottomButtons" type="Control" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="Previous" type="TextureButton" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+offset_right = 200.0
+grow_vertical = 0
+texture_normal = ExtResource("7_gnfts")
+
+[node name="Done" type="TextureButton" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -75.0
+offset_right = 150.0
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("8_fha2b")
+
+[node name="Next" type="TextureButton" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -100.0
+grow_horizontal = 0
+grow_vertical = 0
+texture_normal = ExtResource("9_be4yt")
+
+[node name="PauseMenu" parent="." instance=ExtResource("10_gnfts")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0

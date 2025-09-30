@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://b545m6djvjs8k"]
+
+[ext_resource type="Script" uid="uid://ci0ld6cul3nyt" path="res://source/menus/menu_widgets/pack_select_selected_packs.gd" id="1_eyt5u"]
+[ext_resource type="PackedScene" uid="uid://2wfu0alphsyf" path="res://source/menus/menu_widgets/pack_select_card.tscn" id="1_t7qkg"]
+
+[node name="PackSelectSelectedPacks" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 75)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_eyt5u")
+
+[node name="PackSelectCard" parent="." instance=ExtResource("1_t7qkg")]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+
+[node name="PackSelectCard2" parent="." instance=ExtResource("1_t7qkg")]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+
+[node name="PackSelectCard3" parent="." instance=ExtResource("1_t7qkg")]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+
+[node name="PackSelectCard4" parent="." instance=ExtResource("1_t7qkg")]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+
+[node name="PackSelectCard5" parent="." instance=ExtResource("1_t7qkg")]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2

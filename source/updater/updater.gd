@@ -11,6 +11,7 @@ var _latest_version: String = ""
 @onready var _http_request: HTTPRequest = %HTTPRequest
 @onready var _label: Label = %Label
 @onready var _continue_button: Button = %Continue
+@onready var _skip_button: Button = %Skip
 @onready var _download_button: Button = %Download
 @onready var _quit_button: Button = %Quit
 
@@ -19,6 +20,7 @@ func _ready() -> void:
 	_quit_button.pressed.connect(_quit_game)
 	_download_button.pressed.connect(_download_updates)
 	_continue_button.pressed.connect(_continue)
+	_skip_button.pressed.connect(_load_packs)
 
 	_check_internet_access()
 	await get_tree().create_timer(NETWORK_CHECK_TIME).timeout
@@ -54,7 +56,7 @@ func _request_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot access internet, using existing version"
-			_continue_button.show()
+			_load_packs()
 
 		return
 
@@ -72,7 +74,7 @@ func _check_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot pull updates data, using existing version"
-			_continue_button.show()
+			_load_packs()
 
 		return
 
@@ -84,7 +86,7 @@ func _check_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot parse updates data, using existing version"
-			_continue_button.show()
+			_load_packs()
 
 	var sha = parsed_json["commit"]["sha"]
 	_latest_version = sha
@@ -93,13 +95,11 @@ func _check_update_data(
 		_download_updates()
 	elif UserSettingsManager.latest_version == sha:
 		_label.text = "Everything is Up to Date"
-		await get_tree().create_timer(2.0).timeout
-		_continue()
+		_load_packs()
 	else:
 		_label.text = "New Updates Found!"
 		_download_button.show()
-		_continue_button.text = "Skip Updates"
-		_continue_button.show()
+		_skip_button.show()
 
 
 func _download_updates() -> void:
@@ -122,7 +122,7 @@ func _apply_updates(
 			_quit_button.show()
 		else:
 			_label.text = "Issue downloading latest updates, using existing version"
-			_continue_button.show()
+			_load_packs()
 
 		return
 
@@ -167,7 +167,7 @@ func _apply_updates(
 	UserSettingsManager.update_latest_version(_latest_version)
 
 	_label.text = "Updates Applied"
-	_continue_button.show()
+	_load_packs()
 
 
 func _delete_recursive(folder: DirAccess) -> void:
@@ -190,7 +190,10 @@ func _continue() -> void:
 	get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
 
 
-# === Button Callbacks ===
+func _load_packs() -> void:
+	PackLoader.packs_loaded.connect(_continue)
+	PackLoader.load()
+	_label.text = "Loading Packs..."
 
 
 func _quit_game() -> void:
