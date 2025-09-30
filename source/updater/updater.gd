@@ -1,6 +1,7 @@
 class_name Updater extends Control
 
 const DATA_PATH: String = "https://api.github.com/repos/codeWonderland/pyramid-mods/branches/main"
+# gdlint:ignore = max-line-length
 const DOWNLOAD_PATH: String = "https://github.com/codeWonderland/pyramid-mods/archive/refs/heads/main.zip"
 const NETWORK_CHECK_TIME: float = 15.0
 
