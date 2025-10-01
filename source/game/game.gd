@@ -73,7 +73,7 @@ func _close_game() -> void:
 	if _popup_open:
 		return
 
-	pass
+	# TODO: Create Close Game Dialog with Option to Save
 
 
 func _roll_die() -> void:
