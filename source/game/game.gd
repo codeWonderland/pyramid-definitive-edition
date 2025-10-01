@@ -91,7 +91,7 @@ func _reroll_packs() -> void:
 
 	_set_title()
 
-	# TODO: Pack Rolling
+	# TODO: Create Pack Generation System
 
 	_resize()
 
