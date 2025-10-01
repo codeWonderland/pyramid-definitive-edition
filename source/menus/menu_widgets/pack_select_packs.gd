@@ -20,7 +20,7 @@ func prev_page() -> void:
 	_current_page -= 1
 
 	if _current_page < 0:
-		_current_page = floori(PackLoader.all_packs.size() / PAGE_SIZE)
+		_current_page = int(floor(PackLoader.all_packs.size() as float / PAGE_SIZE as float))
 
 		if PackLoader.all_packs.size() % PAGE_SIZE == 0:
 			_current_page -= 1

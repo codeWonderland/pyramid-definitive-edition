@@ -1,7 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7besnigoyson"]
+[gd_scene load_steps=14 format=3 uid="uid://c7besnigoyson"]
 
 [ext_resource type="Script" uid="uid://3qo2fobue4c5" path="res://source/game/game.gd" id="1_e4lxu"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_bq0n3"]
+[ext_resource type="Texture2D" uid="uid://277dathaiayc" path="res://assets/sprites/ui/buttons/back_button.png" id="3_bq0n3"]
+[ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_qbbrx"]
+[ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_7ae7h"]
+[ext_resource type="Texture2D" uid="uid://owavv4s3scxl" path="res://assets/sprites/ui/icons/d1.png" id="6_2olx2"]
+[ext_resource type="Texture2D" uid="uid://cqsrct6ytbi8g" path="res://assets/sprites/ui/buttons/roll_d6.png" id="7_16hqw"]
+[ext_resource type="Texture2D" uid="uid://de1hbblu776a7" path="res://assets/sprites/ui/buttons/reroll_games.png" id="8_oorho"]
+[ext_resource type="Texture2D" uid="uid://4fpaadhtggcv" path="res://assets/sprites/ui/buttons/multiplayer_rules.png" id="9_uq5as"]
+[ext_resource type="Texture2D" uid="uid://cju0xlldqgfwh" path="res://assets/sprites/ui/buttons/coop_rules.png" id="10_0rlok"]
+[ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="11_7ae7h"]
+[ext_resource type="PackedScene" uid="uid://d0g326064sjje" path="res://source/menus/popups/coop_rules.tscn" id="12_16hqw"]
+[ext_resource type="PackedScene" uid="uid://lbdrdxekcgf6" path="res://source/menus/popups/multiplayer_rules.tscn" id="13_oorho"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -22,3 +33,137 @@ grow_vertical = 2
 texture = ExtResource("2_bq0n3")
 expand_mode = 2
 stretch_mode = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Top" type="Control" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Back" type="TextureButton" parent="MarginContainer/Top"]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+texture_normal = ExtResource("3_bq0n3")
+
+[node name="Title" type="Label" parent="MarginContainer/Top"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 248.0
+offset_right = 1028.0
+offset_bottom = 76.0
+theme_type_variation = &"BigTitle"
+text = "The [Adjective] Pyramid of [Noun]"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/Top"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_override_constants/separation = 16
+
+[node name="Settings" type="TextureButton" parent="MarginContainer/Top/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("4_qbbrx")
+
+[node name="Close" type="TextureButton" parent="MarginContainer/Top/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("5_7ae7h")
+
+[node name="Bottom" type="Control" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 166)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/Bottom"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -166.0
+offset_right = 231.0
+grow_vertical = 0
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="Die" type="TextureRect" parent="MarginContainer/Bottom/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+texture = ExtResource("6_2olx2")
+
+[node name="RollDie" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("7_16hqw")
+
+[node name="RerollGames" type="TextureButton" parent="MarginContainer/Bottom"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("8_oorho")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/Bottom"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 16
+
+[node name="MultiplayerRulesButton" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("9_uq5as")
+
+[node name="CoopRulesButton" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("10_0rlok")
+
+[node name="PauseMenu" parent="." instance=ExtResource("11_7ae7h")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+
+[node name="CoopRules" parent="." instance=ExtResource("12_16hqw")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 650.0
+
+[node name="MultiplayerRules" parent="." instance=ExtResource("13_oorho")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 650.0

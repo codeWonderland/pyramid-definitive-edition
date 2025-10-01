@@ -3,6 +3,7 @@ extends Node
 signal packs_updated
 
 var selected_packs: Array[PackData] = []
+var num_games: int = 1
 
 
 func add_pack(pack_data: PackData) -> void:

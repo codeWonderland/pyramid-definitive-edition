@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://diypped42tlcr"]
+
+[ext_resource type="Script" uid="uid://30fpp5ehjrpr" path="res://source/autoloads/word_bank_loader.gd" id="1_tgunj"]
+
+[node name="WordBankLoader" type="Node"]
+script = ExtResource("1_tgunj")

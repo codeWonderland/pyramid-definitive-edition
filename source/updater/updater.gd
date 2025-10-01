@@ -8,6 +8,9 @@ const NETWORK_CHECK_TIME: float = 15.0
 var _has_internet: bool = false
 var _has_requested_updates: bool = false
 var _latest_version: String = ""
+var _packs_loaded: bool = false
+var _word_bank_loaded: bool = false
+var _additional_rules_loaded: bool = false
 
 @onready var _http_request: HTTPRequest = %HTTPRequest
 @onready var _label: Label = %Label
@@ -21,7 +24,7 @@ func _ready() -> void:
 	_quit_button.pressed.connect(_quit_game)
 	_download_button.pressed.connect(_download_updates)
 	_continue_button.pressed.connect(_continue)
-	_skip_button.pressed.connect(_load_packs)
+	_skip_button.pressed.connect(_load_data)
 
 	_check_internet_access()
 	await get_tree().create_timer(NETWORK_CHECK_TIME).timeout
@@ -57,7 +60,7 @@ func _request_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot access internet, using existing version"
-			_load_packs()
+			_load_data()
 
 		return
 
@@ -75,7 +78,7 @@ func _check_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot pull updates data, using existing version"
-			_load_packs()
+			_load_data()
 
 		return
 
@@ -87,7 +90,7 @@ func _check_update_data(
 			_quit_button.show()
 		else:
 			_label.text = "Cannot parse updates data, using existing version"
-			_load_packs()
+			_load_data()
 
 	var sha = parsed_json["commit"]["sha"]
 	_latest_version = sha
@@ -96,7 +99,7 @@ func _check_update_data(
 		_download_updates()
 	elif UserSettingsManager.latest_version == sha:
 		_label.text = "Everything is Up to Date"
-		_load_packs()
+		_load_data()
 	else:
 		_label.text = "New Updates Found!"
 		_download_button.show()
@@ -104,6 +107,9 @@ func _check_update_data(
 
 
 func _download_updates() -> void:
+	_download_button.hide()
+	_skip_button.hide()
+
 	if UserSettingsManager.latest_version == "":
 		_label.text = "Downloading Initial Data..."
 	else:
@@ -123,7 +129,7 @@ func _apply_updates(
 			_quit_button.show()
 		else:
 			_label.text = "Issue downloading latest updates, using existing version"
-			_load_packs()
+			_load_data()
 
 		return
 
@@ -168,7 +174,7 @@ func _apply_updates(
 	UserSettingsManager.update_latest_version(_latest_version)
 
 	_label.text = "Updates Applied"
-	_load_packs()
+	_load_data()
 
 
 func _delete_recursive(folder: DirAccess) -> void:
@@ -188,13 +194,42 @@ func _delete_recursive(folder: DirAccess) -> void:
 
 
 func _continue() -> void:
-	get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
+	var can_continue = true
+
+	for check in [_packs_loaded, _word_bank_loaded, _additional_rules_loaded]:
+		can_continue = can_continue and check
+
+	if can_continue:
+		get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
 
 
-func _load_packs() -> void:
-	PackLoader.packs_loaded.connect(_continue)
+func _load_data() -> void:
+	_download_button.hide()
+	_skip_button.hide()
+
+	_label.text = "Loading..."
+
+	PackLoader.packs_loaded.connect(_on_packs_loaded)
 	PackLoader.load()
-	_label.text = "Loading Packs..."
+	WordBankLoader.word_bank_loaded.connect(_on_word_bank_loaded)
+	WordBankLoader.load()
+	AdditionalRulesLoader.rules_loaded.connect(_on_additional_rules_loaded)
+	AdditionalRulesLoader.load()
+
+
+func _on_packs_loaded() -> void:
+	_packs_loaded = true
+	_continue()
+
+
+func _on_word_bank_loaded() -> void:
+	_word_bank_loaded = true
+	_continue()
+
+
+func _on_additional_rules_loaded() -> void:
+	_additional_rules_loaded = true
+	_continue()
 
 
 func _quit_game() -> void:

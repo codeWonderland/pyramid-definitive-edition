@@ -53,4 +53,4 @@ func _selection_complete() -> void:
 	if RunManager.selected_packs.size() == 0:
 		return
 
-	get_tree().change_scene_to_packed(load("res://source/game/game.tscn"))
+	get_tree().change_scene_to_packed(load("res://source/menus/num_games.tscn"))

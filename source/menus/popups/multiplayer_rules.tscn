@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3 uid="uid://lbdrdxekcgf6"]
+
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="1_fxaeq"]
+[ext_resource type="Script" uid="uid://bsj7v6klkardn" path="res://source/menus/popups/multiplayer_rules.gd" id="1_lfmv4"]
+
+[node name="MultiplayerRules" type="PanelContainer"]
+custom_minimum_size = Vector2(650, 0)
+offset_right = 48.0
+offset_bottom = 48.0
+script = ExtResource("1_lfmv4")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Multiplayer Rules"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 400)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "The person who completes the tertiary objective best receives an additional 50 points and the person who completes it second best gets an additional 25 points.
+
+**If only two people are playing, the second person does not get 25 points.**"
+fit_content = true
+
+[node name="PerGameRules" type="RichTextLabel" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_content = true
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("1_fxaeq")

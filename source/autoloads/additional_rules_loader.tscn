@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://hecd5a821dsn"]
+
+[ext_resource type="Script" uid="uid://206o8g6lje66" path="res://source/autoloads/additional_rules_loader.gd" id="1_1urb5"]
+
+[node name="AdditionalRulesLoader" type="Node"]
+script = ExtResource("1_1urb5")
