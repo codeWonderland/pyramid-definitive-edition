@@ -38,7 +38,7 @@ func _resize() -> void:
 
 
 func _load_pack() -> void:
-	var has_curse = randf() <= 0.05
+	var has_curse = randf() <= 0.05 and pack.curses.size() > 0
 
 	if has_curse:
 		_curse.texture = pack.curses.pick_random()
@@ -47,7 +47,12 @@ func _load_pack() -> void:
 		_curse.hide()
 
 	_primary.texture = pack.primaries.pick_random()
-	_secondary.texture = pack.secondaries.pick_random()
+
+	if pack.secondaries.size() > 0:
+		_secondary.texture = pack.secondaries.pick_random()
+		_secondary.show()
+	else:
+		_secondary.hide()
 
 
 func _redraw_primary() -> void:
