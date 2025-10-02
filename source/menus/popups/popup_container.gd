@@ -9,7 +9,7 @@ func _ready() -> void:
 	_resize()
 	get_tree().get_root().size_changed.connect(_resize)
 
-	_close_button.pressed.connect(_close_settings)
+	_close_button.pressed.connect(_close)
 
 
 func _resize() -> void:
@@ -24,6 +24,6 @@ func _resize() -> void:
 	position = screen_size / 2 - size * scale / 2
 
 
-func _close_settings() -> void:
+func _close() -> void:
 	hide()
 	self.closing.emit()

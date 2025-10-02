@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2oiqsso5at0"]
+
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="1_4j3lp"]
+[ext_resource type="Script" uid="uid://mvwp3nf33e5l" path="res://source/menus/popups/save_dialog.gd" id="1_s7csr"]
+
+[node name="SaveDialog" type="PanelContainer"]
+custom_minimum_size = Vector2(650, 0)
+offset_right = 48.0
+offset_bottom = 48.0
+script = ExtResource("1_s7csr")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Save First?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Save" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sure"
+
+[node name="NoSave" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Nah"
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("1_4j3lp")

@@ -25,6 +25,8 @@ const DICE_TEXTURES = [
 @onready var _multiplayer_rules: MultiplayerRules = %MultiplayerRules
 @onready var _coop_rules_button: TextureButton = %CoopRulesButton
 @onready var _coop_rules: CoopRules = %CoopRules
+@onready var _quit_dialog: QuitDialog = %QuitDialog
+@onready var _save_dialog: SaveDialog = %SaveDialog
 
 
 func _ready() -> void:
@@ -44,6 +46,10 @@ func _ready() -> void:
 	_pause_menu.closing.connect(_on_popup_closing)
 	_multiplayer_rules.closing.connect(_on_popup_closing)
 	_coop_rules.closing.connect(_on_popup_closing)
+	_quit_dialog.closing.connect(_on_popup_closing)
+	_save_dialog.closing.connect(_on_popup_closing)
+	_quit_dialog.confirm_quit.connect(_on_quit_confirmed)
+	_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
 	# Scene Setup
 	_reroll_packs()
@@ -85,7 +91,8 @@ func _close_game() -> void:
 	if RunManager.popup_open:
 		return
 
-	# TODO: Create Close Game Dialog with Option to Save
+	_quit_dialog.show()
+	RunManager.popup_open = true
 
 
 func _roll_die() -> void:
@@ -149,3 +156,12 @@ func _set_title() -> void:
 		_title.theme_type_variation = &"MediumTitle"
 	else:
 		_title.theme_type_variation = &"BigTitle"
+
+
+func _on_quit_confirmed() -> void:
+	_save_dialog.show()
+
+
+func _on_save_confirmed(should_save: bool) -> void:
+	print("should save")
+	print(should_save)
