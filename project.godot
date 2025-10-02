@@ -11,11 +11,12 @@ config_version=5
 [application]
 
 config/name="Pyramid Definitive Edition"
+config/version="1.0.0"
 run/main_scene="uid://ctf5sb112jkcq"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 boot_splash/bg_color=Color(0.56078434, 0.8235294, 0.91764706, 1)
 boot_splash/image="uid://u52jchngj51e"
-config/icon="res://icon.svg"
+config/icon="uid://betxlbc4jxcah"
 
 [autoload]
 
