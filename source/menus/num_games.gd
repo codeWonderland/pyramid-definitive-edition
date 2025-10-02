@@ -1,5 +1,6 @@
 class_name NumGames extends Control
 
+@onready var _background: TextureRect = %Background
 @onready var _back_button: TextureButton = %Back
 @onready var _pause_button: TextureButton = %Pause
 @onready var _one_button: TextureButton = %One
@@ -14,6 +15,14 @@ func _ready() -> void:
 	_one_button.pressed.connect(_select_num_games.bind(1))
 	_three_button.pressed.connect(_select_num_games.bind(3))
 	_five_button.pressed.connect(_select_num_games.bind(5))
+
+	_set_background()
+	UserSettingsManager.background_set.connect(_set_background)
+
+
+func _set_background() -> void:
+	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
+		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
 func _back_to_pack_select() -> void:

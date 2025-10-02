@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://hp6q31n7gewn"]
+
+[ext_resource type="Script" uid="uid://c0k40hnbp2lbn" path="res://source/autoloads/background_manager.gd" id="1_ebi3j"]
+
+[node name="BackgroundManager" type="Node"]
+script = ExtResource("1_ebi3j")

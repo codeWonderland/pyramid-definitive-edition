@@ -11,7 +11,9 @@ var _latest_version: String = ""
 var _packs_loaded: bool = false
 var _word_bank_loaded: bool = false
 var _additional_rules_loaded: bool = false
+var _backgrounds_loaded: bool = false
 
+@onready var _background: TextureRect = %Background
 @onready var _http_request: HTTPRequest = %HTTPRequest
 @onready var _label: Label = %Label
 @onready var _continue_button: Button = %Continue
@@ -21,6 +23,7 @@ var _additional_rules_loaded: bool = false
 
 
 func _ready() -> void:
+	_set_background()
 	_quit_button.pressed.connect(_quit_game)
 	_download_button.pressed.connect(_download_updates)
 	_continue_button.pressed.connect(_continue)
@@ -29,6 +32,11 @@ func _ready() -> void:
 	_check_internet_access()
 	await get_tree().create_timer(NETWORK_CHECK_TIME).timeout
 	_request_update_data(13, -1, [], [])
+
+
+func _set_background() -> void:
+	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
+		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
 # === Network Request Functions ===
@@ -196,7 +204,7 @@ func _delete_recursive(folder: DirAccess) -> void:
 func _continue() -> void:
 	var can_continue = true
 
-	for check in [_packs_loaded, _word_bank_loaded, _additional_rules_loaded]:
+	for check in [_packs_loaded, _word_bank_loaded, _additional_rules_loaded, _backgrounds_loaded]:
 		can_continue = can_continue and check
 
 	if can_continue:
@@ -209,12 +217,16 @@ func _load_data() -> void:
 
 	_label.text = "Loading..."
 
+	await get_tree().create_timer(0.1).timeout
+
 	PackLoader.packs_loaded.connect(_on_packs_loaded)
 	PackLoader.load()
 	WordBankLoader.word_bank_loaded.connect(_on_word_bank_loaded)
 	WordBankLoader.load()
 	AdditionalRulesLoader.rules_loaded.connect(_on_additional_rules_loaded)
 	AdditionalRulesLoader.load()
+	BackgroundManager.backgrounds_loaded.connect(_on_backgrounds_loaded)
+	BackgroundManager.load()
 
 
 func _on_packs_loaded() -> void:
@@ -229,6 +241,11 @@ func _on_word_bank_loaded() -> void:
 
 func _on_additional_rules_loaded() -> void:
 	_additional_rules_loaded = true
+	_continue()
+
+
+func _on_backgrounds_loaded() -> void:
+	_backgrounds_loaded = true
 	_continue()
 
 

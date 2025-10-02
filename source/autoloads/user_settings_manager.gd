@@ -2,6 +2,7 @@ extends Node
 
 signal music_volume_updated
 signal sfx_volume_updated
+signal background_set
 
 const SAVE_PATH = "user://settings.cfg"
 const DB_LOWER_LIMIT: int = 30
@@ -12,6 +13,7 @@ var config := ConfigFile.new()
 var music_volume: float = 0.7
 var sfx_volume: float = 0.7
 var fullscreen: bool = false
+var background: String = "Default"
 
 # updater
 var latest_version: String = ""
@@ -40,6 +42,12 @@ func update_sfx_volume(new_volume: float) -> void:
 func update_fullscreen(new_value: bool) -> void:
 	fullscreen = new_value
 	_apply_fullscreen_setting()
+	_save_config()
+
+
+func update_background(new_value: String) -> void:
+	background = new_value
+	self.background_set.emit()
 	_save_config()
 
 
@@ -83,6 +91,8 @@ func _load_config() -> void:
 		fullscreen = config.get_value("settings", "fullscreen", false)
 		_apply_fullscreen_setting()
 
+		background = config.get_value("settings", "background", "default")
+
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
 
@@ -92,6 +102,7 @@ func _save_config() -> void:
 	config.set_value("settings", "music_volume", music_volume)
 	config.set_value("settings", "sfx_volume", sfx_volume)
 	config.set_value("settings", "fullscreen", fullscreen)
+	config.set_value("settings", "background", background)
 
 	# Updater
 	config.set_value("updater", "latest_version", latest_version)

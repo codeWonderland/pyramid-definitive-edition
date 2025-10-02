@@ -1,12 +1,15 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://dkcfibuwqlsb5"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://dkcfibuwqlsb5"]
 
 [ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
 [ext_resource type="StyleBox" uid="uid://1yr2oyhmdn6y" path="res://assets/themes/style_boxes/button.tres" id="1_axncs"]
 [ext_resource type="Texture2D" uid="uid://bakts8eoog0cj" path="res://assets/sprites/ui/icons/confirm.png" id="1_gvtt4"]
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
+[ext_resource type="Texture2D" uid="uid://bhgkip670mh4r" path="res://assets/sprites/ui/icons/down-caret.png" id="5_4fp8c"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_4fp8c"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_0f6i3"]
 
 [resource]
 BigTitle/base_type = &"Label"
@@ -47,6 +50,14 @@ MediumTitle/constants/outline_size = 16
 MediumTitle/constants/shadow_offset_x = 6
 MediumTitle/constants/shadow_offset_y = 6
 MediumTitle/font_sizes/font_size = 40
+OptionButton/constants/arrow_margin = 16
+OptionButton/constants/h_separation = 16
+OptionButton/constants/outline_size = 8
+OptionButton/font_sizes/font_size = 32
+OptionButton/icons/arrow = ExtResource("5_4fp8c")
 PanelContainer/styles/panel = ExtResource("2_lxams")
+PopupMenu/font_sizes/font_size = 40
+PopupMenu/icons/radio_checked = ExtResource("1_gvtt4")
+PopupMenu/icons/radio_unchecked = SubResource("ImageTexture_0f6i3")
 RichTextLabel/constants/outline_size = 8
 RichTextLabel/font_sizes/normal_font_size = 32

@@ -9,6 +9,7 @@ const DICE_TEXTURES = [
 	preload("res://assets/sprites/ui/icons/d6.png"),
 ]
 
+@onready var _background: TextureRect = %Background
 @onready var _back_button: TextureButton = %Back
 @onready var _title: Label = %Title
 @onready var _top_right: HBoxContainer = %TopRight
@@ -53,6 +54,14 @@ func _ready() -> void:
 
 	# Scene Setup
 	_reroll_packs()
+
+	_set_background()
+	UserSettingsManager.background_set.connect(_set_background)
+
+
+func _set_background() -> void:
+	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
+		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
 func _resize() -> void:

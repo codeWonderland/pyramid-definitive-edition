@@ -2,6 +2,7 @@ class_name MainMenu extends Control
 
 var _settings_were_open: bool = false
 
+@onready var _background: TextureRect = %Background
 @onready var _title: Label = %Title
 @onready var _start_label: Label = %StartLabel
 @onready var _pause_menu: PauseMenu = %PauseMenu
@@ -13,6 +14,14 @@ func _ready() -> void:
 	_setup_ui()
 	_settings_button.pressed.connect(_toggle_settings)
 	_exit_button.pressed.connect(_close_game)
+
+	_set_background()
+	UserSettingsManager.background_set.connect(_set_background)
+
+
+func _set_background() -> void:
+	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
+		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
 func _input(event: InputEvent) -> void:
