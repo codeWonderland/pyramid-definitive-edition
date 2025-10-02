@@ -9,16 +9,18 @@ const DICE_TEXTURES = [
 	preload("res://assets/sprites/ui/icons/d6.png"),
 ]
 
-var _popup_open: bool = false
-
 @onready var _back_button: TextureButton = %Back
 @onready var _title: Label = %Title
+@onready var _top_right: HBoxContainer = %TopRight
 @onready var _settings_button: TextureButton = %Settings
 @onready var _pause_menu: PauseMenu = %PauseMenu
 @onready var _close_button: TextureButton = %Close
+@onready var _card_group_collection: CardGroupCollection = %CardGroupCollection
+@onready var _bottom_left: VBoxContainer = %BottomLeft
 @onready var _die: TextureRect = %Die
 @onready var _roll_die_button: TextureButton = %RollDie
 @onready var _reroll_packs_button: TextureButton = %RerollGames
+@onready var _bottom_right: VBoxContainer = %BottomRight
 @onready var _multiplayer_rules_button: TextureButton = %MultiplayerRulesButton
 @onready var _multiplayer_rules: MultiplayerRules = %MultiplayerRules
 @onready var _coop_rules_button: TextureButton = %CoopRulesButton
@@ -49,35 +51,45 @@ func _ready() -> void:
 
 func _resize() -> void:
 	var screen_size = get_viewport().size as Vector2
+	var scale_mult = screen_size.x / 1280.0
 
-	_title.size.x = screen_size.x * 0.6
-	_title.position.x = screen_size.x * 0.2
+	if screen_size.y / 720.0 < scale_mult:
+		scale_mult = screen_size.y / 720.0
+
+	if scale_mult <= 1.0:
+		var new_scale = Vector2(scale_mult, scale_mult)
+		_title.scale = new_scale
+		_back_button.scale = new_scale
+		_top_right.scale = new_scale
+		_bottom_left.scale = new_scale
+		_reroll_packs_button.scale = new_scale
+		_bottom_right.scale = new_scale
 
 
 func _back() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
 	get_tree().change_scene_to_packed(load("res://source/menus/num_games.tscn"))
 
 
 func _open_settings() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
 	_pause_menu.show()
-	_popup_open = true
+	RunManager.popup_open = true
 
 
 func _close_game() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
 	# TODO: Create Close Game Dialog with Option to Save
 
 
 func _roll_die() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
 	_die.texture = DICE_TEXTURES.pick_random()
@@ -86,36 +98,37 @@ func _roll_die() -> void:
 
 
 func _reroll_packs() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
 	_set_title()
 
-	# TODO: Create Pack Generation System
+	var current_packs = RunManager.get_random_loadout()
+	_card_group_collection.packs = current_packs
 
 	_resize()
 
 
 func _show_multiplayer_rules() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
-	_popup_open = true
+	RunManager.popup_open = true
 
 	_multiplayer_rules.show()
 
 
 func _show_coop_rules() -> void:
-	if _popup_open:
+	if RunManager.popup_open:
 		return
 
-	_popup_open = true
+	RunManager.popup_open = true
 
 	_coop_rules.show()
 
 
 func _on_popup_closing() -> void:
-	_popup_open = false
+	RunManager.popup_open = false
 
 
 func _set_title() -> void:

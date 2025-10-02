@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://1w2t3sh58d3j"]
+
+[ext_resource type="Texture2D" uid="uid://cahirlfplrq8v" path="res://assets/sprites/testing/b1.png" id="1_740tw"]
+[ext_resource type="Script" uid="uid://btnartyborq1i" path="res://source/game/challenge_card.gd" id="1_kle6q"]
+
+[node name="ChallengeCard" type="TextureRect"]
+custom_minimum_size = Vector2(105, 150)
+offset_right = 105.0
+offset_bottom = 150.0
+texture = ExtResource("1_740tw")
+expand_mode = 3
+stretch_mode = 5
+script = ExtResource("1_kle6q")

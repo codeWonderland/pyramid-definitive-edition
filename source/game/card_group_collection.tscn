@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://3jtablu0mal1"]
+
+[ext_resource type="Script" uid="uid://c27vp3piawu8m" path="res://source/game/card_group_collection.gd" id="1_surro"]
+[ext_resource type="PackedScene" uid="uid://sqbqnb524stw" path="res://source/game/card_group.tscn" id="2_vs3hg"]
+
+[node name="CardGroupCollection" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 945.0
+offset_bottom = 425.0
+script = ExtResource("1_surro")
+
+[node name="CardGroup" parent="." instance=ExtResource("2_vs3hg")]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="CardGroup2" parent="." instance=ExtResource("2_vs3hg")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 400.0
+offset_right = 610.0
+
+[node name="CardGroup3" parent="." instance=ExtResource("2_vs3hg")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 800.0
+offset_right = 1010.0
+
+[node name="CardGroup4" parent="." instance=ExtResource("2_vs3hg")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 200.0
+offset_top = 200.0
+offset_right = 410.0
+offset_bottom = 425.0
+
+[node name="CardGroup5" parent="." instance=ExtResource("2_vs3hg")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 600.0
+offset_top = 200.0
+offset_right = 810.0
+offset_bottom = 425.0

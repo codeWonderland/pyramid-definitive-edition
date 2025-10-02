@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://sqbqnb524stw"]
+
+[ext_resource type="Script" uid="uid://lssqo4xuo56" path="res://source/game/card_group.gd" id="1_3qyos"]
+[ext_resource type="PackedScene" uid="uid://1w2t3sh58d3j" path="res://source/game/challenge_card.tscn" id="2_xyylh"]
+
+[node name="CardGroup" type="Control"]
+custom_minimum_size = Vector2(210, 225)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 210.0
+offset_bottom = 225.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_3qyos")
+
+[node name="Primary" parent="." instance=ExtResource("2_xyylh")]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 0
+
+[node name="Secondary" parent="." instance=ExtResource("2_xyylh")]
+unique_name_in_owner = true
+z_index = 1
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 0
+offset_left = 105.0
+offset_right = 210.0
+
+[node name="Curse" parent="." instance=ExtResource("2_xyylh")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 52.5
+offset_top = 75.0
+offset_right = 52.5
+offset_bottom = 75.0
+focus_on_hover = true

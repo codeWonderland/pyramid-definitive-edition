@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c7besnigoyson"]
+[gd_scene load_steps=15 format=3 uid="uid://c7besnigoyson"]
 
 [ext_resource type="Script" uid="uid://3qo2fobue4c5" path="res://source/game/game.gd" id="1_e4lxu"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_bq0n3"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_qbbrx"]
 [ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_7ae7h"]
 [ext_resource type="Texture2D" uid="uid://owavv4s3scxl" path="res://assets/sprites/ui/icons/d1.png" id="6_2olx2"]
+[ext_resource type="PackedScene" uid="uid://3jtablu0mal1" path="res://source/game/card_group_collection.tscn" id="6_oorho"]
 [ext_resource type="Texture2D" uid="uid://cqsrct6ytbi8g" path="res://assets/sprites/ui/buttons/roll_d6.png" id="7_16hqw"]
 [ext_resource type="Texture2D" uid="uid://de1hbblu776a7" path="res://assets/sprites/ui/buttons/reroll_games.png" id="8_oorho"]
 [ext_resource type="Texture2D" uid="uid://4fpaadhtggcv" path="res://assets/sprites/ui/buttons/multiplayer_rules.png" id="9_uq5as"]
@@ -56,16 +57,22 @@ texture_normal = ExtResource("3_bq0n3")
 
 [node name="Title" type="Label" parent="MarginContainer/Top"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 248.0
-offset_right = 1028.0
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -390.0
+offset_right = 390.0
 offset_bottom = 76.0
+grow_horizontal = 2
+pivot_offset = Vector2(375, 0)
 theme_type_variation = &"BigTitle"
 text = "The [Adjective] Pyramid of [Noun]"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/Top"]
+[node name="TopRight" type="HBoxContainer" parent="MarginContainer/Top"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -73,42 +80,53 @@ anchor_right = 1.0
 offset_left = -40.0
 offset_bottom = 40.0
 grow_horizontal = 0
+pivot_offset = Vector2(168, 0)
 theme_override_constants/separation = 16
 
-[node name="Settings" type="TextureButton" parent="MarginContainer/Top/HBoxContainer"]
+[node name="Settings" type="TextureButton" parent="MarginContainer/Top/TopRight"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("4_qbbrx")
 
-[node name="Close" type="TextureButton" parent="MarginContainer/Top/HBoxContainer"]
+[node name="Close" type="TextureButton" parent="MarginContainer/Top/TopRight"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("5_7ae7h")
+
+[node name="CardGroupCollection" parent="MarginContainer" instance=ExtResource("6_oorho")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1010, 425)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="Bottom" type="Control" parent="MarginContainer"]
 custom_minimum_size = Vector2(0, 166)
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/Bottom"]
+[node name="BottomLeft" type="VBoxContainer" parent="MarginContainer/Bottom"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
+offset_left = 3.0
 offset_top = -166.0
-offset_right = 231.0
+offset_right = 234.0
 grow_vertical = 0
+pivot_offset = Vector2(0, 166)
 theme_override_constants/separation = 16
 alignment = 2
 
-[node name="Die" type="TextureRect" parent="MarginContainer/Bottom/VBoxContainer"]
+[node name="Die" type="TextureRect" parent="MarginContainer/Bottom/BottomLeft"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 texture = ExtResource("6_2olx2")
 
-[node name="RollDie" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer"]
+[node name="RollDie" type="TextureButton" parent="MarginContainer/Bottom/BottomLeft"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("7_16hqw")
@@ -126,27 +144,30 @@ offset_top = -40.0
 offset_right = 20.0
 grow_horizontal = 2
 grow_vertical = 0
+pivot_offset = Vector2(150, 75)
 texture_normal = ExtResource("8_oorho")
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/Bottom"]
+[node name="BottomRight" type="VBoxContainer" parent="MarginContainer/Bottom"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -40.0
-offset_top = -40.0
+offset_left = -300.0
+offset_top = -166.0
 grow_horizontal = 0
 grow_vertical = 0
+pivot_offset = Vector2(300, 166)
 theme_override_constants/separation = 16
 
-[node name="MultiplayerRulesButton" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer2"]
+[node name="MultiplayerRulesButton" type="TextureButton" parent="MarginContainer/Bottom/BottomRight"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("9_uq5as")
 
-[node name="CoopRulesButton" type="TextureButton" parent="MarginContainer/Bottom/VBoxContainer2"]
+[node name="CoopRulesButton" type="TextureButton" parent="MarginContainer/Bottom/BottomRight"]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("10_0rlok")
@@ -154,16 +175,19 @@ texture_normal = ExtResource("10_0rlok")
 [node name="PauseMenu" parent="." instance=ExtResource("11_7ae7h")]
 unique_name_in_owner = true
 visible = false
+z_index = 2
 layout_mode = 0
 
 [node name="CoopRules" parent="." instance=ExtResource("12_16hqw")]
 unique_name_in_owner = true
 visible = false
+z_index = 2
 layout_mode = 0
 offset_right = 650.0
 
 [node name="MultiplayerRules" parent="." instance=ExtResource("13_oorho")]
 unique_name_in_owner = true
 visible = false
+z_index = 2
 layout_mode = 0
 offset_right = 650.0
