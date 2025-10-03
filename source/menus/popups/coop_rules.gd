@@ -1,5 +1,6 @@
 class_name CoopRules extends PopupContainer
 
+@onready var _scroll_container: ScrollContainer = %ScrollContainer
 @onready var _per_game_rules: RichTextLabel = %PerGameRules
 
 
@@ -14,3 +15,12 @@ func _ready() -> void:
 					game_rule = AdditionalRulesLoader.additional_rules[pack.title]["coop"]
 				}
 			))
+
+	_resize()
+	super._override_resize()
+	get_tree().get_root().size_changed.connect(_resize)
+
+
+func _resize() -> void:
+	super._resize()
+	_scroll_container.custom_minimum_size.y = size.y - 130.0

@@ -20,6 +20,7 @@ text = "Multiplayer Rules"
 horizontal_alignment = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 

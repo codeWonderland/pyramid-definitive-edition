@@ -12,6 +12,10 @@ func _ready() -> void:
 	_close_button.pressed.connect(_close)
 
 
+func _override_resize() -> void:
+	get_tree().get_root().size_changed.disconnect(_resize)
+
+
 func _resize() -> void:
 	var screen_size = get_viewport().size as Vector2
 	var scale_mult = screen_size.x / 1920.0

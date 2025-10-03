@@ -48,7 +48,7 @@ func _ready() -> void:
 	_multiplayer_rules.closing.connect(_on_popup_closing)
 	_coop_rules.closing.connect(_on_popup_closing)
 	_quit_dialog.closing.connect(_on_popup_closing)
-	_save_dialog.closing.connect(_on_popup_closing)
+	_save_dialog.closing.connect(_on_save_closed)
 	_quit_dialog.confirm_quit.connect(_on_quit_confirmed)
 	_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
@@ -145,6 +145,11 @@ func _show_coop_rules() -> void:
 
 func _on_popup_closing() -> void:
 	RunManager.popup_open = false
+
+
+func _on_save_closed() -> void:
+	_quit_dialog.hide()
+	_on_popup_closing()
 
 
 func _set_title() -> void:
