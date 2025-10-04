@@ -15,6 +15,7 @@ var _backgrounds_loaded: bool = false
 
 @onready var _background: TextureRect = %Background
 @onready var _http_request: HTTPRequest = %HTTPRequest
+@onready var _loading_animation: LoadingAnimation = %LoadingAnimation
 @onready var _label: Label = %Label
 @onready var _continue_button: Button = %Continue
 @onready var _skip_button: Button = %Skip
@@ -65,6 +66,7 @@ func _request_update_data(
 	if not _has_internet or result != 0:
 		if UserSettingsManager.latest_version == "":
 			_label.text = "Cannot access internet / download initial data. Please try again"
+			_loading_animation.hide()
 			_quit_button.show()
 		else:
 			_label.text = "Cannot access internet, using existing version"
@@ -83,6 +85,7 @@ func _check_update_data(
 	if result != 0:
 		if UserSettingsManager.latest_version == "":
 			_label.text = "Cannot pull updates data / download initial data. Please try again"
+			_loading_animation.hide()
 			_quit_button.show()
 		else:
 			_label.text = "Cannot pull updates data, using existing version"
@@ -95,6 +98,7 @@ func _check_update_data(
 	if parsed_json == null:
 		if UserSettingsManager.latest_version == "":
 			_label.text = "Cannot parse updates data / download initial data. Please try again"
+			_loading_animation.hide()
 			_quit_button.show()
 		else:
 			_label.text = "Cannot parse updates data, using existing version"
@@ -110,11 +114,13 @@ func _check_update_data(
 		_load_data()
 	else:
 		_label.text = "New Updates Found!"
+		_loading_animation.hide()
 		_download_button.show()
 		_skip_button.show()
 
 
 func _download_updates() -> void:
+	_loading_animation.show()
 	_download_button.hide()
 	_skip_button.hide()
 
@@ -212,6 +218,7 @@ func _continue() -> void:
 
 
 func _load_data() -> void:
+	_loading_animation.show()
 	_download_button.hide()
 	_skip_button.hide()
 

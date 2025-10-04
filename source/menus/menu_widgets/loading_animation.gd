@@ -5,8 +5,6 @@ const SMALLEST_SCALE: float = 0.75
 
 var _animation_progress: float = 0.0
 var _growing: bool = true
-var _paused: bool = true
-var _pause_time: float = 0.0
 
 @onready var _circles: Array[TextureRect] = [
 	%TextureRect,
