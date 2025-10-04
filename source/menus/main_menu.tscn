@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://ctf5sb112jkcq"]
+[gd_scene load_steps=11 format=3 uid="uid://ctf5sb112jkcq"]
 
 [ext_resource type="Theme" uid="uid://dkcfibuwqlsb5" path="res://assets/themes/main_theme.tres" id="1_3w2xd"]
 [ext_resource type="Script" uid="uid://cbob4lq0ngk6w" path="res://source/menus/main_menu.gd" id="2_ea0ap"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_xebgs"]
 [ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_emlqa"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="6_ea0ap"]
+[ext_resource type="Texture2D" uid="uid://bwdl5x2iaqyfp" path="res://assets/sprites/ui/buttons/github.png" id="7_emlqa"]
+[ext_resource type="Texture2D" uid="uid://cwnfpyfvt1jt2" path="res://assets/sprites/ui/buttons/credits.png" id="8_1hacp"]
 [ext_resource type="PackedScene" uid="uid://k7wyt0bajfdp" path="res://source/menus/popups/load_game_dialog.tscn" id="8_f0h3j"]
 
 [node name="MainMenu" type="Control"]
@@ -72,6 +74,20 @@ size_flags_horizontal = 4
 size_flags_vertical = 8
 text = "- Press Anything to Start -"
 
+[node name="Github" type="TextureButton" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+texture_normal = ExtResource("7_emlqa")
+
+[node name="Credits" type="TextureButton" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+texture_normal = ExtResource("8_1hacp")
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -116,3 +132,4 @@ layout_mode = 0
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+offset_right = 650.0

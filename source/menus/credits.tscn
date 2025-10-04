@@ -1,0 +1,103 @@
+[gd_scene load_steps=3 format=3 uid="uid://q1erlck7gmfl"]
+
+[ext_resource type="Script" uid="uid://b3orii505k0qq" path="res://source/menus/credits.gd" id="1_lsw4i"]
+[ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="1_uu0m1"]
+
+[node name="Credits" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lsw4i")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_uu0m1")
+expand_mode = 2
+stretch_mode = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 32.0
+offset_bottom = 32.0
+
+[node name="SkipCreditsLabel" type="Label" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "[ESC] to Skip"
+
+[node name="ScrollingContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 128
+alignment = 1
+
+[node name="MainTitle" type="Label" parent="ScrollingContainer"]
+layout_mode = 2
+theme_type_variation = &"ExtraLargeTitle"
+text = "The Pyramid:
+Definitive Edition"
+horizontal_alignment = 1
+
+[node name="CreditsSection" type="VBoxContainer" parent="ScrollingContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="ScrollingContainer/CreditsSection"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Concepting / Design:"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="ScrollingContainer/CreditsSection"]
+layout_mode = 2
+text = "Olexa (@OlexaYT)"
+horizontal_alignment = 1
+
+[node name="CreditsSection2" type="VBoxContainer" parent="ScrollingContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="ScrollingContainer/CreditsSection2"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Development:"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="ScrollingContainer/CreditsSection2"]
+layout_mode = 2
+text = "codeWonderland Development"
+horizontal_alignment = 1
+
+[node name="CreditsSection3" type="VBoxContainer" parent="ScrollingContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="ScrollingContainer/CreditsSection3"]
+layout_mode = 2
+theme_type_variation = &"BigTitle"
+text = "Pack Creators:"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="ScrollingContainer/CreditsSection3"]
+layout_mode = 2
+text = "BearTheDice
+DanEgbert
+Funguy
+g0m
+Liliane Cloud
+ryan
+subsonic"
+horizontal_alignment = 1

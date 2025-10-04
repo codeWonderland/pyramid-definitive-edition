@@ -1,6 +1,6 @@
 class_name MainMenu extends Control
 
-var _popup_was_open: bool = false
+var _hold_scene_transition: bool = false
 
 @onready var _background: TextureRect = %Background
 @onready var _title: Label = %Title
@@ -10,6 +10,8 @@ var _popup_was_open: bool = false
 @onready var _load_game_dialog: LoadGameDialog = %LoadGameDialog
 @onready var _settings_button: TextureButton = %Settings
 @onready var _exit_button: TextureButton = %Exit
+@onready var _credits_button: TextureButton = %Credits
+@onready var _github_button: TextureButton = %Github
 
 
 func _ready() -> void:
@@ -18,6 +20,8 @@ func _ready() -> void:
 	_settings_button.pressed.connect(_toggle_settings)
 	_load_game_button.pressed.connect(_load_game)
 	_exit_button.pressed.connect(_close_game)
+	_credits_button.pressed.connect(_show_credits)
+	_github_button.pressed.connect(_open_github)
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
@@ -34,8 +38,8 @@ func _input(event: InputEvent) -> void:
 		if _pause_menu.visible or _load_game_dialog.visible:
 			return
 
-		if _popup_was_open:
-			_popup_was_open = false
+		if _hold_scene_transition:
+			_hold_scene_transition = false
 			return
 
 		_transition_scene()
@@ -74,7 +78,7 @@ func _toggle_settings() -> void:
 		return
 
 	_pause_menu.show()
-	_popup_was_open = true
+	_hold_scene_transition = true
 
 
 func _load_game() -> void:
@@ -82,7 +86,7 @@ func _load_game() -> void:
 		return
 
 	_load_game_dialog.show()
-	_popup_was_open = true
+	_hold_scene_transition = true
 
 
 func _transition_scene() -> void:
@@ -94,3 +98,13 @@ func _close_game() -> void:
 		return
 
 	get_tree().quit()
+
+
+func _open_github() -> void:
+	_hold_scene_transition = true
+	OS.shell_open("https://www.github.com/codeWonderland/pyramid-definitive-edition")
+
+
+func _show_credits() -> void:
+	_hold_scene_transition = true
+	get_tree().change_scene_to_packed(load("res://source/menus/credits.tscn"))
