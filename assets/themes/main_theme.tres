@@ -61,3 +61,6 @@ PopupMenu/icons/radio_checked = ExtResource("1_gvtt4")
 PopupMenu/icons/radio_unchecked = SubResource("ImageTexture_0f6i3")
 RichTextLabel/constants/outline_size = 8
 RichTextLabel/font_sizes/normal_font_size = 32
+SmallLabel/base_type = &"Label"
+SmallLabel/constants/line_spacing = -8
+SmallLabel/font_sizes/font_size = 24

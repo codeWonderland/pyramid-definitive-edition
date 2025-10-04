@@ -5,6 +5,25 @@ signal packs_updated
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
 var popup_open: bool = false
+var save_data: SaveData = null:
+	set(value):
+		save_data = value
+
+		if value != null:
+			selected_packs = []
+
+			for path in value.selected_pack_paths:
+				var pack = PackLoader.load_pack_from_path(path)
+				selected_packs.append(pack)
+
+			num_games = value.num_games
+
+
+func clear() -> void:
+	selected_packs = []
+	num_games = 5
+	popup_open = false
+	save_data = null
 
 
 func add_pack(pack_data: PackData) -> void:

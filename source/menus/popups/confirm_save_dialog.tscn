@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://b2oiqsso5at0"]
 
 [ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="1_4j3lp"]
-[ext_resource type="Script" uid="uid://mvwp3nf33e5l" path="res://source/menus/popups/save_dialog.gd" id="1_s7csr"]
+[ext_resource type="Script" uid="uid://mvwp3nf33e5l" path="res://source/menus/popups/confirm_save_dialog.gd" id="1_s7csr"]
 
-[node name="SaveDialog" type="PanelContainer"]
+[node name="ConfirmSaveDialog" type="PanelContainer"]
 custom_minimum_size = Vector2(650, 0)
 offset_right = 48.0
 offset_bottom = 48.0

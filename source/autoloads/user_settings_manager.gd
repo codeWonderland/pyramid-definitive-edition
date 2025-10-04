@@ -76,10 +76,6 @@ func db_to_volume(input_db: int) -> float:
 	return min(floor((input_db + DB_LOWER_LIMIT) * DB_LOWER_LIMIT * 10) / 10.0, 1.0)
 
 
-func reload_config() -> void:
-	_load_config()
-
-
 func _load_config() -> void:
 	if config.has_section("settings"):
 		music_volume = config.get_value("settings", "music_volume", 0.7)

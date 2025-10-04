@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c7besnigoyson"]
+[gd_scene load_steps=18 format=3 uid="uid://c7besnigoyson"]
 
 [ext_resource type="Script" uid="uid://3qo2fobue4c5" path="res://source/game/game.gd" id="1_e4lxu"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_bq0n3"]
@@ -15,7 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://d0g326064sjje" path="res://source/menus/popups/coop_rules.tscn" id="12_16hqw"]
 [ext_resource type="PackedScene" uid="uid://lbdrdxekcgf6" path="res://source/menus/popups/multiplayer_rules.tscn" id="13_oorho"]
 [ext_resource type="PackedScene" uid="uid://cfnlmhe3v85if" path="res://source/menus/popups/quit_dialog.tscn" id="15_0rlok"]
-[ext_resource type="PackedScene" uid="uid://b2oiqsso5at0" path="res://source/menus/popups/save_dialog.tscn" id="16_egut0"]
+[ext_resource type="PackedScene" uid="uid://b2oiqsso5at0" path="res://source/menus/popups/confirm_save_dialog.tscn" id="16_egut0"]
+[ext_resource type="PackedScene" uid="uid://bschd23pcse03" path="res://source/menus/popups/save_game_dialog.tscn" id="17_egut0"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -202,9 +203,15 @@ z_index = 2
 layout_mode = 0
 offset_right = 650.0
 
-[node name="SaveDialog" parent="." instance=ExtResource("16_egut0")]
+[node name="ConfirmSaveDialog" parent="." instance=ExtResource("16_egut0")]
 unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 0
 offset_right = 650.0
+
+[node name="SaveGameDialog" parent="." instance=ExtResource("17_egut0")]
+unique_name_in_owner = true
+visible = false
+z_index = 3
+layout_mode = 0

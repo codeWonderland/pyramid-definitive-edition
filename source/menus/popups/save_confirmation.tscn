@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnqlkatf0syyk"]
+
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="1_cstxw"]
+[ext_resource type="Script" uid="uid://x6h4h8ac5qt0" path="res://source/menus/popups/save_confirmation.gd" id="1_kd4lc"]
+
+[node name="SaveConfirmation" type="PanelContainer"]
+custom_minimum_size = Vector2(450, 0)
+offset_right = 450.0
+offset_bottom = 245.0
+script = ExtResource("1_kd4lc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Saving..."
+horizontal_alignment = 1
+
+[node name="Exit" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Exit Game"
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("1_cstxw")

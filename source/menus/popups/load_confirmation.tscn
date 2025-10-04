@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://8pneimcmdb2c"]
+
+[ext_resource type="Script" uid="uid://cbxtfpnyufat7" path="res://source/menus/popups/load_confirmation.gd" id="1_g4ton"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="1_je3i1"]
+
+[node name="LoadConfirmation" type="PanelContainer"]
+offset_right = 48.0
+offset_bottom = 48.0
+script = ExtResource("1_g4ton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Load Slot #1?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Confirm" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("1_je3i1")

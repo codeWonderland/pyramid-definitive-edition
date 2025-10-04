@@ -4,6 +4,8 @@ signal pressed
 
 @export var focus_on_hover: bool = false
 
+var hovering: bool = false
+
 
 func _ready() -> void:
 	_resize()
@@ -16,19 +18,21 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	var local_mouse_pos := get_local_mouse_position()
-	var hovering := Rect2(Vector2.ZERO, size).has_point(local_mouse_pos)
+	var mouse_over_card := Rect2(Vector2.ZERO, size).has_point(local_mouse_pos)
 	# These extra checks are here because we are only
 	# using hover effects on curse cards, and we want
 	# to be thoroughly in the card before triggering
 	if (
-		hovering
+		mouse_over_card
 		and local_mouse_pos.y >= size.y * 0.25
 		and local_mouse_pos.x >= size.x * 0.1
 		and local_mouse_pos.x <= size.x * 0.9
 	):
 		z_index = 2
+		hovering = true
 	else:
 		z_index = 0
+		hovering = true
 
 
 func _on_gui_input(event: InputEvent) -> void:

@@ -1,18 +1,22 @@
 class_name MainMenu extends Control
 
-var _settings_were_open: bool = false
+var _popup_was_open: bool = false
 
 @onready var _background: TextureRect = %Background
 @onready var _title: Label = %Title
 @onready var _start_label: Label = %StartLabel
 @onready var _pause_menu: PauseMenu = %PauseMenu
+@onready var _load_game_button: TextureButton = %Load
+@onready var _load_game_dialog: LoadGameDialog = %LoadGameDialog
 @onready var _settings_button: TextureButton = %Settings
 @onready var _exit_button: TextureButton = %Exit
 
 
 func _ready() -> void:
+	RunManager.clear()
 	_setup_ui()
 	_settings_button.pressed.connect(_toggle_settings)
+	_load_game_button.pressed.connect(_load_game)
 	_exit_button.pressed.connect(_close_game)
 
 	_set_background()
@@ -27,11 +31,11 @@ func _set_background() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed == true:
 		await get_tree().create_timer(0.2).timeout
-		if _pause_menu.visible:
+		if _pause_menu.visible or _load_game_dialog.visible:
 			return
 
-		if _settings_were_open:
-			_settings_were_open = false
+		if _popup_was_open:
+			_popup_was_open = false
 			return
 
 		_transition_scene()
@@ -66,11 +70,19 @@ func _hide_label() -> void:
 
 
 func _toggle_settings() -> void:
-	if _pause_menu.visible:
+	if _pause_menu.visible or _load_game_dialog.visible:
 		return
 
 	_pause_menu.show()
-	_settings_were_open = true
+	_popup_was_open = true
+
+
+func _load_game() -> void:
+	if _pause_menu.visible or _load_game_dialog.visible:
+		return
+
+	_load_game_dialog.show()
+	_popup_was_open = true
 
 
 func _transition_scene() -> void:
@@ -78,4 +90,7 @@ func _transition_scene() -> void:
 
 
 func _close_game() -> void:
+	if _pause_menu.visible or _load_game_dialog.visible:
+		return
+
 	get_tree().quit()

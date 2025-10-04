@@ -3,7 +3,9 @@ class_name CardGroupCollection extends Control
 var packs: Array[PackData] = []:
 	set(value):
 		packs = value
-		_load_packs()
+		if not _loading_from_save:
+			_load_packs()
+var _loading_from_save: bool = false
 
 @onready var _card_groups: Array[CardGroup] = [
 	%CardGroup,
@@ -18,8 +20,36 @@ func _ready() -> void:
 	_resize()
 	get_tree().get_root().size_changed.connect(_resize)
 
-	if packs.size() > 0:
+	if RunManager.save_data == null and packs.size() > 0:
 		_load_packs()
+
+	_update_pack_visibility()
+
+
+func generate_card_groups_data() -> Array[CardGroupData]:
+	var card_groups_data: Array[CardGroupData] = []
+
+	for group in _card_groups:
+		if group.pack != null:
+			var data: CardGroupData = group.generate_card_group_data()
+			card_groups_data.append(data)
+
+	return card_groups_data
+
+
+func load_packs_from_save(save_data: SaveData) -> void:
+	_loading_from_save = true
+
+	packs = []
+
+	for pack_path in save_data.rolled_loadout_paths:
+		var pack_data: PackData = PackLoader.load_pack_from_path(pack_path)
+		packs.append(pack_data)
+
+	for index in range(RunManager.num_games):
+		_card_groups[index].load_from_card_group_data(save_data.card_groups[index])
+
+	_loading_from_save = false
 
 
 func _resize() -> void:
@@ -57,7 +87,7 @@ func _resize() -> void:
 	size = custom_minimum_size
 
 
-func _load_packs() -> void:
+func _update_pack_visibility() -> void:
 	if RunManager.num_games == 5:
 		_card_groups[1].show()
 		_card_groups[2].show()
@@ -74,5 +104,7 @@ func _load_packs() -> void:
 		_card_groups[3].hide()
 		_card_groups[4].hide()
 
+
+func _load_packs() -> void:
 	for index in range(RunManager.num_games):
 		_card_groups[index].pack = packs[index]

@@ -1,11 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://ctf5sb112jkcq"]
+[gd_scene load_steps=9 format=3 uid="uid://ctf5sb112jkcq"]
 
 [ext_resource type="Theme" uid="uid://dkcfibuwqlsb5" path="res://assets/themes/main_theme.tres" id="1_3w2xd"]
 [ext_resource type="Script" uid="uid://cbob4lq0ngk6w" path="res://source/menus/main_menu.gd" id="2_ea0ap"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="3_qwdd7"]
+[ext_resource type="Texture2D" uid="uid://bso3qhggdljhj" path="res://assets/sprites/ui/buttons/save.png" id="4_emlqa"]
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_xebgs"]
 [ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_emlqa"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="6_ea0ap"]
+[ext_resource type="PackedScene" uid="uid://k7wyt0bajfdp" path="res://source/menus/popups/load_game_dialog.tscn" id="8_f0h3j"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -37,8 +39,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Load" type="TextureButton" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("4_emlqa")
+
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 8
 size_flags_vertical = 0
 alignment = 2
 
@@ -98,6 +108,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="PauseMenu" parent="." instance=ExtResource("6_ea0ap")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+
+[node name="LoadGameDialog" parent="." instance=ExtResource("8_f0h3j")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0

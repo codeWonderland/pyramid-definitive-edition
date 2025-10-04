@@ -1,4 +1,4 @@
-class_name SaveDialog extends PopupContainer
+class_name ConfirmSaveDialog extends PopupContainer
 
 signal save_confirmed(should_save: bool)
 

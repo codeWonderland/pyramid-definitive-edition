@@ -27,7 +27,8 @@ const DICE_TEXTURES = [
 @onready var _coop_rules_button: TextureButton = %CoopRulesButton
 @onready var _coop_rules: CoopRules = %CoopRules
 @onready var _quit_dialog: QuitDialog = %QuitDialog
-@onready var _save_dialog: SaveDialog = %SaveDialog
+@onready var _confirm_save_dialog: ConfirmSaveDialog = %ConfirmSaveDialog
+@onready var _save_game_dialog: SaveGameDialog = %SaveGameDialog
 
 
 func _ready() -> void:
@@ -48,12 +49,15 @@ func _ready() -> void:
 	_multiplayer_rules.closing.connect(_on_popup_closing)
 	_coop_rules.closing.connect(_on_popup_closing)
 	_quit_dialog.closing.connect(_on_popup_closing)
-	_save_dialog.closing.connect(_on_save_closed)
+	_confirm_save_dialog.closing.connect(_on_save_closed)
 	_quit_dialog.confirm_quit.connect(_on_quit_confirmed)
-	_save_dialog.save_confirmed.connect(_on_save_confirmed)
+	_confirm_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
 	# Scene Setup
-	_reroll_packs()
+	if RunManager.save_data != null:
+		_load_packs_from_save()
+	else:
+		_reroll_packs()
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
@@ -113,6 +117,12 @@ func _roll_die() -> void:
 	AudioManager.play_sfx(AudioManager.DICE_ROLL)
 
 
+func _load_packs_from_save() -> void:
+	_title.text = RunManager.save_data.title
+	_card_group_collection.load_packs_from_save(RunManager.save_data)
+	RunManager.save_data = null
+
+
 func _reroll_packs() -> void:
 	if RunManager.popup_open:
 		return
@@ -121,6 +131,8 @@ func _reroll_packs() -> void:
 
 	var current_packs = RunManager.get_random_loadout()
 	_card_group_collection.packs = current_packs
+
+	_update_save_data()
 
 	_resize()
 
@@ -173,9 +185,27 @@ func _set_title() -> void:
 
 
 func _on_quit_confirmed() -> void:
-	_save_dialog.show()
+	_confirm_save_dialog.show()
 
 
 func _on_save_confirmed(should_save: bool) -> void:
-	print("should save")
-	print(should_save)
+	if should_save:
+		_save_game_dialog.show()
+	else:
+		get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+
+
+func _update_save_data() -> void:
+	var save_data = SaveData.new()
+	save_data.title = _title.text
+	save_data.num_games = RunManager.num_games
+
+	for pack in RunManager.selected_packs:
+		save_data.selected_pack_paths.append(pack.folder_path)
+
+	for pack in _card_group_collection.packs:
+		save_data.rolled_loadout_paths.append(pack.folder_path)
+
+	save_data.card_groups = _card_group_collection.generate_card_groups_data()
+
+	_save_game_dialog.save_data = save_data
