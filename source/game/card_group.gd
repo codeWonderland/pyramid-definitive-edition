@@ -94,11 +94,13 @@ func _load_cards() -> void:
 
 	if _secondary_index != -1:
 		_secondary.texture = pack.secondaries[_secondary_index]
+		_secondary.show()
 	else:
 		_secondary.hide()
 
 	if _curse_index != -1:
 		_curse.texture = pack.curses[_curse_index]
+		_curse.show()
 	else:
 		_curse.hide()
 
