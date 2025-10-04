@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://b0cp1ynew3des"]
+[gd_scene load_steps=4 format=3 uid="uid://b0cp1ynew3des"]
 
 [ext_resource type="Script" uid="uid://dc4akym12ao5g" path="res://source/updater/updater.gd" id="1_vnkms"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_ionyj"]
+[ext_resource type="PackedScene" uid="uid://nv1acxtkb31o" path="res://source/menus/menu_widgets/loading_animation.tscn" id="3_c0vr8"]
 
 [node name="Updates" type="Control"]
 layout_mode = 3
@@ -41,6 +42,11 @@ offset_bottom = 25.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 24
+alignment = 1
+
+[node name="LoadingAnimation" parent="VBoxContainer" instance=ExtResource("3_c0vr8")]
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true

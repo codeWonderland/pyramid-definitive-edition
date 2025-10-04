@@ -15,6 +15,8 @@ func load() -> void:
 		packs_folder.list_dir_begin()
 		var pack_path = packs_folder.get_next()
 		while pack_path != "":
+			await get_tree().process_frame
+
 			var pack_data = load_pack_from_path(PACKS_FOLDER_PATH + pack_path)
 
 			if pack_data != null:
