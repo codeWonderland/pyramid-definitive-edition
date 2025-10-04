@@ -56,8 +56,6 @@ func _ready() -> void:
 	# Scene Setup
 	if RunManager.save_data != null:
 		_load_packs_from_save()
-	else:
-		_reroll_packs()
 		WordBankLoader.load()
 		AdditionalRulesLoader.rules_loaded.connect(
 			func():
@@ -65,6 +63,8 @@ func _ready() -> void:
 				_coop_rules.load_rules()
 		)
 		AdditionalRulesLoader.load()
+	else:
+		_reroll_packs()
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
