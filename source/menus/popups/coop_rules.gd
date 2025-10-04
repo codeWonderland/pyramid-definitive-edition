@@ -7,6 +7,14 @@ class_name CoopRules extends PopupContainer
 func _ready() -> void:
 	super._ready()
 
+	load_rules()
+
+	_resize()
+	super._override_resize()
+	get_tree().get_root().size_changed.connect(_resize)
+
+
+func load_rules() -> void:
 	for pack in RunManager.selected_packs:
 		if AdditionalRulesLoader.additional_rules.has(pack.title):
 			_per_game_rules.text += ("\n{game_name}:\n{game_rule}\n".format(
@@ -15,10 +23,6 @@ func _ready() -> void:
 					game_rule = AdditionalRulesLoader.additional_rules[pack.title]["coop"]
 				}
 			))
-
-	_resize()
-	super._override_resize()
-	get_tree().get_root().size_changed.connect(_resize)
 
 
 func _resize() -> void:

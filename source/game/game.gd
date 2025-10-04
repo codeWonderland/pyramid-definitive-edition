@@ -58,6 +58,13 @@ func _ready() -> void:
 		_load_packs_from_save()
 	else:
 		_reroll_packs()
+		WordBankLoader.load()
+		AdditionalRulesLoader.rules_loaded.connect(
+			func():
+				_multiplayer_rules.load_rules()
+				_coop_rules.load_rules()
+		)
+		AdditionalRulesLoader.load()
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
