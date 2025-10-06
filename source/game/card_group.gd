@@ -91,9 +91,11 @@ func _roll_cards() -> void:
 
 func _load_cards() -> void:
 	_primary.texture = pack.primaries[_primary_index]
+	_primary.accounting_for_curse = _curse_index != -1
 
 	if _secondary_index != -1:
 		_secondary.texture = pack.secondaries[_secondary_index]
+		_secondary.accounting_for_curse = _curse_index != -1
 		_secondary.show()
 	else:
 		_secondary.hide()

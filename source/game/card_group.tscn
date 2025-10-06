@@ -20,12 +20,13 @@ offset_left = 52.5
 offset_top = 75.0
 offset_right = 157.5
 offset_bottom = 225.0
-focus_on_hover = true
+is_curse = true
 
 [node name="Primary" parent="." instance=ExtResource("2_xyylh")]
 unique_name_in_owner = true
 z_index = 1
 layout_mode = 0
+accounting_for_curse = true
 
 [node name="Secondary" parent="." instance=ExtResource("2_xyylh")]
 unique_name_in_owner = true
@@ -34,3 +35,4 @@ custom_minimum_size = Vector2(0, 150)
 layout_mode = 0
 offset_left = 105.0
 offset_right = 210.0
+accounting_for_curse = true
