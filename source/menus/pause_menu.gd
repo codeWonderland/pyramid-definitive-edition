@@ -4,6 +4,8 @@ class_name PauseMenu extends PopupContainer
 @onready var _sfx_volume: VolumeChanger = %SFXVolume
 @onready var _background_select: OptionButton = %BackgroundSelect
 @onready var _fullscreen_toggle: CheckBox = %FullscreenToggle
+@onready var _offical_mods_button: Button = %OfficialMods
+@onready var _local_mods_button: Button = %LocalMods
 
 
 func _ready() -> void:
@@ -20,6 +22,8 @@ func _ready() -> void:
 	_sfx_volume.on_volume_changed.connect(_sfx_volume_changed)
 	_background_select.item_selected.connect(_on_background_selected)
 	_fullscreen_toggle.pressed.connect(_fullscreen_toggled)
+	_offical_mods_button.pressed.connect(_open_official_mods)
+	_local_mods_button.pressed.connect(_open_mod_manager)
 
 
 func _music_volume_changed(new_volume: int) -> void:
@@ -52,3 +56,16 @@ func _setup_background_options() -> void:
 func _on_background_selected(background_index: int) -> void:
 	var image_name = _background_select.get_item_text(background_index)
 	UserSettingsManager.update_background(image_name)
+
+
+func _open_official_mods() -> void:
+	OS.shell_open("https://github.com/codeWonderland/pyramid-mods")
+
+
+func _open_mod_manager() -> void:
+	var local_mods_folder = ProjectSettings.globalize_path(PackLoader.LOCAL_PACKS_FOLDER_PATH)
+	print(local_mods_folder)
+	var err = OS.shell_open(local_mods_folder)
+
+	if err != null:
+		print(err)
