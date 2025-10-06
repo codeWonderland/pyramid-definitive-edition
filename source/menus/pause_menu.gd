@@ -64,8 +64,4 @@ func _open_official_mods() -> void:
 
 func _open_mod_manager() -> void:
 	var local_mods_folder = ProjectSettings.globalize_path(PackLoader.LOCAL_PACKS_FOLDER_PATH)
-	print(local_mods_folder)
 	var err = OS.shell_open(local_mods_folder)
-
-	if err != null:
-		print(err)
