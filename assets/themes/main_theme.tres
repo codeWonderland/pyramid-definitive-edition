@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=9 format=3 uid="uid://dkcfibuwqlsb5"]
+[gd_resource type="Theme" load_steps=10 format=3 uid="uid://dkcfibuwqlsb5"]
 
 [ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
 [ext_resource type="StyleBox" uid="uid://1yr2oyhmdn6y" path="res://assets/themes/style_boxes/button.tres" id="1_axncs"]
@@ -6,6 +6,7 @@
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
 [ext_resource type="Texture2D" uid="uid://bhgkip670mh4r" path="res://assets/sprites/ui/icons/down-caret.png" id="5_4fp8c"]
+[ext_resource type="StyleBox" uid="uid://c2utbn782dhf3" path="res://assets/themes/style_boxes/selected_button.tres" id="7_0f6i3"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_4fp8c"]
 
@@ -46,6 +47,7 @@ HBoxContainer/constants/separation = 8
 Label/constants/outline_size = 8
 Label/font_sizes/font_size = 32
 Label/fonts/font = ExtResource("1_3f3va")
+LineEdit/font_sizes/font_size = 32
 MarginContainer/constants/margin_bottom = 16
 MarginContainer/constants/margin_left = 16
 MarginContainer/constants/margin_right = 16
@@ -68,6 +70,9 @@ PopupMenu/icons/radio_checked = ExtResource("1_gvtt4")
 PopupMenu/icons/radio_unchecked = SubResource("ImageTexture_0f6i3")
 RichTextLabel/constants/outline_size = 8
 RichTextLabel/font_sizes/normal_font_size = 32
+SelectableButton/base_type = &"Button"
+SelectableButton/styles/focus = ExtResource("7_0f6i3")
+SelectableButton/styles/pressed = ExtResource("7_0f6i3")
 SmallLabel/base_type = &"Label"
 SmallLabel/constants/line_spacing = -8
 SmallLabel/font_sizes/font_size = 24

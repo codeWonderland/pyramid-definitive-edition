@@ -58,23 +58,25 @@ layout_mode = 2
 layout_mode = 2
 text = "Fullscreen"
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/VBoxContainer"]
+[node name="ModsOptions" type="VBoxContainer" parent="VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/VBoxContainer2"]
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/ModsOptions"]
 layout_mode = 2
 text = "Mods Folders"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/VBoxContainer/VBoxContainer2"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/VBoxContainer/ModsOptions"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="OfficialMods" type="Button" parent="VBoxContainer/VBoxContainer/VBoxContainer2/HBoxContainer2"]
+[node name="OfficialMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Offical Mods"
 
-[node name="LocalMods" type="Button" parent="VBoxContainer/VBoxContainer/VBoxContainer2/HBoxContainer2"]
+[node name="LocalMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Local Mods"

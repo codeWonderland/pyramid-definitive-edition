@@ -155,7 +155,7 @@ func _apply_updates(
 	# Delete Old Mods Files
 	var mods_folder = DirAccess.open("user://mods/")
 	if mods_folder:
-		_delete_recursive(mods_folder)
+		Helpers.delete_recursive(mods_folder)
 
 	# Create New Mods Folder
 	var user_dir = DirAccess.open("user://")
@@ -191,22 +191,6 @@ func _apply_updates(
 	_load_data()
 
 
-func _delete_recursive(folder: DirAccess) -> void:
-	var folder_path = folder.get_current_dir(true)
-
-	var files = folder.get_files()
-	for file in files:
-		folder.remove(file)
-
-	var subfolders = folder.get_directories()
-	for subfolder_path in subfolders:
-		var full_subfolder_path = folder_path + "/" + subfolder_path
-		var subfolder = DirAccess.open(full_subfolder_path)
-		_delete_recursive(subfolder)
-
-	DirAccess.remove_absolute(folder_path)
-
-
 func _continue() -> void:
 	var can_continue = true
 
@@ -226,8 +210,8 @@ func _load_data() -> void:
 
 	await get_tree().create_timer(0.1).timeout
 
-	PackLoader.packs_loaded.connect(_on_packs_loaded)
-	PackLoader.load()
+	PacksManager.packs_loaded.connect(_on_packs_loaded)
+	PacksManager.load()
 	WordBankLoader.word_bank_loaded.connect(_on_word_bank_loaded)
 	WordBankLoader.load()
 	AdditionalRulesLoader.rules_loaded.connect(_on_additional_rules_loaded)

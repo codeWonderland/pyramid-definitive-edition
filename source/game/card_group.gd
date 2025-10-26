@@ -45,7 +45,7 @@ func generate_card_group_data() -> CardGroupData:
 func load_from_card_group_data(data: CardGroupData) -> void:
 	_loading_from_save = true
 
-	pack = PackLoader.load_pack_from_path(data.pack_path)
+	pack = PackDataLoader.load_pack_from_path(data.pack_path)
 	_primary_index = data.primary
 	_secondary_index = data.secondary
 	_curse_index = data.curse

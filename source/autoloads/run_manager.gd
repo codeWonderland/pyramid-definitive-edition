@@ -13,7 +13,7 @@ var save_data: SaveData = null:
 			selected_packs = []
 
 			for path in value.selected_pack_paths:
-				var pack = PackLoader.load_pack_from_path(path)
+				var pack = PackDataLoader.load_pack_from_path(path)
 				selected_packs.append(pack)
 
 			num_games = value.num_games

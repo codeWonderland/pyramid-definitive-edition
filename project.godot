@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Pyramid Definitive Edition"
-config/version="1.2.1"
+config/version="1.3.0"
 run/main_scene="uid://ctf5sb112jkcq"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 boot_splash/bg_color=Color(0.56078434, 0.8235294, 0.91764706, 1)
@@ -23,7 +23,7 @@ config/icon="uid://betxlbc4jxcah"
 UserSettingsManager="*res://source/autoloads/user_settings_manager.tscn"
 SaveManager="*res://source/autoloads/save_manager.tscn"
 AudioManager="*res://source/autoloads/audio_manager.tscn"
-PackLoader="*res://source/autoloads/pack_loader.tscn"
+PacksManager="*res://source/autoloads/packs_manager.tscn"
 WordBankLoader="*res://source/autoloads/word_bank_loader.tscn"
 AdditionalRulesLoader="*res://source/autoloads/additional_rules_loader.tscn"
 BackgroundManager="*res://source/autoloads/background_manager.tscn"

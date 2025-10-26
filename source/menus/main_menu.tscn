@@ -127,6 +127,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+show_mods = true
 
 [node name="LoadGameDialog" parent="." instance=ExtResource("8_f0h3j")]
 unique_name_in_owner = true

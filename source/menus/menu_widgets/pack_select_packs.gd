@@ -20,9 +20,9 @@ func prev_page() -> void:
 	_current_page -= 1
 
 	if _current_page < 0:
-		_current_page = int(floor(PackLoader.all_packs.size() as float / PAGE_SIZE as float))
+		_current_page = int(floor(PacksManager.all_packs.size() as float / PAGE_SIZE as float))
 
-		if PackLoader.all_packs.size() % PAGE_SIZE == 0:
+		if PacksManager.all_packs.size() % PAGE_SIZE == 0:
 			_current_page -= 1
 
 	_populate()
@@ -31,7 +31,7 @@ func prev_page() -> void:
 func next_page() -> void:
 	_current_page += 1
 
-	if _current_page * PAGE_SIZE >= PackLoader.all_packs.size():
+	if _current_page * PAGE_SIZE >= PacksManager.all_packs.size():
 		_current_page = 0
 
 	_populate()
@@ -60,7 +60,7 @@ func _get_visible_packs() -> Array[PackData]:
 	var starting_index = _current_page * PAGE_SIZE
 	var last_index = starting_index + PAGE_SIZE
 
-	return PackLoader.all_packs.slice(starting_index, last_index)
+	return PacksManager.all_packs.slice(starting_index, last_index)
 
 
 func _get_card_size() -> Vector2:
