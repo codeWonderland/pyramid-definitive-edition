@@ -31,7 +31,7 @@ func _back_to_pack_select() -> void:
 
 	# if we loaded from a save and we don't have packs
 	# we go to the updater instead of pack select
-	if PackLoader.all_packs.size() == 0:
+	if PacksManager.all_packs.size() == 0:
 		get_tree().change_scene_to_packed(load("res://source/updater/updater.tscn"))
 	else:
 		get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))

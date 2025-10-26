@@ -1,14 +1,20 @@
 class_name PauseMenu extends PopupContainer
 
+@export var show_mods: bool = false
+
 @onready var _music_volume: VolumeChanger = %MusicVolume
 @onready var _sfx_volume: VolumeChanger = %SFXVolume
 @onready var _background_select: OptionButton = %BackgroundSelect
 @onready var _fullscreen_toggle: CheckBox = %FullscreenToggle
+@onready var _mods_options: VBoxContainer = %ModsOptions
 @onready var _offical_mods_button: Button = %OfficialMods
 @onready var _local_mods_button: Button = %LocalMods
 
 
 func _ready() -> void:
+	if show_mods:
+		_mods_options.show()
+
 	super._ready()
 
 	# set initial values
@@ -63,5 +69,4 @@ func _open_official_mods() -> void:
 
 
 func _open_mod_manager() -> void:
-	var local_mods_folder = ProjectSettings.globalize_path(PackLoader.LOCAL_PACKS_FOLDER_PATH)
-	OS.shell_open(local_mods_folder)
+	get_tree().change_scene_to_packed(load("res://source/mod-manager/mod_manager.tscn"))

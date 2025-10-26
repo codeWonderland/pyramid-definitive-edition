@@ -44,7 +44,7 @@ func _display_save_data() -> void:
 		_card_label.show()
 		_delete_button.hide()
 	else:
-		var first_pack: PackData = PackLoader.load_pack_from_path(
+		var first_pack: PackData = PackDataLoader.load_pack_from_path(
 			save_data.card_groups[0].pack_path
 		)
 		_card.texture = first_pack.backs[0]
