@@ -4,9 +4,12 @@ const DATA_PATH: String = "https://api.github.com/repos/codeWonderland/pyramid-m
 # gdlint:ignore = max-line-length
 const DOWNLOAD_PATH: String = "https://github.com/codeWonderland/pyramid-mods/archive/refs/heads/main.zip"
 const NETWORK_CHECK_TIME: float = 15.0
+const INITIAL_MODS_PATH: String = "res://initial_mods/pyramid-mods/"
+const MODS_ROOT: String = "user://mods/"
+const REMOTE_MODS_PATH: String = "user://mods/pyramid-mods-main/"
 
 var _has_internet: bool = false
-var _has_requested_updates: bool = false
+var _internet_check_resolved: bool = false
 var _latest_version: String = ""
 var _packs_loaded: bool = false
 var _word_bank_loaded: bool = false
@@ -32,7 +35,7 @@ func _ready() -> void:
 
 	_check_internet_access()
 	await get_tree().create_timer(NETWORK_CHECK_TIME).timeout
-	_request_update_data(13, -1, [], [])
+	_resolve_internet_check()
 
 
 func _set_background() -> void:
@@ -44,107 +47,88 @@ func _set_background() -> void:
 
 
 func _check_internet_access() -> void:
-	_http_request.request_completed.connect(_validate_internet)
+	_http_request.request_completed.connect(_on_internet_response, CONNECT_ONE_SHOT)
 	_http_request.request("https://www.github.com", [], HTTPClient.METHOD_GET)
 
 
-func _validate_internet(
-	result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray
-) -> void:
-	_has_internet = true
-	_request_update_data(result, response_code, headers, body)
-
-
-func _request_update_data(
+func _on_internet_response(
 	result: int, _response_code: int, _headers: PackedStringArray, _body: PackedByteArray
 ) -> void:
-	if _has_requested_updates:
+	if result == HTTPRequest.RESULT_SUCCESS:
+		_has_internet = true
+	_resolve_internet_check()
+
+
+func _resolve_internet_check() -> void:
+	if _internet_check_resolved:
+		return
+	_internet_check_resolved = true
+
+	_ensure_initial_mods_present()
+
+	if not _has_internet:
+		_label.text = "Loading..."
+		_load_data()
 		return
 
-	_has_requested_updates = true
+	_check_for_updates()
 
-	if not _has_internet or result != 0:
-		if UserSettingsManager.latest_version == "":
-			_label.text = "Cannot access internet / download initial data. Please try again"
-			_loading_animation.hide()
-			_quit_button.show()
-		else:
-			_label.text = "Cannot access internet, using existing version"
-			_load_data()
 
-		return
-
+func _check_for_updates() -> void:
 	_label.text = "Checking for Updates..."
-	_http_request.request_completed.connect(_check_update_data)
+	_http_request.request_completed.connect(_check_update_data, CONNECT_ONE_SHOT)
 	_http_request.request(DATA_PATH, [], HTTPClient.METHOD_GET)
 
 
 func _check_update_data(
 	result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
-	if result != 0:
-		if UserSettingsManager.latest_version == "":
-			_label.text = "Cannot pull updates data / download initial data. Please try again"
-			_loading_animation.hide()
-			_quit_button.show()
-		else:
-			_label.text = "Cannot pull updates data, using existing version"
-			_load_data()
-
+	if result != HTTPRequest.RESULT_SUCCESS:
+		_label.text = "Couldn't check for updates, using existing mods"
+		_load_data()
 		return
 
 	var parsed_json = JSON.parse_string(body.get_string_from_utf8())
 
-	if parsed_json == null:
-		if UserSettingsManager.latest_version == "":
-			_label.text = "Cannot parse updates data / download initial data. Please try again"
-			_loading_animation.hide()
-			_quit_button.show()
-		else:
-			_label.text = "Cannot parse updates data, using existing version"
-			_load_data()
+	if parsed_json == null or not parsed_json.has("commit"):
+		_label.text = "Couldn't parse updates info, using existing mods"
+		_load_data()
+		return
 
-	var sha = parsed_json["commit"]["sha"]
+	var sha: String = parsed_json["commit"]["sha"]
 	_latest_version = sha
 
-	if UserSettingsManager.latest_version == "":
-		_download_updates()
-	elif UserSettingsManager.latest_version == sha:
+	if UserSettingsManager.latest_version == sha:
 		_label.text = "Everything is Up to Date"
 		_load_data()
+		return
+
+	if UserSettingsManager.latest_version == "":
+		_label.text = "Mod updates available, download?"
 	else:
 		_label.text = "New Updates Found!"
-		_loading_animation.hide()
-		_download_button.show()
-		_skip_button.show()
+
+	_loading_animation.hide()
+	_download_button.show()
+	_skip_button.show()
 
 
 func _download_updates() -> void:
 	_loading_animation.show()
 	_download_button.hide()
 	_skip_button.hide()
+	_label.text = "Downloading Updates..."
 
-	if UserSettingsManager.latest_version == "":
-		_label.text = "Downloading Initial Data..."
-	else:
-		_label.text = "Downloading Updates..."
-
-	_http_request.request_completed.disconnect(_check_update_data)
-	_http_request.request_completed.connect(_apply_updates)
+	_http_request.request_completed.connect(_apply_updates, CONNECT_ONE_SHOT)
 	_http_request.request(DOWNLOAD_PATH, [], HTTPClient.METHOD_GET)
 
 
 func _apply_updates(
 	result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
-	if result != 0:
-		if UserSettingsManager.latest_version == "":
-			_label.text = "Issue downloading initial data. Please try again"
-			_quit_button.show()
-		else:
-			_label.text = "Issue downloading latest updates, using existing version"
-			_load_data()
-
+	if result != HTTPRequest.RESULT_SUCCESS:
+		_label.text = "Issue downloading latest updates, using existing mods"
+		_load_data()
 		return
 
 	# Save ZIP File
@@ -152,15 +136,14 @@ func _apply_updates(
 	output_zip.store_buffer(body)
 	output_zip.close()
 
-	# Delete Old Mods Files
-	var mods_folder = DirAccess.open("user://mods/")
-	if mods_folder:
-		Helpers.delete_recursive(mods_folder)
+	# Delete remote mods (preserve user://mods/local/)
+	var remote_mods = DirAccess.open(REMOTE_MODS_PATH)
+	if remote_mods:
+		Helpers.delete_recursive(remote_mods)
 
-	# Create New Mods Folder
-	var user_dir = DirAccess.open("user://")
-	user_dir.make_dir("mods/")
-	mods_folder = DirAccess.open("user://mods/")
+	# Ensure mods root exists
+	DirAccess.make_dir_recursive_absolute(MODS_ROOT)
+	var mods_folder = DirAccess.open(MODS_ROOT)
 
 	# Extract ZIP File
 	var zip_reader = ZIPReader.new()
@@ -182,13 +165,61 @@ func _apply_updates(
 		file.store_buffer(buffer)
 
 	# Delete Zip
-	user_dir.remove("updates.zip")
+	DirAccess.open("user://").remove("updates.zip")
 
 	# Update Records
 	UserSettingsManager.update_latest_version(_latest_version)
 
 	_label.text = "Updates Applied"
 	_load_data()
+
+
+# === Initial Mods Functions ===
+
+
+func _ensure_initial_mods_present() -> void:
+	if _remote_mods_present():
+		return
+
+	_label.text = "Setting up initial mods..."
+	DirAccess.make_dir_recursive_absolute(REMOTE_MODS_PATH)
+	_copy_directory_recursive(INITIAL_MODS_PATH, REMOTE_MODS_PATH)
+
+
+func _remote_mods_present() -> bool:
+	var dir = DirAccess.open(REMOTE_MODS_PATH)
+	if dir == null:
+		return false
+	return dir.get_files().size() > 0 or dir.get_directories().size() > 0
+
+
+func _copy_directory_recursive(source: String, target: String) -> void:
+	var source_dir = DirAccess.open(source)
+	if source_dir == null:
+		return
+
+	DirAccess.make_dir_recursive_absolute(target)
+
+	for file_name in source_dir.get_files():
+		# Skip Godot import sidecars and ignore markers
+		if file_name.ends_with(".import") or file_name == ".gdignore":
+			continue
+
+		var source_file = source.path_join(file_name)
+		var target_file = target.path_join(file_name)
+		var bytes = FileAccess.get_file_as_bytes(source_file)
+		var out = FileAccess.open(target_file, FileAccess.WRITE)
+		if out:
+			out.store_buffer(bytes)
+			out.close()
+
+	for sub in source_dir.get_directories():
+		if sub.begins_with("."):
+			continue
+		_copy_directory_recursive(source.path_join(sub), target.path_join(sub))
+
+
+# === Data Loading ===
 
 
 func _continue() -> void:

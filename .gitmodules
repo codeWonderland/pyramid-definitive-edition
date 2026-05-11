@@ -1,3 +1,6 @@
 [submodule "source/mod-manager"]
 	path = source/mod-manager
 	url = git@github.com:codeWonderland/pyramid-mod-manager-submodule
+[submodule "initial_mods/pyramid-mods"]
+	path = initial_mods/pyramid-mods
+	url = https://github.com/codeWonderland/pyramid-mods
