@@ -35,8 +35,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install git+https://github.com/Scony/godot-gdscript-toolkit.git
 
+      # Scope to our own code only — addons/ holds the vendored GUT testing
+      # framework, which follows its own formatting/lint conventions.
       - name: Check formatting
-        run: gdformat --check --diff .
+        run: gdformat --check --diff source test
 
       - name: Run gdlint
-        run: gdlint .
+        run: gdlint source test
