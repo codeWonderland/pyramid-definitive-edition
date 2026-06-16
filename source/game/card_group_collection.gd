@@ -46,8 +46,12 @@ func load_packs_from_save(save_data: SaveData) -> void:
 		var pack_data: PackData = PackDataLoader.load_pack_from_path(pack_path)
 		packs.append(pack_data)
 
-	for index in range(RunManager.num_games):
-		_card_groups[index].load_from_card_group_data(save_data.card_groups[index])
+	var group_count := mini(RunManager.num_games, save_data.card_groups.size())
+	for index in range(group_count):
+		var group_data: CardGroupData = save_data.card_groups[index]
+		if group_data == null:
+			continue
+		_card_groups[index].load_from_card_group_data(group_data)
 
 	_loading_from_save = false
 
