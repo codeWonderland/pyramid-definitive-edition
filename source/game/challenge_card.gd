@@ -12,7 +12,7 @@ const DRAG_Z_INDEX: int = 10
 const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
 ## Radians of lean per px/sec of drag velocity (sign flips the lean direction).
 const ROLL_PER_VELOCITY: float = 0.0004
-const PITCH_PER_VELOCITY: float = 0.0004
+const PITCH_PER_VELOCITY: float = -0.0004
 ## Hard cap on the lean so a fast flick stays believable (radians).
 const MAX_TILT: float = 0.4
 ## How quickly the current lean chases its target (higher = snappier).
