@@ -43,13 +43,22 @@ func _display_save_data() -> void:
 		_card.texture = DEFAULT_CARD_TEXTURE
 		_card_label.show()
 		_delete_button.hide()
-	else:
-		var first_pack: PackData = PackDataLoader.load_pack_from_path(
-			save_data.card_groups[0].pack_path
-		)
+		return
+
+	# A populated slot can still reference a pack the user has since deleted
+	# (or a save with no card groups), so fall back to the default art instead
+	# of crashing the dialog.
+	var first_pack: PackData = null
+	if not save_data.card_groups.is_empty():
+		first_pack = PackDataLoader.load_pack_from_path(save_data.card_groups[0].pack_path)
+
+	if first_pack != null and not first_pack.backs.is_empty():
 		_card.texture = first_pack.backs[0]
-		_card_label.hide()
-		_delete_button.show()
+	else:
+		_card.texture = DEFAULT_CARD_TEXTURE
+
+	_card_label.hide()
+	_delete_button.show()
 
 
 func _on_gui_input(event: InputEvent) -> void:

@@ -46,6 +46,14 @@ func load_from_card_group_data(data: CardGroupData) -> void:
 	_loading_from_save = true
 
 	pack = PackDataLoader.load_pack_from_path(data.pack_path)
+
+	# The referenced pack may have been deleted/uninstalled since the save was
+	# written; leave the group empty rather than dereferencing a null pack.
+	if pack == null:
+		push_warning("CardGroup: pack no longer available at %s" % data.pack_path)
+		_loading_from_save = false
+		return
+
 	_primary_index = data.primary
 	_secondary_index = data.secondary
 	_curse_index = data.curse
@@ -82,11 +90,8 @@ func _roll_cards() -> void:
 
 	if pack.secondaries.size() > 0:
 		_secondary_index = randi() % pack.secondaries.size()
-		_secondary.texture = pack.secondaries[_secondary_index]
 	else:
 		_secondary_index = -1
-
-	_load_cards()
 
 
 func _load_cards() -> void:

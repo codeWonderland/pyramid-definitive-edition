@@ -21,10 +21,11 @@ func _load_config() -> void:
 
 
 func _save_config() -> void:
-	if _saves[0] != null:
-		config.set_value("user_data", "saves", _saves)
+	config.set_value("user_data", "saves", _saves)
 
-	config.save(SAVE_PATH)
+	var error := config.save(SAVE_PATH)
+	if error != OK:
+		push_error("SaveManager: failed to write %s (error %d)" % [SAVE_PATH, error])
 
 
 func create_save(save_index: int, data: SaveData) -> void:

@@ -29,6 +29,10 @@ func load() -> void:
 				continue
 
 			var image: Image = Image.load_from_file(BACKGROUNDS_PATH + image_path)
+			if image == null:
+				push_warning("BackgroundManager: couldn't load image %s" % image_path)
+				continue
+
 			var texture: ImageTexture = ImageTexture.create_from_image(image)
 			var image_name: String = image_path.split(".")[0]
 
