@@ -1,6 +1,6 @@
 class_name CardGroupData extends Resource
 
-var pack_path: String
-var primary: int
-var secondary: int
-var curse: int
+@export var pack_path: String = ""
+@export var primary: int = 0
+@export var secondary: int = -1
+@export var curse: int = -1

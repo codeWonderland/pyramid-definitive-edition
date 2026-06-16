@@ -7,6 +7,8 @@ const NETWORK_CHECK_TIME: float = 15.0
 const INITIAL_MODS_PATH: String = "res://initial_mods/pyramid-mods/"
 const MODS_ROOT: String = "user://mods/"
 const REMOTE_MODS_PATH: String = "user://mods/pyramid-mods-main/"
+const UPDATE_ZIP_PATH: String = "user://updates.zip"
+const UPDATE_TEMP_PATH: String = "user://mods_update_tmp/"
 
 var _has_internet: bool = false
 var _internet_check_resolved: bool = false
@@ -132,46 +134,143 @@ func _apply_updates(
 		return
 
 	# Save ZIP File
-	var output_zip = FileAccess.open("user://updates.zip", FileAccess.WRITE)
-	output_zip.store_buffer(body)
-	output_zip.close()
+	if not _write_buffer_to_file(UPDATE_ZIP_PATH, body):
+		_label.text = "Couldn't save update file, using existing mods"
+		_load_data()
+		return
 
-	# Delete remote mods (preserve user://mods/local/)
+	# Extract to a temporary directory first so a corrupt/malicious download can
+	# never leave the user with half-deleted mods (existing mods stay untouched
+	# until we know the new ones extracted cleanly).
+	if not _extract_zip_to(UPDATE_ZIP_PATH, UPDATE_TEMP_PATH):
+		_label.text = "Update download was invalid, using existing mods"
+		_cleanup_path(UPDATE_TEMP_PATH)
+		_cleanup_path(UPDATE_ZIP_PATH)
+		_load_data()
+		return
+
+	# Extraction succeeded: now it's safe to swap in the new mods.
 	var remote_mods = DirAccess.open(REMOTE_MODS_PATH)
 	if remote_mods:
 		Helpers.delete_recursive(remote_mods)
 
-	# Ensure mods root exists
 	DirAccess.make_dir_recursive_absolute(MODS_ROOT)
-	var mods_folder = DirAccess.open(MODS_ROOT)
+	_move_directory_contents(UPDATE_TEMP_PATH, MODS_ROOT)
 
-	# Extract ZIP File
-	var zip_reader = ZIPReader.new()
-	zip_reader.open("user://updates.zip")
+	_cleanup_path(UPDATE_TEMP_PATH)
+	_cleanup_path(UPDATE_ZIP_PATH)
 
-	var files = zip_reader.get_files()
-	for file_path in files:
-		if file_path.ends_with("/"):
-			mods_folder.make_dir_recursive(file_path)
-			continue
-
-		mods_folder.make_dir_recursive(
-			mods_folder.get_current_dir().path_join(file_path).get_base_dir()
-		)
-		var file = FileAccess.open(
-			mods_folder.get_current_dir().path_join(file_path), FileAccess.WRITE
-		)
-		var buffer = zip_reader.read_file(file_path)
-		file.store_buffer(buffer)
-
-	# Delete Zip
-	DirAccess.open("user://").remove("updates.zip")
-
-	# Update Records
+	# Only record the new version once the swap has actually completed.
 	UserSettingsManager.update_latest_version(_latest_version)
 
 	_label.text = "Updates Applied"
 	_load_data()
+
+
+func _write_buffer_to_file(path: String, body: PackedByteArray) -> bool:
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error(
+			"Updater: failed to open %s for writing (%d)" % [path, FileAccess.get_open_error()]
+		)
+		return false
+
+	file.store_buffer(body)
+	file.close()
+	return true
+
+
+# Rejects path-traversal and absolute entries so a malicious archive can't write
+# outside the extraction directory (zip-slip).
+func _is_safe_zip_entry(path: String) -> bool:
+	var normalized := path.replace("\\", "/")
+
+	if normalized.begins_with("/"):
+		return false
+
+	# Drive-letter style absolute paths (e.g. "C:/...").
+	if normalized.length() >= 2 and normalized[1] == ":":
+		return false
+
+	for segment in normalized.split("/"):
+		if segment == "..":
+			return false
+
+	return true
+
+
+func _extract_zip_to(zip_path: String, dest_root: String) -> bool:
+	_cleanup_path(dest_root)
+	DirAccess.make_dir_recursive_absolute(dest_root)
+
+	var dest_dir = DirAccess.open(dest_root)
+	if dest_dir == null:
+		push_error("Updater: couldn't open extraction directory %s" % dest_root)
+		return false
+
+	var zip_reader = ZIPReader.new()
+	if zip_reader.open(zip_path) != OK:
+		push_error("Updater: couldn't open downloaded archive %s" % zip_path)
+		return false
+
+	var files = zip_reader.get_files()
+	if files.is_empty():
+		push_error("Updater: downloaded archive was empty")
+		zip_reader.close()
+		return false
+
+	var base := dest_dir.get_current_dir()
+	for file_path in files:
+		if not _is_safe_zip_entry(file_path):
+			push_warning("Updater: skipping unsafe archive entry %s" % file_path)
+			continue
+
+		if file_path.ends_with("/"):
+			dest_dir.make_dir_recursive(base.path_join(file_path))
+			continue
+
+		var out_path := base.path_join(file_path)
+		dest_dir.make_dir_recursive(out_path.get_base_dir())
+
+		var out = FileAccess.open(out_path, FileAccess.WRITE)
+		if out == null:
+			push_error("Updater: failed to write %s during extraction" % out_path)
+			zip_reader.close()
+			return false
+
+		out.store_buffer(zip_reader.read_file(file_path))
+		out.close()
+
+	zip_reader.close()
+	return true
+
+
+func _move_directory_contents(source_root: String, dest_root: String) -> void:
+	var source_dir = DirAccess.open(source_root)
+	if source_dir == null:
+		return
+
+	for sub in source_dir.get_directories():
+		var dest := dest_root.path_join(sub)
+		var existing = DirAccess.open(dest)
+		if existing:
+			Helpers.delete_recursive(existing)
+		DirAccess.rename_absolute(source_root.path_join(sub), dest)
+
+	for file_name in source_dir.get_files():
+		var dest_file := dest_root.path_join(file_name)
+		if FileAccess.file_exists(dest_file):
+			DirAccess.remove_absolute(dest_file)
+		DirAccess.rename_absolute(source_root.path_join(file_name), dest_file)
+
+
+func _cleanup_path(path: String) -> void:
+	if path.ends_with("/"):
+		var dir = DirAccess.open(path)
+		if dir:
+			Helpers.delete_recursive(dir)
+	elif FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
 
 
 # === Initial Mods Functions ===

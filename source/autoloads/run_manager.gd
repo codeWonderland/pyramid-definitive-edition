@@ -33,30 +33,32 @@ func add_pack(pack_data: PackData) -> void:
 
 
 func remove_pack(pack_data: PackData) -> void:
-	var index = 0
-	for pack in selected_packs:
-		if pack.title == pack_data.title:
-			selected_packs.remove_at(index)
-			break
+	var index := selected_packs.find(pack_data)
+	if index == -1:
+		return
 
-		index += 1
+	selected_packs.remove_at(index)
 	self.packs_updated.emit()
 
 
 func get_random_loadout() -> Array[PackData]:
 	var loadout: Array[PackData] = []
-	selected_packs.shuffle()
 
-	if num_games == selected_packs.size():
-		loadout = selected_packs
-	elif num_games < selected_packs.size():
-		loadout = selected_packs.slice(0, num_games)
-	else:
-		for pack in selected_packs:
-			loadout.append(pack)
+	if selected_packs.is_empty():
+		return loadout
 
-		for _index in range(num_games - selected_packs.size()):
-			loadout.append(selected_packs.pick_random())
+	# Work on a copy so "getting" a loadout doesn't reorder the player's
+	# persistent selection, and never alias it into the returned array.
+	var pool := selected_packs.duplicate()
+	pool.shuffle()
+
+	if num_games <= pool.size():
+		return pool.slice(0, num_games)
+
+	# Fewer packs selected than games: use them all, then pad with random repeats.
+	loadout = pool.duplicate()
+	for _index in range(num_games - pool.size()):
+		loadout.append(pool.pick_random())
 
 	return loadout
 

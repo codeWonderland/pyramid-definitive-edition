@@ -70,10 +70,11 @@ func db_to_volume(input_db: int) -> float:
 	if input_db == -100:
 		return 0.0
 
-	# audio range is -60db to 0db
-	# we multiply by 600 and divide by 10 to get a value in the tenths place
-	# the min fn is a probably unnecessary precaution to avoid a 1.1 result
-	return min(floor((input_db + DB_LOWER_LIMIT) * DB_LOWER_LIMIT * 10) / 10.0, 1.0)
+	# Inverse of volume_to_db: db = volume * DB_LOWER_LIMIT - DB_LOWER_LIMIT,
+	# so volume = (db + DB_LOWER_LIMIT) / DB_LOWER_LIMIT. Snap to the tenths the
+	# rest of the volume code works in and clamp to the valid 0.0-1.0 range.
+	var volume := (input_db + DB_LOWER_LIMIT) / float(DB_LOWER_LIMIT)
+	return clampf(floor(volume * 10.0) / 10.0, 0.0, 1.0)
 
 
 func _load_config() -> void:
@@ -87,7 +88,7 @@ func _load_config() -> void:
 		fullscreen = config.get_value("settings", "fullscreen", false)
 		_apply_fullscreen_setting()
 
-		background = config.get_value("settings", "background", "default")
+		background = config.get_value("settings", "background", "Default")
 
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
