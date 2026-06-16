@@ -2,10 +2,23 @@ class_name ChallengeCard extends TextureRect
 
 signal pressed
 
+## Pixels the pointer must travel while held before a press becomes a drag.
+## Below this, releasing counts as a click (which re-rolls the card).
+const DRAG_THRESHOLD: float = 6.0
+## z_index used while dragging so the card floats above its siblings.
+const DRAG_Z_INDEX: int = 10
+
 @export var is_curse: bool = false
 @export var accounting_for_curse: bool = false
 
 var hovering: bool = false
+
+var _pressed: bool = false
+var _dragging: bool = false
+var _press_global_position: Vector2 = Vector2.ZERO
+# Parent-local offset between the card's position and the mouse at grab time,
+# so the point we grabbed stays under the cursor for the whole drag.
+var _grab_offset: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -15,6 +28,11 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	# While dragging, position and z_index are driven by the drag; skip the hover
+	# logic so it doesn't fight for control of either.
+	if _dragging:
+		return
+
 	var local_mouse_pos := get_local_mouse_position()
 	var mouse_over_card := Rect2(Vector2.ZERO, size).has_point(local_mouse_pos)
 
@@ -49,7 +67,58 @@ func _physics_process(_delta: float) -> void:
 
 
 func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.is_pressed():
+	# Begin a potential click/drag on left-press. Motion and release are handled
+	# in _input() so we keep receiving events even when the cursor leaves the
+	# card's rect during a fast drag.
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if RunManager.popup_open:
+				return
+			_pressed = true
+			_dragging = false
+			_press_global_position = event.global_position
+			_grab_offset = position - get_parent().get_local_mouse_position()
+			accept_event()
+
+
+func _input(event: InputEvent) -> void:
+	if not _pressed:
+		return
+
+	if event is InputEventMouseMotion:
+		if (
+			not _dragging
+			and event.global_position.distance_to(_press_global_position) > DRAG_THRESHOLD
+		):
+			_begin_drag()
+
+		if _dragging:
+			position = get_parent().get_local_mouse_position() + _grab_offset
+			get_viewport().set_input_as_handled()
+	elif (
+		event is InputEventMouseButton
+		and event.button_index == MOUSE_BUTTON_LEFT
+		and not event.pressed
+	):
+		_end_press()
+
+
+func _begin_drag() -> void:
+	_dragging = true
+	z_index = DRAG_Z_INDEX
+
+
+func _end_press() -> void:
+	var was_dragging := _dragging
+	_pressed = false
+	_dragging = false
+
+	if was_dragging:
+		# Drop the card where it was released; let the hover loop reclaim z_index.
+		z_index = 0
+		get_viewport().set_input_as_handled()
+	else:
+		# A click with no drag re-rolls the card (preserves the old behavior).
 		self.pressed.emit()
 
 
