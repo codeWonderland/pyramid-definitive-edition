@@ -8,6 +8,16 @@ const DRAG_THRESHOLD: float = 6.0
 ## z_index used while dragging so the card floats above its siblings.
 const DRAG_Z_INDEX: int = 10
 
+# Velocity-based tilt: drag velocity (px/sec) maps to a pitch/roll lean.
+const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
+## Radians of lean per px/sec of drag velocity (sign flips the lean direction).
+const ROLL_PER_VELOCITY: float = 0.0004
+const PITCH_PER_VELOCITY: float = 0.0004
+## Hard cap on the lean so a fast flick stays believable (radians).
+const MAX_TILT: float = 0.4
+## How quickly the current lean chases its target (higher = snappier).
+const TILT_RESPONSE: float = 14.0
+
 @export var is_curse: bool = false
 @export var accounting_for_curse: bool = false
 
@@ -20,11 +30,45 @@ var _press_global_position: Vector2 = Vector2.ZERO
 # so the point we grabbed stays under the cursor for the whole drag.
 var _grab_offset: Vector2 = Vector2.ZERO
 
+# Mouse motion accumulated since the last _process frame, converted to a
+# velocity there so a stationary hold naturally flattens the card back out.
+var _frame_motion: Vector2 = Vector2.ZERO
+var _pitch: float = 0.0
+var _roll: float = 0.0
+var _tilt_material: ShaderMaterial
+
 
 func _ready() -> void:
+	_setup_tilt_material()
 	_resize()
 	get_tree().get_root().size_changed.connect(_resize)
 	gui_input.connect(_on_gui_input)
+
+
+func _setup_tilt_material() -> void:
+	_tilt_material = ShaderMaterial.new()
+	_tilt_material.shader = TILT_SHADER
+	material = _tilt_material
+
+
+func _process(delta: float) -> void:
+	# Convert this frame's accumulated motion into a velocity (zero when the
+	# card is held still or not being dragged), then ease the lean toward it.
+	var velocity := _frame_motion / maxf(delta, 0.0001)
+	_frame_motion = Vector2.ZERO
+
+	var target_roll := 0.0
+	var target_pitch := 0.0
+	if _dragging:
+		target_roll = clampf(velocity.x * ROLL_PER_VELOCITY, -MAX_TILT, MAX_TILT)
+		target_pitch = clampf(velocity.y * PITCH_PER_VELOCITY, -MAX_TILT, MAX_TILT)
+
+	var weight := clampf(delta * TILT_RESPONSE, 0.0, 1.0)
+	_roll = lerpf(_roll, target_roll, weight)
+	_pitch = lerpf(_pitch, target_pitch, weight)
+
+	_tilt_material.set_shader_parameter("roll", _roll)
+	_tilt_material.set_shader_parameter("pitch", _pitch)
 
 
 func _physics_process(_delta: float) -> void:
@@ -94,6 +138,7 @@ func _input(event: InputEvent) -> void:
 
 		if _dragging:
 			position = get_parent().get_local_mouse_position() + _grab_offset
+			_frame_motion += event.relative
 			get_viewport().set_input_as_handled()
 	elif (
 		event is InputEventMouseButton
@@ -133,3 +178,7 @@ func _resize() -> void:
 	custom_minimum_size = Vector2(card_size.x * scale_mult, card_size.y * scale_mult)
 	size = custom_minimum_size
 	pivot_offset = Vector2(size.x / 2, size.y / 2)
+
+	# Keep the tilt shader's quad dimensions in sync with the on-screen size.
+	if _tilt_material != null:
+		_tilt_material.set_shader_parameter("card_size", size)
