@@ -19,9 +19,12 @@ func after_each() -> void:
 func _make_save() -> SaveData:
 	var group := CardGroupData.new()
 	group.pack_path = "user://mods/example/PACKS/CoolPack"
-	group.primary = 3
-	group.secondary = 1
-	group.curse = -1
+	group.primary_deck = [0, 2, -1, 5]
+	group.secondary_deck = [1, 0, 3]
+	group.table_cards = [
+		{"entry": 4, "secondary": false, "curse": false, "x": 12.0, "y": 34.0},
+		{"entry": -2, "secondary": false, "curse": true, "x": 56.0, "y": 78.0},
+	]
 
 	var save := SaveData.new()
 	save.title = "My Run"
@@ -64,6 +67,8 @@ func test_nested_card_group_fields_persist() -> void:
 	var group: CardGroupData = first.card_groups[0]
 
 	assert_eq(group.pack_path, "user://mods/example/PACKS/CoolPack")
-	assert_eq(group.primary, 3, "primary index persisted")
-	assert_eq(group.secondary, 1, "secondary index persisted")
-	assert_eq(group.curse, -1, "curse sentinel persisted")
+	assert_eq(group.primary_deck, [0, 2, -1, 5], "primary deck order persisted")
+	assert_eq(group.secondary_deck, [1, 0, 3], "secondary deck order persisted")
+	assert_eq(group.table_cards.size(), 2, "table cards persisted")
+	assert_eq(group.table_cards[1]["curse"], true, "per-card flags persisted")
+	assert_eq(group.table_cards[0]["x"], 12.0, "card positions persisted")

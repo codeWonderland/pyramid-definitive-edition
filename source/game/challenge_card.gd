@@ -1,12 +1,15 @@
 class_name ChallengeCard extends TextureRect
 
 signal pressed
+## Emitted when this card is released over the trash zone; the owning CardGroup
+## routes the card back to the bottom of its deck and frees it.
+signal request_trash(card: ChallengeCard)
 
 ## Pixels the pointer must travel while held before a press becomes a drag.
-## Below this, releasing counts as a click (which re-rolls the card).
+## Below this, releasing counts as a click.
 const DRAG_THRESHOLD: float = 6.0
-## z_index used while dragging so the card floats above its siblings.
-const DRAG_Z_INDEX: int = 10
+## How long a deal/flip takes, in seconds.
+const FLIP_TIME: float = 0.22
 
 # Velocity-based tilt: drag velocity (px/sec) maps to a pitch/roll lean.
 const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
@@ -21,10 +24,17 @@ const TILT_RESPONSE: float = 14.0
 @export var is_curse: bool = false
 @export var accounting_for_curse: bool = false
 
+# Deck bookkeeping set by the owning CardGroup so a trashed card can be routed
+# back to the right pile. deck_entry is a CardDeck-encoded int.
+var deck_entry: int = 0
+var deck_is_secondary: bool = false
+var back_texture: Texture2D = null
+
 var hovering: bool = false
 
 var _pressed: bool = false
 var _dragging: bool = false
+var _flipping: bool = false
 var _press_global_position: Vector2 = Vector2.ZERO
 # Parent-local offset between the card's position and the mouse at grab time,
 # so the point we grabbed stays under the cursor for the whole drag.
@@ -59,7 +69,7 @@ func _process(delta: float) -> void:
 
 	var target_roll := 0.0
 	var target_pitch := 0.0
-	if _dragging:
+	if _dragging and not _flipping:
 		target_roll = clampf(velocity.x * ROLL_PER_VELOCITY, -MAX_TILT, MAX_TILT)
 		target_pitch = clampf(velocity.y * PITCH_PER_VELOCITY, -MAX_TILT, MAX_TILT)
 
@@ -72,9 +82,8 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	# While dragging, position and z_index are driven by the drag; skip the hover
-	# logic so it doesn't fight for control of either.
-	if _dragging:
+	# While dragging or flipping, transform is driven by those; skip hover.
+	if _dragging or _flipping:
 		return
 
 	var local_mouse_pos := get_local_mouse_position()
@@ -90,19 +99,12 @@ func _physics_process(_delta: float) -> void:
 		and local_mouse_pos.x >= size.x * 0.1
 		and local_mouse_pos.x <= size.x * 0.9
 	):
-		if is_curse:
-			z_index = 3
-		else:
-			z_index = 2
-
 		if not hovering:
 			var size_tween = create_tween()
 			size_tween.tween_property(self, "scale", Vector2(1.25, 1.25), 0.2)
 
 		hovering = true
 	else:
-		z_index = 0
-
 		if hovering:
 			var size_tween = create_tween()
 			size_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
@@ -148,9 +150,17 @@ func _input(event: InputEvent) -> void:
 		_end_press()
 
 
+## Raise this card above every other card in the scene (the user's "highest
+## z-index on grab"). z_as_relative is off so the index is scene-global.
+func bring_to_front() -> void:
+	z_as_relative = false
+	z_index = RunManager.next_card_z_index()
+
+
 func _begin_drag() -> void:
 	_dragging = true
-	z_index = DRAG_Z_INDEX
+	bring_to_front()
+	RunManager.begin_card_drag()
 
 
 func _end_press() -> void:
@@ -158,13 +168,41 @@ func _end_press() -> void:
 	_pressed = false
 	_dragging = false
 
-	if was_dragging:
-		# Drop the card where it was released; let the hover loop reclaim z_index.
-		z_index = 0
-		get_viewport().set_input_as_handled()
-	else:
-		# A click with no drag re-rolls the card (preserves the old behavior).
+	if not was_dragging:
+		# A click with no drag.
 		self.pressed.emit()
+		return
+
+	RunManager.end_card_drag()
+	get_viewport().set_input_as_handled()
+
+	# Dropped over the trash zone: hand ourselves back to the owning group.
+	if RunManager.point_over_trash(get_global_mouse_position()):
+		self.request_trash.emit(self)
+
+
+## Deal this card face-up with a quick flip (back -> front).
+func play_flip(front: Texture2D) -> void:
+	_flipping = true
+	if back_texture != null:
+		texture = back_texture
+
+	var flip := create_tween()
+	flip.tween_property(self, "scale:x", 0.0, FLIP_TIME * 0.5)
+	flip.tween_callback(func(): texture = front)
+	flip.tween_property(self, "scale:x", 1.0, FLIP_TIME * 0.5)
+	flip.tween_callback(func(): _flipping = false)
+
+
+## Start dragging this card programmatically (used when a card is drawn out of a
+## pile by dragging — it should immediately follow the cursor).
+func begin_drag_from_pile() -> void:
+	_pressed = true
+	_dragging = true
+	_press_global_position = get_global_mouse_position()
+	_grab_offset = -size * 0.5
+	bring_to_front()
+	RunManager.begin_card_drag()
 
 
 func _resize() -> void:
@@ -179,6 +217,5 @@ func _resize() -> void:
 	size = custom_minimum_size
 	pivot_offset = Vector2(size.x / 2, size.y / 2)
 
-	# Keep the tilt shader's quad dimensions in sync with the on-screen size.
 	if _tilt_material != null:
 		_tilt_material.set_shader_parameter("card_size", size)

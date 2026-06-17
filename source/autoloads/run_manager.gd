@@ -2,6 +2,10 @@ extends Node
 
 signal packs_updated
 
+# Raised when any card grab begins/ends, so the trash zone can show/hide.
+signal card_drag_started
+signal card_drag_ended
+
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
 var popup_open: bool = false
@@ -18,12 +22,47 @@ var save_data: SaveData = null:
 
 			num_games = value.num_games
 
+# Monotonic z-index handed out so a freshly grabbed card always sits above every
+# other card in the scene. z_as_relative is turned off on cards so this is global.
+var _card_z_counter: int = 100
+# Global-rect of the trash zone (in viewport coordinates) while one is shown,
+# used by cards to decide whether a drop should trash the card.
+var _trash_zone_rect: Rect2 = Rect2()
+
 
 func clear() -> void:
 	selected_packs = []
 	num_games = 5
 	popup_open = false
 	save_data = null
+	_card_z_counter = 100
+	_trash_zone_rect = Rect2()
+
+
+# --- Card drag / z-index coordination ---
+
+
+## The next z-index a grabbed card should use to float above all other cards.
+## Capped below the UI band (2000) so cards never cover the table UI or popups.
+func next_card_z_index() -> int:
+	_card_z_counter = mini(_card_z_counter + 1, 1900)
+	return _card_z_counter
+
+
+func begin_card_drag() -> void:
+	self.card_drag_started.emit()
+
+
+func end_card_drag() -> void:
+	self.card_drag_ended.emit()
+
+
+func set_trash_zone_rect(rect: Rect2) -> void:
+	_trash_zone_rect = rect
+
+
+func point_over_trash(global_position: Vector2) -> bool:
+	return _trash_zone_rect.has_area() and _trash_zone_rect.has_point(global_position)
 
 
 func add_pack(pack_data: PackData) -> void:
