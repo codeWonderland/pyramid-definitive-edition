@@ -69,6 +69,25 @@ func _ready() -> void:
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
 
+	_setup_card_table()
+
+
+func _setup_card_table() -> void:
+	# Cards float on high z-indices while grabbed; keep popups above them and add
+	# the shared trash-zone overlay.
+	for popup in [
+		_pause_menu,
+		_coop_rules,
+		_multiplayer_rules,
+		_quit_dialog,
+		_confirm_save_dialog,
+		_save_game_dialog,
+	]:
+		popup.z_as_relative = false
+		popup.z_index = 4096
+
+	add_child(TrashZone.new())
+
 
 func _set_background() -> void:
 	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
