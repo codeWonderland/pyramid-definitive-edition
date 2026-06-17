@@ -117,6 +117,7 @@ offset_bottom = 92.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+pivot_offset_ratio = Vector2(0.5, 0.5)
 theme_type_variation = &"BigTitle"
 text = "The Pyramid:
 Definitive Edition"

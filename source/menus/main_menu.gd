@@ -1,5 +1,11 @@
 class_name MainMenu extends Control
 
+# Idle logo animation (after the intro): a gentle pulse and slow back-and-forth sway.
+const LOGO_SWAY_DEGREES: float = 5.0
+const LOGO_SWAY_TIME: float = 2.5
+const LOGO_PULSE_SCALE: float = 1.06
+const LOGO_PULSE_TIME: float = 1.6
+
 var _hold_scene_transition: bool = false
 
 @onready var _background: TextureRect = %Background
@@ -57,7 +63,40 @@ func _setup_ui() -> void:
 	title_tween.finished.connect(_show_label)
 
 	var title_rot_tween = create_tween()
-	title_rot_tween.tween_property(_title, "rotation_degrees", -5, 0.7)
+	title_rot_tween.tween_property(_title, "rotation_degrees", -LOGO_SWAY_DEGREES, 0.7)
+
+	title_tween.finished.connect(_start_logo_idle)
+
+
+## Looping idle animation: the logo pulses and sways gently after it settles in.
+func _start_logo_idle() -> void:
+	var sway := create_tween().set_loops()
+	(
+		sway
+		. tween_property(_title, "rotation_degrees", LOGO_SWAY_DEGREES, LOGO_SWAY_TIME)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
+	(
+		sway
+		. tween_property(_title, "rotation_degrees", -LOGO_SWAY_DEGREES, LOGO_SWAY_TIME)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
+
+	var pulse := create_tween().set_loops()
+	(
+		pulse
+		. tween_property(_title, "scale", Vector2.ONE * LOGO_PULSE_SCALE, LOGO_PULSE_TIME)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
+	(
+		pulse
+		. tween_property(_title, "scale", Vector2.ONE, LOGO_PULSE_TIME)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
 
 
 func _show_label() -> void:
