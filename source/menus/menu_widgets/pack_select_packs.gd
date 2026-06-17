@@ -3,9 +3,11 @@ class_name PackSelectPacks extends GridContainer
 signal pack_added(pack_data: PackData)
 
 # Grid shape and card size for the draft screen (tunable).
-const COLUMNS: int = 6
-const ROWS: int = 3
-const PAGE_SIZE: int = COLUMNS * ROWS
+const ROWS: int = 2
+const BASE_COLUMNS: int = 6
+# Wider screens get an extra column on each side.
+const WIDE_EXTRA_COLUMNS: int = 2
+const WIDE_THRESHOLD: float = 1280.0
 const CARD_BASE_HEIGHT: float = 165.0
 const ROW_SEPARATION: float = 16.0
 const PACK_SELECT_CARD: PackedScene = preload(
@@ -18,7 +20,6 @@ var _favorites_only: bool = false
 
 
 func _ready() -> void:
-	columns = COLUMNS
 	_populate()
 	get_tree().get_root().size_changed.connect(_populate)
 	# Re-sort/redraw when favorites change so favorited packs move to the top.
@@ -48,6 +49,9 @@ func next_page() -> void:
 
 
 func _populate() -> void:
+	columns = _columns()
+	_current_page = clampi(_current_page, 0, _page_count() - 1)
+
 	var visible_packs = _get_visible_packs()
 	var card_size = _get_card_size()
 
@@ -67,17 +71,28 @@ func _populate() -> void:
 		add_child(card)
 
 
+## Columns scale up on wider screens (an extra column on each side).
+func _columns() -> int:
+	if get_viewport().size.x >= WIDE_THRESHOLD:
+		return BASE_COLUMNS + WIDE_EXTRA_COLUMNS
+	return BASE_COLUMNS
+
+
+func _page_size() -> int:
+	return _columns() * ROWS
+
+
 func _page_count() -> int:
 	var total := _ordered_packs().size()
 	if total <= 0:
 		return 1
-	return int(ceil(total as float / PAGE_SIZE as float))
+	return int(ceil(total as float / _page_size() as float))
 
 
 func _get_visible_packs() -> Array[PackData]:
 	var ordered := _ordered_packs()
-	var starting_index = _current_page * PAGE_SIZE
-	var last_index = starting_index + PAGE_SIZE
+	var starting_index = _current_page * _page_size()
+	var last_index = starting_index + _page_size()
 
 	return ordered.slice(starting_index, last_index)
 
