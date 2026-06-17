@@ -2,7 +2,12 @@ class_name PackSelectPacks extends GridContainer
 
 signal pack_added(pack_data: PackData)
 
-const PAGE_SIZE: int = 12
+# Grid shape and card size for the draft screen (tunable).
+const COLUMNS: int = 6
+const ROWS: int = 3
+const PAGE_SIZE: int = COLUMNS * ROWS
+const CARD_BASE_HEIGHT: float = 165.0
+const ROW_SEPARATION: float = 16.0
 const PACK_SELECT_CARD: PackedScene = preload(
 	"res://source/menus/menu_widgets/pack_select_card.tscn"
 )
@@ -13,6 +18,7 @@ var _favorites_only: bool = false
 
 
 func _ready() -> void:
+	columns = COLUMNS
 	_populate()
 	get_tree().get_root().size_changed.connect(_populate)
 	# Re-sort/redraw when favorites change so favorited packs move to the top.
@@ -45,7 +51,7 @@ func _populate() -> void:
 	var visible_packs = _get_visible_packs()
 	var card_size = _get_card_size()
 
-	custom_minimum_size.y = card_size.y * 2.0 + 16.0
+	custom_minimum_size.y = card_size.y * ROWS + ROW_SEPARATION * (ROWS - 1)
 
 	# Clear Old Packs
 	for child in get_children():
@@ -107,7 +113,7 @@ func _get_card_size() -> Vector2:
 	if screen_size.y / 720.0 < screen_scale:
 		screen_scale = screen_size.y / 720.0
 
-	return Vector2(0, 150.0 * screen_scale)
+	return Vector2(0, CARD_BASE_HEIGHT * screen_scale)
 
 
 func _on_card_pressed(pack_data: PackData) -> void:

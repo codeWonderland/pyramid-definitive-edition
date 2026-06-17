@@ -26,9 +26,44 @@ func _ready() -> void:
 	_pack_select_selected_packs.pack_pressed.connect(RunManager.remove_pack)
 
 	_build_toolbar()
+	_move_pagination_to_sides()
+	_make_selection_scrollable()
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
+
+
+func _move_pagination_to_sides() -> void:
+	# Float the prev/next arrows to the left/right edges, vertically centered,
+	# kept beneath the pause menu in draw order.
+	for button in [_previous, _next]:
+		button.reparent(self)
+		move_child(button, _pause_menu.get_index())
+
+	_previous.set_anchors_and_offsets_preset(
+		Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_KEEP_SIZE, 24
+	)
+	_next.set_anchors_and_offsets_preset(
+		Control.PRESET_CENTER_RIGHT, Control.PRESET_MODE_KEEP_SIZE, 24
+	)
+
+
+func _make_selection_scrollable() -> void:
+	# Wrap the selected-packs strip in a horizontal scroll view so any number of
+	# drafted packs fits.
+	var strip := _pack_select_selected_packs
+	var container := strip.get_parent()
+	var strip_index := strip.get_index()
+
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size.y = strip.custom_minimum_size.y + 12.0
+
+	container.remove_child(strip)
+	container.add_child(scroll)
+	container.move_child(scroll, strip_index)
+	scroll.add_child(strip)
 
 
 func _build_toolbar() -> void:
