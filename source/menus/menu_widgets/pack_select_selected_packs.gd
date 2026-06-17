@@ -25,7 +25,8 @@ func _populate() -> void:
 		var card = PACK_SELECT_CARD.instantiate()
 		card.custom_minimum_size = card_size
 		card.pack_data = pack_data
-		card.pressed.connect(_pack_pressed)
+		card.pressed.connect(_on_card_pressed)
+		card.favorite_toggled.connect(_on_card_favorite_toggled)
 		add_child(card)
 
 
@@ -39,5 +40,9 @@ func _get_card_size() -> Vector2:
 	return Vector2(0, 75.0 * screen_scale)
 
 
-func _pack_pressed(pack_data: PackData, _button_index: int) -> void:
+func _on_card_pressed(pack_data: PackData) -> void:
 	self.pack_pressed.emit(pack_data)
+
+
+func _on_card_favorite_toggled(pack_data: PackData) -> void:
+	FavoritesManager.toggle(pack_data.folder_path)

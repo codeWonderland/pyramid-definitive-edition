@@ -1,7 +1,6 @@
 class_name PackSelectPacks extends GridContainer
 
 signal pack_added(pack_data: PackData)
-signal pack_removed(pack_data: PackData)
 
 const PAGE_SIZE: int = 12
 const PACK_SELECT_CARD: PackedScene = preload(
@@ -14,6 +13,8 @@ var _current_page: int = 0
 func _ready() -> void:
 	_populate()
 	get_tree().get_root().size_changed.connect(_populate)
+	# Re-sort/redraw when favorites change so favorited packs move to the top.
+	FavoritesManager.favorites_changed.connect(_populate)
 
 
 func prev_page() -> void:
@@ -52,15 +53,34 @@ func _populate() -> void:
 		var card = PACK_SELECT_CARD.instantiate()
 		card.custom_minimum_size = card_size
 		card.pack_data = pack_data
-		card.pressed.connect(_pack_pressed)
+		card.pressed.connect(_on_card_pressed)
+		card.favorite_toggled.connect(_on_card_favorite_toggled)
 		add_child(card)
 
 
 func _get_visible_packs() -> Array[PackData]:
+	var ordered := _ordered_packs()
 	var starting_index = _current_page * PAGE_SIZE
 	var last_index = starting_index + PAGE_SIZE
 
-	return PacksManager.all_packs.slice(starting_index, last_index)
+	return ordered.slice(starting_index, last_index)
+
+
+## All packs with favorites floated to the top (each group keeps title order).
+func _ordered_packs() -> Array[PackData]:
+	var favorites: Array[PackData] = []
+	var others: Array[PackData] = []
+
+	for pack in PacksManager.all_packs:
+		if FavoritesManager.is_favorite(pack.folder_path):
+			favorites.append(pack)
+		else:
+			others.append(pack)
+
+	var ordered: Array[PackData] = []
+	ordered.append_array(favorites)
+	ordered.append_array(others)
+	return ordered
 
 
 func _get_card_size() -> Vector2:
@@ -73,8 +93,9 @@ func _get_card_size() -> Vector2:
 	return Vector2(0, 150.0 * screen_scale)
 
 
-func _pack_pressed(pack_data: PackData, button_index: int) -> void:
-	if button_index == MOUSE_BUTTON_LEFT:
-		self.pack_added.emit(pack_data)
-	else:
-		self.pack_removed.emit(pack_data)
+func _on_card_pressed(pack_data: PackData) -> void:
+	self.pack_added.emit(pack_data)
+
+
+func _on_card_favorite_toggled(pack_data: PackData) -> void:
+	FavoritesManager.toggle(pack_data.folder_path)

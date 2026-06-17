@@ -18,7 +18,6 @@ func _ready() -> void:
 	_previous.pressed.connect(_prev_page)
 	_done.pressed.connect(_selection_complete)
 	_pack_select_packs.pack_added.connect(RunManager.add_pack)
-	_pack_select_packs.pack_removed.connect(RunManager.remove_pack)
 	_pack_select_selected_packs.pack_pressed.connect(RunManager.remove_pack)
 
 	_set_background()
