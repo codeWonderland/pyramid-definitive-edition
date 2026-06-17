@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://ctf5sb112jkcq"]
+[gd_scene format=3 uid="uid://ctf5sb112jkcq"]
 
 [ext_resource type="Theme" uid="uid://dkcfibuwqlsb5" path="res://assets/themes/main_theme.tres" id="1_3w2xd"]
 [ext_resource type="Script" uid="uid://cbob4lq0ngk6w" path="res://source/menus/main_menu.gd" id="2_ea0ap"]
@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://cwnfpyfvt1jt2" path="res://assets/sprites/ui/buttons/credits.png" id="8_1hacp"]
 [ext_resource type="PackedScene" uid="uid://k7wyt0bajfdp" path="res://source/menus/popups/load_game_dialog.tscn" id="8_f0h3j"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=775856653]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +21,7 @@ grow_vertical = 2
 theme = ExtResource("1_3w2xd")
 script = ExtResource("2_ea0ap")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=1440553088]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -33,7 +33,7 @@ texture = ExtResource("3_qwdd7")
 expand_mode = 2
 stretch_mode = 6
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=462539219]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,32 +41,32 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Load" type="TextureButton" parent="MarginContainer"]
+[node name="Load" type="TextureButton" parent="MarginContainer" unique_id=1750466276]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 texture_normal = ExtResource("4_emlqa")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=422398039]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 alignment = 2
 
-[node name="Settings" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="Settings" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=225985219]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
 texture_normal = ExtResource("4_xebgs")
 
-[node name="Exit" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="Exit" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=1076728457]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
 texture_normal = ExtResource("5_emlqa")
 
-[node name="StartLabel" type="Label" parent="MarginContainer"]
+[node name="StartLabel" type="Label" parent="MarginContainer" unique_id=1928650487]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
@@ -74,21 +74,21 @@ size_flags_horizontal = 4
 size_flags_vertical = 8
 text = "- Press Anything to Start -"
 
-[node name="Github" type="TextureButton" parent="MarginContainer"]
+[node name="Github" type="TextureButton" parent="MarginContainer" unique_id=148999680]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 texture_normal = ExtResource("7_emlqa")
 
-[node name="Credits" type="TextureButton" parent="MarginContainer"]
+[node name="Credits" type="TextureButton" parent="MarginContainer" unique_id=804177140]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 texture_normal = ExtResource("8_1hacp")
 
-[node name="Control" type="Control" parent="."]
+[node name="Control" type="Control" parent="." unique_id=931090940]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -102,7 +102,7 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="Control"]
+[node name="Title" type="Label" parent="Control" unique_id=911621401]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -116,21 +116,21 @@ offset_right = 261.5
 offset_bottom = 92.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
 pivot_offset_ratio = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
 theme_type_variation = &"BigTitle"
 text = "The Pyramid:
 Definitive Edition"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PauseMenu" parent="." instance=ExtResource("6_ea0ap")]
+[node name="PauseMenu" parent="." unique_id=224367784 instance=ExtResource("6_ea0ap")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
 show_mods = true
 
-[node name="LoadGameDialog" parent="." instance=ExtResource("8_f0h3j")]
+[node name="LoadGameDialog" parent="." unique_id=1667284220 instance=ExtResource("8_f0h3j")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0

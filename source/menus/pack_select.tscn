@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_lqhju"]
 [ext_resource type="PackedScene" uid="uid://ild1rgpwgs05" path="res://source/menus/menu_widgets/pack_select_packs.tscn" id="5_lqhju"]
 [ext_resource type="PackedScene" uid="uid://b545m6djvjs8k" path="res://source/menus/menu_widgets/pack_select_selected_packs.tscn" id="6_u4vdn"]
-[ext_resource type="Texture2D" uid="uid://ry3kmbg6ufb5" path="res://assets/sprites/ui/buttons/done_drafting.png" id="8_fha2b"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="10_gnfts"]
 
 [node name="PackSelect" type="Control" unique_id=594107462]
@@ -138,7 +137,7 @@ custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="Done" type="TextureButton" parent="MarginContainer/BottomButtons" unique_id=1793814952]
+[node name="Done" type="Button" parent="MarginContainer/BottomButtons" unique_id=631590957]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -151,7 +150,7 @@ offset_top = -75.0
 offset_right = 150.0
 grow_horizontal = 2
 grow_vertical = 0
-texture_normal = ExtResource("8_fha2b")
+text = "Done Drafting"
 
 [node name="SortButton" type="Button" parent="MarginContainer/BottomButtons" unique_id=2055669498]
 unique_name_in_owner = true

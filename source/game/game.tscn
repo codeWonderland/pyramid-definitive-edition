@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c7besnigoyson"]
+[gd_scene format=3 uid="uid://c7besnigoyson"]
 
 [ext_resource type="Script" uid="uid://3qo2fobue4c5" path="res://source/game/game.gd" id="1_e4lxu"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_bq0n3"]
@@ -7,10 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_7ae7h"]
 [ext_resource type="Texture2D" uid="uid://owavv4s3scxl" path="res://assets/sprites/ui/icons/d1.png" id="6_2olx2"]
 [ext_resource type="PackedScene" uid="uid://3jtablu0mal1" path="res://source/game/card_group_collection.tscn" id="6_oorho"]
-[ext_resource type="Texture2D" uid="uid://cqsrct6ytbi8g" path="res://assets/sprites/ui/buttons/roll_d6.png" id="7_16hqw"]
-[ext_resource type="Texture2D" uid="uid://de1hbblu776a7" path="res://assets/sprites/ui/buttons/reroll_games.png" id="8_oorho"]
-[ext_resource type="Texture2D" uid="uid://4fpaadhtggcv" path="res://assets/sprites/ui/buttons/multiplayer_rules.png" id="9_uq5as"]
-[ext_resource type="Texture2D" uid="uid://cju0xlldqgfwh" path="res://assets/sprites/ui/buttons/coop_rules.png" id="10_0rlok"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="11_7ae7h"]
 [ext_resource type="PackedScene" uid="uid://d0g326064sjje" path="res://source/menus/popups/coop_rules.tscn" id="12_16hqw"]
 [ext_resource type="PackedScene" uid="uid://lbdrdxekcgf6" path="res://source/menus/popups/multiplayer_rules.tscn" id="13_oorho"]
@@ -18,7 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://b2oiqsso5at0" path="res://source/menus/popups/confirm_save_dialog.tscn" id="16_egut0"]
 [ext_resource type="PackedScene" uid="uid://bschd23pcse03" path="res://source/menus/popups/save_game_dialog.tscn" id="17_egut0"]
 
-[node name="Game" type="Control"]
+[node name="Game" type="Control" unique_id=2011441010]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,7 +23,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_e4lxu")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=1965422136]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -39,7 +35,7 @@ texture = ExtResource("2_bq0n3")
 expand_mode = 2
 stretch_mode = 6
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1896295779]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,19 +43,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Top" type="Control" parent="MarginContainer"]
+[node name="Top" type="Control" parent="MarginContainer" unique_id=362952788]
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="Back" type="TextureButton" parent="MarginContainer/Top"]
+[node name="Back" type="TextureButton" parent="MarginContainer/Top" unique_id=2130655898]
 unique_name_in_owner = true
 layout_mode = 1
 offset_right = 40.0
 offset_bottom = 40.0
 texture_normal = ExtResource("3_bq0n3")
 
-[node name="Title" type="Label" parent="MarginContainer/Top"]
+[node name="Title" type="Label" parent="MarginContainer/Top" unique_id=1909928555]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
@@ -75,7 +71,7 @@ text = "The [Adjective] Pyramid of [Noun]"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="TopRight" type="HBoxContainer" parent="MarginContainer/Top"]
+[node name="TopRight" type="HBoxContainer" parent="MarginContainer/Top" unique_id=444042424]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 1
@@ -87,29 +83,29 @@ grow_horizontal = 0
 pivot_offset = Vector2(168, 0)
 theme_override_constants/separation = 16
 
-[node name="Settings" type="TextureButton" parent="MarginContainer/Top/TopRight"]
+[node name="Settings" type="TextureButton" parent="MarginContainer/Top/TopRight" unique_id=2032174185]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("4_qbbrx")
 
-[node name="Close" type="TextureButton" parent="MarginContainer/Top/TopRight"]
+[node name="Close" type="TextureButton" parent="MarginContainer/Top/TopRight" unique_id=1075175882]
 unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("5_7ae7h")
 
-[node name="CardGroupCollection" parent="MarginContainer" instance=ExtResource("6_oorho")]
+[node name="CardGroupCollection" parent="MarginContainer" unique_id=1949013271 instance=ExtResource("6_oorho")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(1010, 425)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Bottom" type="Control" parent="MarginContainer"]
+[node name="Bottom" type="Control" parent="MarginContainer" unique_id=595380767]
 custom_minimum_size = Vector2(0, 166)
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="BottomLeft" type="VBoxContainer" parent="MarginContainer/Bottom"]
+[node name="BottomLeft" type="VBoxContainer" parent="MarginContainer/Bottom" unique_id=332848543]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 2
@@ -123,19 +119,19 @@ pivot_offset = Vector2(0, 166)
 theme_override_constants/separation = 16
 alignment = 2
 
-[node name="Die" type="TextureRect" parent="MarginContainer/Bottom/BottomLeft"]
+[node name="Die" type="TextureRect" parent="MarginContainer/Bottom/BottomLeft" unique_id=2109199157]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 texture = ExtResource("6_2olx2")
 
-[node name="RollDie" type="TextureButton" parent="MarginContainer/Bottom/BottomLeft"]
+[node name="RollDie" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=439422289]
 unique_name_in_owner = true
 layout_mode = 2
-texture_normal = ExtResource("7_16hqw")
+text = "Roll D6"
 
-[node name="RerollGames" type="TextureButton" parent="MarginContainer/Bottom"]
+[node name="RerollGames" type="Button" parent="MarginContainer/Bottom" unique_id=1515219405]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -143,15 +139,15 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -40.0
-offset_right = 20.0
+offset_left = -150.0
+offset_top = -83.0
+offset_right = 150.0
 grow_horizontal = 2
 grow_vertical = 0
 pivot_offset = Vector2(150, 75)
-texture_normal = ExtResource("8_oorho")
+text = "Reroll Games"
 
-[node name="BottomRight" type="VBoxContainer" parent="MarginContainer/Bottom"]
+[node name="BottomRight" type="VBoxContainer" parent="MarginContainer/Bottom" unique_id=996358769]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
@@ -166,51 +162,51 @@ grow_vertical = 0
 pivot_offset = Vector2(300, 166)
 theme_override_constants/separation = 16
 
-[node name="MultiplayerRulesButton" type="TextureButton" parent="MarginContainer/Bottom/BottomRight"]
+[node name="MultiplayerRulesButton" type="Button" parent="MarginContainer/Bottom/BottomRight" unique_id=2033290417]
 unique_name_in_owner = true
 layout_mode = 2
-texture_normal = ExtResource("9_uq5as")
+text = "Multiplayer Rules"
 
-[node name="CoopRulesButton" type="TextureButton" parent="MarginContainer/Bottom/BottomRight"]
+[node name="CoopRulesButton" type="Button" parent="MarginContainer/Bottom/BottomRight" unique_id=1052976521]
 unique_name_in_owner = true
 layout_mode = 2
-texture_normal = ExtResource("10_0rlok")
+text = "Co-op Rules"
 
-[node name="PauseMenu" parent="." instance=ExtResource("11_7ae7h")]
+[node name="PauseMenu" parent="." unique_id=1463921098 instance=ExtResource("11_7ae7h")]
 unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 0
 
-[node name="CoopRules" parent="." instance=ExtResource("12_16hqw")]
-unique_name_in_owner = true
-visible = false
-z_index = 2
-layout_mode = 0
-offset_right = 650.0
-
-[node name="MultiplayerRules" parent="." instance=ExtResource("13_oorho")]
+[node name="CoopRules" parent="." unique_id=419439958 instance=ExtResource("12_16hqw")]
 unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 0
 offset_right = 650.0
 
-[node name="QuitDialog" parent="." instance=ExtResource("15_0rlok")]
+[node name="MultiplayerRules" parent="." unique_id=1918975550 instance=ExtResource("13_oorho")]
 unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 0
 offset_right = 650.0
 
-[node name="ConfirmSaveDialog" parent="." instance=ExtResource("16_egut0")]
+[node name="QuitDialog" parent="." unique_id=790591324 instance=ExtResource("15_0rlok")]
 unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 0
 offset_right = 650.0
 
-[node name="SaveGameDialog" parent="." instance=ExtResource("17_egut0")]
+[node name="ConfirmSaveDialog" parent="." unique_id=1083703120 instance=ExtResource("16_egut0")]
+unique_name_in_owner = true
+visible = false
+z_index = 2
+layout_mode = 0
+offset_right = 650.0
+
+[node name="SaveGameDialog" parent="." unique_id=1987435230 instance=ExtResource("17_egut0")]
 unique_name_in_owner = true
 visible = false
 z_index = 3

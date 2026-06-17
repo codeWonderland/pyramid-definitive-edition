@@ -1,87 +1,87 @@
-[gd_scene load_steps=4 format=3 uid="uid://bhjmr1eb57wwh"]
+[gd_scene format=3 uid="uid://bhjmr1eb57wwh"]
 
 [ext_resource type="PackedScene" uid="uid://b736hrcerdck0" path="res://source/menus/menu_widgets/volume_changer.tscn" id="1_3wc24"]
 [ext_resource type="Script" uid="uid://bgk3380nlxdmi" path="res://source/menus/pause_menu.gd" id="1_j6agt"]
 [ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_baocf"]
 
-[node name="PauseMenu" type="PanelContainer"]
+[node name="PauseMenu" type="PanelContainer" unique_id=1889015450]
 script = ExtResource("1_j6agt")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2096082557]
 layout_mode = 2
 theme_override_constants/separation = 48
 alignment = 1
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=599564753]
 layout_mode = 2
 theme_type_variation = &"BigTitle"
 text = "Options"
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=1683680660]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 32
 
-[node name="MusicVolume" parent="VBoxContainer/VBoxContainer" instance=ExtResource("1_3wc24")]
+[node name="MusicVolume" parent="VBoxContainer/VBoxContainer" unique_id=1625892894 instance=ExtResource("1_3wc24")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 2
 volume_label_text = "Music Volume"
 
-[node name="SFXVolume" parent="VBoxContainer/VBoxContainer" instance=ExtResource("1_3wc24")]
+[node name="SFXVolume" parent="VBoxContainer/VBoxContainer" unique_id=515794821 instance=ExtResource("1_3wc24")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 2
 volume_label_text = "SFX Volume   "
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=2070162737]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/VBoxContainer" unique_id=315017521]
 layout_mode = 2
 text = "Background"
 
-[node name="BackgroundSelect" type="OptionButton" parent="VBoxContainer/VBoxContainer/VBoxContainer"]
+[node name="BackgroundSelect" type="OptionButton" parent="VBoxContainer/VBoxContainer/VBoxContainer" unique_id=1267342652]
 unique_name_in_owner = true
 layout_mode = 2
 allow_reselect = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=435945670]
 layout_mode = 2
 
-[node name="FullscreenToggle" type="CheckBox" parent="VBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="FullscreenToggle" type="CheckBox" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=676408520]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=1301877484]
 layout_mode = 2
 text = "Fullscreen"
 
-[node name="ModsOptions" type="VBoxContainer" parent="VBoxContainer/VBoxContainer"]
+[node name="ModsOptions" type="VBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=414733242]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/ModsOptions"]
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/ModsOptions" unique_id=605136795]
 layout_mode = 2
 text = "Mods Folders"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/VBoxContainer/ModsOptions"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/VBoxContainer/ModsOptions" unique_id=1638368003]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="OfficialMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2"]
+[node name="OfficialMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2" unique_id=2015478548]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Offical Mods"
 
-[node name="LocalMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2"]
+[node name="LocalMods" type="Button" parent="VBoxContainer/VBoxContainer/ModsOptions/HBoxContainer2" unique_id=742342530]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Local Mods"
 
-[node name="Close" type="TextureButton" parent="."]
+[node name="Close" type="TextureButton" parent="." unique_id=401847463]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
