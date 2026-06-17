@@ -1,14 +1,41 @@
-[gd_resource type="Theme" load_steps=10 format=3 uid="uid://dkcfibuwqlsb5"]
+[gd_resource type="Theme" format=3 uid="uid://dkcfibuwqlsb5"]
 
 [ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
-[ext_resource type="StyleBox" uid="uid://1yr2oyhmdn6y" path="res://assets/themes/style_boxes/button.tres" id="1_axncs"]
 [ext_resource type="Texture2D" uid="uid://bakts8eoog0cj" path="res://assets/sprites/ui/icons/confirm.png" id="1_gvtt4"]
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
 [ext_resource type="Texture2D" uid="uid://bhgkip670mh4r" path="res://assets/sprites/ui/icons/down-caret.png" id="5_4fp8c"]
 [ext_resource type="StyleBox" uid="uid://c2utbn782dhf3" path="res://assets/themes/style_boxes/selected_button.tres" id="7_0f6i3"]
+[ext_resource type="Texture2D" uid="uid://c1icm337leqt7" path="res://assets/sprites/ui/buttons/blank-card.png" id="8_card"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_card"]
+content_margin_left = 48.0
+content_margin_top = 16.0
+content_margin_right = 48.0
+content_margin_bottom = 16.0
+texture = ExtResource("8_card")
+texture_margin_left = 1.0
+texture_margin_top = 4.0
+texture_margin_right = 1.0
+texture_margin_bottom = 4.0
+region_rect = Rect2(0, 0, 2088.2502, 2991.5942)
 
 [sub_resource type="ImageTexture" id="ImageTexture_4fp8c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0f6i3"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y0ixg"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_etupa"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_luy55"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n0pxi"]
+bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
 
 [sub_resource type="ImageTexture" id="ImageTexture_0f6i3"]
 
@@ -21,13 +48,13 @@ BigTitle/constants/shadow_offset_x = 8
 BigTitle/constants/shadow_offset_y = 8
 BigTitle/font_sizes/font_size = 48
 Button/colors/font_outline_color = Color(0, 0, 0, 1)
-Button/constants/outline_size = 4
+Button/constants/outline_size = 12
 Button/font_sizes/font_size = 32
-Button/styles/disabled = ExtResource("1_axncs")
-Button/styles/focus = ExtResource("1_axncs")
-Button/styles/hover = ExtResource("1_axncs")
-Button/styles/normal = ExtResource("1_axncs")
-Button/styles/pressed = ExtResource("1_axncs")
+Button/styles/disabled = SubResource("StyleBoxTexture_card")
+Button/styles/focus = SubResource("StyleBoxTexture_card")
+Button/styles/hover = SubResource("StyleBoxTexture_card")
+Button/styles/normal = SubResource("StyleBoxTexture_card")
+Button/styles/pressed = SubResource("StyleBoxTexture_card")
 CheckBox/icons/checked = ExtResource("1_gvtt4")
 CheckBox/icons/unchecked = SubResource("ImageTexture_4fp8c")
 CheckBox/styles/disabled = ExtResource("2_axncs")
@@ -64,6 +91,11 @@ OptionButton/constants/h_separation = 16
 OptionButton/constants/outline_size = 8
 OptionButton/font_sizes/font_size = 32
 OptionButton/icons/arrow = ExtResource("5_4fp8c")
+OptionButton/styles/focus = SubResource("StyleBoxFlat_0f6i3")
+OptionButton/styles/hover = SubResource("StyleBoxFlat_y0ixg")
+OptionButton/styles/hover_mirrored = SubResource("StyleBoxFlat_etupa")
+OptionButton/styles/normal = SubResource("StyleBoxFlat_luy55")
+OptionButton/styles/pressed = SubResource("StyleBoxFlat_n0pxi")
 PanelContainer/styles/panel = ExtResource("2_lxams")
 PopupMenu/font_sizes/font_size = 40
 PopupMenu/icons/radio_checked = ExtResource("1_gvtt4")

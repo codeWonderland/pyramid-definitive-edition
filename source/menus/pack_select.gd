@@ -11,7 +11,7 @@ var _favorites_only: bool = false
 @onready var _pack_select_selected_packs: PackSelectSelectedPacks = %PackSelectSelectedPacks
 @onready var _previous: Button = %Previous
 @onready var _next: Button = %Next
-@onready var _done: TextureButton = %Done
+@onready var _done: Button = %Done
 @onready var _sort_button: Button = %SortButton
 @onready var _filter_button: Button = %FilterButton
 
