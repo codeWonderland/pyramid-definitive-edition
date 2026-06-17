@@ -73,8 +73,20 @@ func _ready() -> void:
 
 
 func _setup_card_table() -> void:
-	# Cards float on high z-indices while grabbed; keep popups above them and add
-	# the shared trash-zone overlay.
+	# Layering bands (back -> front): background, cards/piles (z 2-1900),
+	# trash overlay (1950), table UI (2000), popups (4096). Cards are kept
+	# beneath the UI so a grabbed card never covers the buttons or title.
+	for ui in [
+		_title,
+		_back_button,
+		_top_right,
+		_bottom_left,
+		_reroll_packs_button,
+		_bottom_right,
+	]:
+		ui.z_as_relative = false
+		ui.z_index = 2000
+
 	for popup in [
 		_pause_menu,
 		_coop_rules,

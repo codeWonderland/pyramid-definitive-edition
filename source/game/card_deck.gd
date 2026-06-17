@@ -71,26 +71,6 @@ func build_secondary(num_secondaries: int) -> void:
 	cards.shuffle()
 
 
-## Deal the first face-up primary. Per design, the initial card never reveals a
-## curse — any curse sitting under it is just recycled to the bottom.
-## Returns the primary entry (>= 0), or -1 if the pile has no primaries.
-func deal_initial_primary() -> int:
-	_ensure_top_primary()
-	if is_empty() or is_curse(cards[0]):
-		return -1
-	var primary: int = cards.pop_front()
-	_ensure_top_primary()
-	return primary
-
-
-## Deal the first face-up secondary. Returns the entry, or -1 if empty.
-func deal_initial_secondary() -> int:
-	if is_empty():
-		return -1
-	var entry: int = cards.pop_front()
-	return entry
-
-
 ## Draw the top primary. Returns:
 ##   { "primary": <entry> }                 when no curse is revealed
 ##   { "primary": <entry>, "curse": <entry> } when the card under it is a curse

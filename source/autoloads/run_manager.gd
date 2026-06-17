@@ -42,10 +42,10 @@ func clear() -> void:
 # --- Card drag / z-index coordination ---
 
 
-## The next z-index a grabbed card should use to float above all others.
-## Capped below the popup layer (4096) so dialogs always stay on top.
+## The next z-index a grabbed card should use to float above all other cards.
+## Capped below the UI band (2000) so cards never cover the table UI or popups.
 func next_card_z_index() -> int:
-	_card_z_counter = mini(_card_z_counter + 1, 3999)
+	_card_z_counter = mini(_card_z_counter + 1, 1900)
 	return _card_z_counter
 
 

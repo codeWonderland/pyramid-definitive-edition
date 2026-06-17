@@ -16,7 +16,7 @@ var _hot: bool = false
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	z_as_relative = false
-	z_index = 4000  # above cards, below popups
+	z_index = 1950  # just above cards, below the table UI
 	visible = false
 	size = Vector2(ZONE_SIZE, ZONE_SIZE)
 	pivot_offset = size * 0.5

@@ -36,14 +36,23 @@ func test_build_primary_top_is_primary() -> void:
 		assert_false(CardDeck.is_curse(deck.peek()), "top of a fresh pile is never a curse")
 
 
-func test_deal_initial_primary_returns_primary_and_keeps_top_primary() -> void:
-	var deck := CardDeck.new()
-	deck.build_primary(5, 5)
+func test_first_draw_from_fresh_deck_is_a_primary() -> void:
+	# The initial deal is just the first draw; it must always hand out a primary.
+	for _i in range(50):
+		var deck := CardDeck.new()
+		deck.build_primary(3, 8)
+		var result := deck.draw_primary()
+		assert_false(result.is_empty(), "a primary is always dealt first")
+		assert_false(CardDeck.is_curse(result["primary"]), "the first card is a primary")
 
-	var active := deck.deal_initial_primary()
-	assert_false(CardDeck.is_curse(active), "dealt card is a primary")
-	if deck.has_primary():
-		assert_false(CardDeck.is_curse(deck.peek()), "next drawable stays a primary")
+
+func test_run_can_start_with_a_curse_revealed() -> void:
+	# A curse sitting under the first primary should surface (start cursed).
+	var deck := CardDeck.new()
+	deck.cards = [CardDeck.encode_primary(0), CardDeck.encode_curse(0), CardDeck.encode_primary(1)]
+
+	var result := deck.draw_primary()
+	assert_true(result.has("curse"), "the starting draw can reveal a curse")
 
 
 func test_draw_primary_surfaces_at_most_one_curse() -> void:

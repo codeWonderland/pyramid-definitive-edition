@@ -58,16 +58,12 @@ func _setup_new() -> void:
 
 
 func _deal_initial() -> void:
-	var primary_entry := _primary_deck.deal_initial_primary()
-	if primary_entry != -1:
-		_spawn_card(primary_entry, false, false, _slot_position(false), false)
-	_primary_pile.set_remaining(_primary_deck.size())
+	# The initial deal is just the first draw (no flip), so a run can start with
+	# a curse already revealed in the curse slot.
+	_draw_primary_card(false, false)
 
 	if pack.secondaries.size() > 0:
-		var secondary_entry := _secondary_deck.deal_initial_secondary()
-		if secondary_entry != -1:
-			_spawn_card(secondary_entry, true, false, _slot_position(true), false)
-		_secondary_pile.set_remaining(_secondary_deck.size())
+		_draw_secondary_card(false, false)
 	else:
 		_secondary_pile.hide()
 
@@ -100,14 +96,23 @@ func _make_pile(slot: Vector2) -> CardPile:
 func _on_primary_draw_requested(start_dragging: bool) -> void:
 	if RunManager.popup_open:
 		return
+	_draw_primary_card(true, start_dragging)
 
+
+func _on_secondary_draw_requested(start_dragging: bool) -> void:
+	if RunManager.popup_open:
+		return
+	_draw_secondary_card(true, start_dragging)
+
+
+func _draw_primary_card(flip: bool, start_dragging: bool) -> void:
 	var result := _primary_deck.draw_primary()
 	if result.is_empty():
 		_primary_pile.set_remaining(0)
 		return
 
 	var primary_entry: int = result["primary"]
-	var card := _spawn_card(primary_entry, false, false, _slot_position(false), true)
+	var card := _spawn_card(primary_entry, false, false, _slot_position(false), flip)
 	if start_dragging:
 		card.begin_drag_from_pile()
 
@@ -118,16 +123,13 @@ func _on_primary_draw_requested(start_dragging: bool) -> void:
 	_primary_pile.set_remaining(_primary_deck.size())
 
 
-func _on_secondary_draw_requested(start_dragging: bool) -> void:
-	if RunManager.popup_open:
-		return
-
+func _draw_secondary_card(flip: bool, start_dragging: bool) -> void:
 	var entry := _secondary_deck.draw_secondary()
 	if entry == -1:
 		_secondary_pile.set_remaining(0)
 		return
 
-	var card := _spawn_card(entry, true, false, _slot_position(true), true)
+	var card := _spawn_card(entry, true, false, _slot_position(true), flip)
 	if start_dragging:
 		card.begin_drag_from_pile()
 
