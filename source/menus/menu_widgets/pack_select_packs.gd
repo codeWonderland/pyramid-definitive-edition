@@ -8,6 +8,8 @@ const PACK_SELECT_CARD: PackedScene = preload(
 )
 
 var _current_page: int = 0
+var _sort_ascending: bool = true
+var _favorites_only: bool = false
 
 
 func _ready() -> void:
@@ -17,24 +19,25 @@ func _ready() -> void:
 	FavoritesManager.favorites_changed.connect(_populate)
 
 
+func set_sort_ascending(ascending: bool) -> void:
+	_sort_ascending = ascending
+	_current_page = 0
+	_populate()
+
+
+func set_favorites_only(favorites_only: bool) -> void:
+	_favorites_only = favorites_only
+	_current_page = 0
+	_populate()
+
+
 func prev_page() -> void:
-	_current_page -= 1
-
-	if _current_page < 0:
-		_current_page = int(floor(PacksManager.all_packs.size() as float / PAGE_SIZE as float))
-
-		if PacksManager.all_packs.size() % PAGE_SIZE == 0:
-			_current_page -= 1
-
+	_current_page = (_current_page - 1 + _page_count()) % _page_count()
 	_populate()
 
 
 func next_page() -> void:
-	_current_page += 1
-
-	if _current_page * PAGE_SIZE >= PacksManager.all_packs.size():
-		_current_page = 0
-
+	_current_page = (_current_page + 1) % _page_count()
 	_populate()
 
 
@@ -58,6 +61,13 @@ func _populate() -> void:
 		add_child(card)
 
 
+func _page_count() -> int:
+	var total := _ordered_packs().size()
+	if total <= 0:
+		return 1
+	return int(ceil(total as float / PAGE_SIZE as float))
+
+
 func _get_visible_packs() -> Array[PackData]:
 	var ordered := _ordered_packs()
 	var starting_index = _current_page * PAGE_SIZE
@@ -66,13 +76,20 @@ func _get_visible_packs() -> Array[PackData]:
 	return ordered.slice(starting_index, last_index)
 
 
-## All packs with favorites floated to the top (each group keeps title order).
+## Applies the current filter and sort, with favorites floated to the top.
 func _ordered_packs() -> Array[PackData]:
+	# PacksManager.all_packs is kept sorted A-Z; reverse for Z-A.
+	var packs: Array[PackData] = PacksManager.all_packs.duplicate()
+	if not _sort_ascending:
+		packs.reverse()
+
 	var favorites: Array[PackData] = []
 	var others: Array[PackData] = []
-
-	for pack in PacksManager.all_packs:
-		if FavoritesManager.is_favorite(pack.folder_path):
+	for pack in packs:
+		var favorite := FavoritesManager.is_favorite(pack.folder_path)
+		if _favorites_only and not favorite:
+			continue
+		if favorite:
 			favorites.append(pack)
 		else:
 			others.append(pack)
