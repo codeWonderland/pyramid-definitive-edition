@@ -170,8 +170,6 @@ func _reroll_packs() -> void:
 	var current_packs = RunManager.get_random_loadout()
 	_card_group_collection.packs = current_packs
 
-	_update_save_data()
-
 	_resize()
 
 
@@ -228,6 +226,9 @@ func _on_quit_confirmed() -> void:
 
 func _on_save_confirmed(should_save: bool) -> void:
 	if should_save:
+		# Capture the table as it stands right now (drawn cards, dragged
+		# positions, deck order) rather than the stale snapshot from run start.
+		_update_save_data()
 		_save_game_dialog.show()
 	else:
 		get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
