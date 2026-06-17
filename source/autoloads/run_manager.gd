@@ -66,9 +66,9 @@ func point_over_trash(global_position: Vector2) -> bool:
 
 
 func add_pack(pack_data: PackData) -> void:
-	if selected_packs.size() < 10:
-		selected_packs.append(pack_data)
-		self.packs_updated.emit()
+	# No cap on the draft: the selected-packs strip scrolls to fit any number.
+	selected_packs.append(pack_data)
+	self.packs_updated.emit()
 
 
 func remove_pack(pack_data: PackData) -> void:
