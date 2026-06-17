@@ -69,6 +69,37 @@ func _ready() -> void:
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
 
+	_setup_card_table()
+
+
+func _setup_card_table() -> void:
+	# Layering bands (back -> front): background, cards/piles (z 2-1900),
+	# trash overlay (1950), table UI (2000), popups (4096). Cards are kept
+	# beneath the UI so a grabbed card never covers the buttons or title.
+	for ui in [
+		_title,
+		_back_button,
+		_top_right,
+		_bottom_left,
+		_reroll_packs_button,
+		_bottom_right,
+	]:
+		ui.z_as_relative = false
+		ui.z_index = 2000
+
+	for popup in [
+		_pause_menu,
+		_coop_rules,
+		_multiplayer_rules,
+		_quit_dialog,
+		_confirm_save_dialog,
+		_save_game_dialog,
+	]:
+		popup.z_as_relative = false
+		popup.z_index = 4096
+
+	add_child(TrashZone.new())
+
 
 func _set_background() -> void:
 	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
@@ -139,8 +170,6 @@ func _reroll_packs() -> void:
 	var current_packs = RunManager.get_random_loadout()
 	_card_group_collection.packs = current_packs
 
-	_update_save_data()
-
 	_resize()
 
 
@@ -197,6 +226,9 @@ func _on_quit_confirmed() -> void:
 
 func _on_save_confirmed(should_save: bool) -> void:
 	if should_save:
+		# Capture the table as it stands right now (drawn cards, dragged
+		# positions, deck order) rather than the stale snapshot from run start.
+		_update_save_data()
 		_save_game_dialog.show()
 	else:
 		get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
