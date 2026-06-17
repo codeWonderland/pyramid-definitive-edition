@@ -12,12 +12,11 @@ func test_draft_screen_builds_and_restructures() -> void:
 	await get_tree().process_frame
 
 	assert_true(is_instance_valid(screen), "draft screen built without error")
-	assert_true(is_instance_valid(screen._prev_button), "prev caret button created")
-	assert_true(is_instance_valid(screen._next_button), "next caret button created")
-	assert_same(screen._prev_button.get_parent(), screen, "prev caret floated to the screen root")
-	assert_true(is_instance_valid(screen._sort_button), "sort button created")
-	assert_true(is_instance_valid(screen._filter_button), "filter button created")
+	assert_true(is_instance_valid(screen._previous), "prev button resolved")
+	assert_true(is_instance_valid(screen._next), "next button resolved")
+	assert_true(is_instance_valid(screen._sort_button), "sort button resolved")
+	assert_true(is_instance_valid(screen._filter_button), "filter button resolved")
 	assert_true(
 		screen._pack_select_selected_packs.get_parent() is ScrollContainer,
-		"selected-packs strip wrapped in a scroll view"
+		"selected-packs strip lives in a scroll view"
 	)

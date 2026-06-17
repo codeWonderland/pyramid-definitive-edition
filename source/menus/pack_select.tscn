@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://3hc7e0masxw4"]
+[gd_scene load_steps=10 format=3 uid="uid://3hc7e0masxw4"]
 
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="1_0njbr"]
 [ext_resource type="Script" uid="uid://cbcx63u512vrk" path="res://source/menus/pack_select.gd" id="1_p0uw7"]
@@ -6,9 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_lqhju"]
 [ext_resource type="PackedScene" uid="uid://ild1rgpwgs05" path="res://source/menus/menu_widgets/pack_select_packs.tscn" id="5_lqhju"]
 [ext_resource type="PackedScene" uid="uid://b545m6djvjs8k" path="res://source/menus/menu_widgets/pack_select_selected_packs.tscn" id="6_u4vdn"]
-[ext_resource type="Texture2D" uid="uid://cfsxkp6q7qdk7" path="res://assets/sprites/ui/buttons/previous.png" id="7_gnfts"]
 [ext_resource type="Texture2D" uid="uid://ry3kmbg6ufb5" path="res://assets/sprites/ui/buttons/done_drafting.png" id="8_fha2b"]
-[ext_resource type="Texture2D" uid="uid://c4awvgp2ymbr3" path="res://assets/sprites/ui/buttons/next.png" id="9_be4yt"]
+[ext_resource type="Texture2D" uid="uid://bhgkip670mh4r" path="res://assets/sprites/ui/icons/down-caret.png" id="9_caret"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="10_gnfts"]
 
 [node name="PackSelect" type="Control"]
@@ -90,7 +89,14 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="PackSelectSelectedPacks" parent="MarginContainer/VBoxContainer" instance=ExtResource("6_u4vdn")]
+[node name="SelectedScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(900, 90)
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="PackSelectSelectedPacks" parent="MarginContainer/VBoxContainer/SelectedScroll" instance=ExtResource("6_u4vdn")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
@@ -100,16 +106,21 @@ custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="Previous" type="TextureButton" parent="MarginContainer/BottomButtons"]
+[node name="Previous" type="Button" parent="MarginContainer/BottomButtons"]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -100.0
-offset_right = 200.0
-grow_vertical = 0
-texture_normal = ExtResource("7_gnfts")
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 24.0
+offset_top = -32.0
+offset_right = 88.0
+offset_bottom = 32.0
+grow_vertical = 2
+pivot_offset = Vector2(32, 32)
+rotation = 1.5707964
+icon = ExtResource("9_caret")
+expand_icon = true
 
 [node name="Done" type="TextureButton" parent="MarginContainer/BottomButtons"]
 unique_name_in_owner = true
@@ -126,7 +137,39 @@ grow_horizontal = 2
 grow_vertical = 0
 texture_normal = ExtResource("8_fha2b")
 
-[node name="Next" type="TextureButton" parent="MarginContainer/BottomButtons"]
+[node name="Next" type="Button" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -88.0
+offset_top = -32.0
+offset_right = -24.0
+offset_bottom = 32.0
+grow_horizontal = 0
+grow_vertical = 2
+pivot_offset = Vector2(32, 32)
+rotation = -1.5707964
+icon = ExtResource("9_caret")
+expand_icon = true
+
+[node name="SortButton" type="Button" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -60.0
+offset_right = 196.0
+offset_bottom = -12.0
+grow_vertical = 0
+text = "Sort: A-Z"
+
+[node name="FilterButton" type="Button" parent="MarginContainer/BottomButtons"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
@@ -134,11 +177,13 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -100.0
+offset_left = -220.0
+offset_top = -60.0
+offset_right = -24.0
+offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
-texture_normal = ExtResource("9_be4yt")
+text = "Filter: All"
 
 [node name="PauseMenu" parent="." instance=ExtResource("10_gnfts")]
 unique_name_in_owner = true
