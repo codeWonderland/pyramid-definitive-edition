@@ -32,6 +32,7 @@ WordBankLoader="*res://source/autoloads/word_bank_loader.tscn"
 AdditionalRulesLoader="*res://source/autoloads/additional_rules_loader.tscn"
 BackgroundManager="*res://source/autoloads/background_manager.tscn"
 RunManager="*res://source/autoloads/run_manager.tscn"
+FavoritesManager="*res://source/autoloads/favorites_manager.gd"
 
 [display]
 
