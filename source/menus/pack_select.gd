@@ -14,6 +14,9 @@ var _favorites_only: bool = false
 @onready var _done: Button = %Done
 @onready var _sort_button: Button = %SortButton
 @onready var _filter_button: Button = %FilterButton
+@onready var _search_bar: LineEdit = %SearchBar
+@onready var _tag_filter_button: Button = %TagFilterButton
+@onready var _filter_panel: PackFilterPanel = %PackFilterPanel
 
 
 func _ready() -> void:
@@ -24,6 +27,10 @@ func _ready() -> void:
 	_done.pressed.connect(_selection_complete)
 	_sort_button.pressed.connect(_toggle_sort)
 	_filter_button.pressed.connect(_toggle_filter)
+	_search_bar.text_changed.connect(_on_search_changed)
+	_tag_filter_button.pressed.connect(_toggle_filter_panel)
+	_filter_panel.filters_changed.connect(_on_tag_filters_changed)
+	PacksManager.packs_loaded.connect(_filter_panel.rebuild)
 	_pack_select_packs.pack_added.connect(RunManager.add_pack)
 	_pack_select_selected_packs.pack_pressed.connect(RunManager.remove_pack)
 
@@ -51,6 +58,21 @@ func _toggle_filter() -> void:
 	_favorites_only = not _favorites_only
 	_update_filter_labels()
 	_pack_select_packs.set_favorites_only(_favorites_only)
+
+
+func _on_search_changed(query: String) -> void:
+	_pack_select_packs.set_search_query(query)
+
+
+func _toggle_filter_panel() -> void:
+	if _pause_menu.visible:
+		return
+
+	_filter_panel.toggle()
+
+
+func _on_tag_filters_changed(tags: Array[String], match_all: bool) -> void:
+	_pack_select_packs.set_tag_filters(tags, match_all)
 
 
 func _set_background() -> void:

@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_lqhju"]
 [ext_resource type="PackedScene" uid="uid://ild1rgpwgs05" path="res://source/menus/menu_widgets/pack_select_packs.tscn" id="5_lqhju"]
 [ext_resource type="PackedScene" uid="uid://b545m6djvjs8k" path="res://source/menus/menu_widgets/pack_select_selected_packs.tscn" id="6_u4vdn"]
+[ext_resource type="PackedScene" uid="uid://cq1p8vn3xk4wa" path="res://source/menus/menu_widgets/pack_filter_panel.tscn" id="9_pfp01"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="10_gnfts"]
 
 [node name="PackSelect" type="Control" unique_id=594107462]
@@ -48,21 +49,29 @@ layout_mode = 0
 offset_bottom = 76.0
 texture_normal = ExtResource("3_wx4qi")
 
-[node name="Label" type="Label" parent="MarginContainer/TitleBar" unique_id=24256238]
+[node name="SearchBar" type="LineEdit" parent="MarginContainer/TitleBar" unique_id=1174340001]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -133.5
-offset_top = -38.0
-offset_right = 133.5
-offset_bottom = 38.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_type_variation = &"BigTitle"
-text = "Select Packs"
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 90.0
+offset_top = 8.0
+offset_right = -180.0
+offset_bottom = 68.0
+placeholder_text = "Search packs..."
+clear_button_enabled = true
+
+[node name="TagFilterButton" type="Button" parent="MarginContainer/TitleBar" unique_id=1174340002]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -172.0
+offset_top = 8.0
+offset_right = -84.0
+offset_bottom = 68.0
+text = "Filters"
 
 [node name="Pause" type="TextureButton" parent="MarginContainer/TitleBar" unique_id=1125449630]
 unique_name_in_owner = true
@@ -180,6 +189,9 @@ offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
 text = "Filter: All"
+
+[node name="PackFilterPanel" parent="." unique_id=1174340003 instance=ExtResource("9_pfp01")]
+unique_name_in_owner = true
 
 [node name="PauseMenu" parent="." unique_id=1954334397 instance=ExtResource("10_gnfts")]
 unique_name_in_owner = true

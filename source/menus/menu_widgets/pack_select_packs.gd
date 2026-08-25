@@ -17,6 +17,11 @@ const PACK_SELECT_CARD: PackedScene = preload(
 var _current_page: int = 0
 var _sort_ascending: bool = true
 var _favorites_only: bool = false
+var _search_query: String = ""
+var _tag_filters: Array[String] = []
+# With more than one tag ticked: true requires a pack to carry all of them,
+# false requires only one of them.
+var _match_all_tags: bool = false
 
 
 func _ready() -> void:
@@ -34,6 +39,20 @@ func set_sort_ascending(ascending: bool) -> void:
 
 func set_favorites_only(favorites_only: bool) -> void:
 	_favorites_only = favorites_only
+	_current_page = 0
+	_populate()
+
+
+func set_search_query(query: String) -> void:
+	_search_query = query
+	_current_page = 0
+	_populate()
+
+
+## Tag filters from the filter panel. `match_all` picks AND over OR.
+func set_tag_filters(tags: Array[String], match_all: bool) -> void:
+	_tag_filters = tags.duplicate()
+	_match_all_tags = match_all
 	_current_page = 0
 	_populate()
 
@@ -110,6 +129,10 @@ func _ordered_packs() -> Array[PackData]:
 		var favorite := FavoritesManager.is_favorite(pack.folder_path)
 		if _favorites_only and not favorite:
 			continue
+		if not FuzzyMatch.matches(_search_query, pack.title):
+			continue
+		if not _matches_tag_filters(pack):
+			continue
 		if favorite:
 			favorites.append(pack)
 		else:
@@ -119,6 +142,27 @@ func _ordered_packs() -> Array[PackData]:
 	ordered.append_array(favorites)
 	ordered.append_array(others)
 	return ordered
+
+
+## No ticked tags means the tag filter is off, so every pack passes.
+func _matches_tag_filters(pack: PackData) -> bool:
+	if _tag_filters.is_empty():
+		return true
+
+	# Compare case-insensitively: the ticked tag and the pack's spelling of it
+	# can differ between packs.
+	var pack_tags := {}
+	for tag in pack.tags:
+		pack_tags[tag.to_lower()] = true
+
+	for wanted in _tag_filters:
+		var has := pack_tags.has(wanted.to_lower())
+		if _match_all_tags and not has:
+			return false
+		if not _match_all_tags and has:
+			return true
+
+	return _match_all_tags
 
 
 func _get_card_size() -> Vector2:
