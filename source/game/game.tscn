@@ -131,6 +131,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Roll D6"
 
+[node name="FlipCards" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174350001]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Flip All (F)"
+
 [node name="RerollGames" type="Button" parent="MarginContainer/Bottom" unique_id=1515219405]
 unique_name_in_owner = true
 layout_mode = 1

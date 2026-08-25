@@ -20,6 +20,7 @@ const DICE_TEXTURES = [
 @onready var _bottom_left: VBoxContainer = %BottomLeft
 @onready var _die: TextureRect = %Die
 @onready var _roll_die_button: Button = %RollDie
+@onready var _flip_cards_button: Button = %FlipCards
 @onready var _reroll_packs_button: Button = %RerollGames
 @onready var _bottom_right: VBoxContainer = %BottomRight
 @onready var _multiplayer_rules_button: Button = %MultiplayerRulesButton
@@ -40,6 +41,7 @@ func _ready() -> void:
 	_settings_button.pressed.connect(_open_settings)
 	_close_button.pressed.connect(_close_game)
 	_roll_die_button.pressed.connect(_roll_die)
+	_flip_cards_button.pressed.connect(_flip_all_cards)
 	_reroll_packs_button.pressed.connect(_reroll_packs)
 	_multiplayer_rules_button.pressed.connect(_show_multiplayer_rules)
 	_coop_rules_button.pressed.connect(_show_coop_rules)
@@ -100,6 +102,9 @@ func _setup_card_table() -> void:
 
 	add_child(TrashZone.new())
 
+	# The groups deal their cards as they are built, so ask once that has settled.
+	_update_flip_button.call_deferred()
+
 
 func _set_background() -> void:
 	if BackgroundManager.backgrounds.has(UserSettingsManager.background):
@@ -146,6 +151,28 @@ func _close_game() -> void:
 	RunManager.popup_open = true
 
 
+## The table's cards are dealt face-down, so this is the reveal. Also bound to
+## the FlipCards action, since reaching for a button breaks the moment.
+func _flip_all_cards() -> void:
+	if RunManager.popup_open:
+		return
+
+	_card_group_collection.reveal_all()
+	_update_flip_button()
+
+
+## The control only earns its place while something is still hidden.
+func _update_flip_button() -> void:
+	_flip_cards_button.visible = _card_group_collection.has_face_down_cards()
+
+
+# _unhandled_input rather than _input: a focused LineEdit (the save-name field)
+# consumes its keys first, so typing an "f" there must not flip the table.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("FlipCards"):
+		_flip_all_cards()
+
+
 func _roll_die() -> void:
 	if RunManager.popup_open:
 		return
@@ -171,6 +198,7 @@ func _reroll_packs() -> void:
 	_card_group_collection.packs = current_packs
 
 	_resize()
+	_update_flip_button.call_deferred()
 
 
 func _show_multiplayer_rules() -> void:

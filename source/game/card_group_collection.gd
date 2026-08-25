@@ -26,6 +26,26 @@ func _ready() -> void:
 	_update_pack_visibility()
 
 
+## Turns every face-down card across all groups face-up, returning how many
+## flipped so the table can skip the sound/feedback when there was nothing to do.
+func reveal_all() -> int:
+	var revealed := 0
+
+	for group in _card_groups:
+		if group.pack != null:
+			revealed += group.reveal_all()
+
+	return revealed
+
+
+## Whether any group still has a face-down card.
+func has_face_down_cards() -> bool:
+	for group in _card_groups:
+		if group.pack != null and group.has_face_down_cards():
+			return true
+	return false
+
+
 func generate_card_groups_data() -> Array[CardGroupData]:
 	var card_groups_data: Array[CardGroupData] = []
 
