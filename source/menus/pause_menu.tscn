@@ -58,6 +58,17 @@ layout_mode = 2
 layout_mode = 2
 text = "Fullscreen"
 
+[node name="DuplicateCullingRow" type="HBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=1174320611]
+layout_mode = 2
+
+[node name="DuplicateCullingToggle" type="CheckBox" parent="VBoxContainer/VBoxContainer/DuplicateCullingRow" unique_id=1174320612]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/DuplicateCullingRow" unique_id=1174320613]
+layout_mode = 2
+text = "Avoid duplicate games when drafting"
+
 [node name="ModsOptions" type="VBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=414733242]
 unique_name_in_owner = true
 visible = false

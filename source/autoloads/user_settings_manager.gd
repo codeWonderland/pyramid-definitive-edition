@@ -3,6 +3,7 @@ extends Node
 signal music_volume_updated
 signal sfx_volume_updated
 signal background_set
+signal duplicate_culling_updated
 
 const SAVE_PATH = "user://settings.cfg"
 const DB_LOWER_LIMIT: int = 30
@@ -14,6 +15,9 @@ var music_volume: float = 0.7
 var sfx_volume: float = 0.7
 var fullscreen: bool = false
 var background: String = "Default"
+## When on, a draft avoids rolling the same pack twice until every selected pack
+## has been used once. See RunManager.get_random_loadout().
+var duplicate_culling: bool = true
 
 # updater
 var latest_version: String = ""
@@ -49,6 +53,12 @@ func update_background(new_value: String) -> void:
 	background = new_value
 	self.background_set.emit()
 	_save_config()
+
+
+func update_duplicate_culling(new_value: bool) -> void:
+	duplicate_culling = new_value
+	_save_config()
+	self.duplicate_culling_updated.emit()
 
 
 func update_latest_version(new_value: String) -> void:
@@ -90,6 +100,8 @@ func _load_config() -> void:
 
 		background = config.get_value("settings", "background", "Default")
 
+		duplicate_culling = config.get_value("settings", "duplicate_culling", true)
+
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
 
@@ -100,6 +112,7 @@ func _save_config() -> void:
 	config.set_value("settings", "sfx_volume", sfx_volume)
 	config.set_value("settings", "fullscreen", fullscreen)
 	config.set_value("settings", "background", background)
+	config.set_value("settings", "duplicate_culling", duplicate_culling)
 
 	# Updater
 	config.set_value("updater", "latest_version", latest_version)
