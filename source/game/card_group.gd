@@ -58,12 +58,12 @@ func _setup_new() -> void:
 
 
 func _deal_initial() -> void:
-	# The initial deal is just the first draw (no flip), so a run can start with
-	# a curse already revealed in the curse slot.
-	_draw_primary_card(false, false)
+	# The opening hand is dealt face-down so the whole table can be turned over
+	# at once; a curse drawn as part of it stays hidden with the rest.
+	_draw_primary_card(false, false, true)
 
 	if pack.secondaries.size() > 0:
-		_draw_secondary_card(false, false)
+		_draw_secondary_card(false, false, true)
 	else:
 		_secondary_pile.hide()
 
@@ -105,51 +105,78 @@ func _on_secondary_draw_requested(start_dragging: bool) -> void:
 	_draw_secondary_card(true, start_dragging)
 
 
-func _draw_primary_card(flip: bool, start_dragging: bool) -> void:
+func _draw_primary_card(flip: bool, start_dragging: bool, face_down: bool = false) -> void:
 	var result := _primary_deck.draw_primary()
 	if result.is_empty():
 		_primary_pile.set_remaining(0)
 		return
 
 	var primary_entry: int = result["primary"]
-	var card := _spawn_card(primary_entry, false, false, _slot_position(false), flip)
+	var card := _spawn_card(primary_entry, false, false, _slot_position(false), flip, face_down)
 	if start_dragging:
 		card.begin_drag_from_pile()
 
 	if result.has("curse"):
 		var curse_entry: int = result["curse"]
-		_reveal_curse(curse_entry)
+		_reveal_curse(curse_entry, face_down)
 
 	_primary_pile.set_remaining(_primary_deck.size())
 
 
-func _draw_secondary_card(flip: bool, start_dragging: bool) -> void:
+func _draw_secondary_card(flip: bool, start_dragging: bool, face_down: bool = false) -> void:
 	var entry := _secondary_deck.draw_secondary()
 	if entry == -1:
 		_secondary_pile.set_remaining(0)
 		return
 
-	var card := _spawn_card(entry, true, false, _slot_position(true), flip)
+	var card := _spawn_card(entry, true, false, _slot_position(true), flip, face_down)
 	if start_dragging:
 		card.begin_drag_from_pile()
 
 	_secondary_pile.set_remaining(_secondary_deck.size())
 
 
-func _reveal_curse(curse_entry: int) -> void:
+func _reveal_curse(curse_entry: int, face_down: bool = false) -> void:
 	# Only one curse is shown at a time; retire the previous one.
 	if _curse_card != null and is_instance_valid(_curse_card):
 		_table_cards.erase(_curse_card)
 		_curse_card.queue_free()
 
 	# Fly the curse from the primary pile to the curse slot.
-	var card := _spawn_card(curse_entry, false, true, _slot_position(false), true)
+	var card := _spawn_card(
+		curse_entry, false, true, _slot_position(false), not face_down, face_down
+	)
 	_curse_card = card
 
 	var fly := card.create_tween()
 	fly.tween_property(card, "position", _curse_slot_position(), CURSE_FLY_TIME).set_trans(
 		Tween.TRANS_QUAD
 	)
+
+
+## Turns every face-down card in this group face-up. Returns how many actually
+## flipped, so the table can tell whether the control had anything to do.
+func reveal_all() -> int:
+	var revealed := 0
+
+	for card in _table_cards:
+		if not is_instance_valid(card):
+			continue
+		if not card.face_down:
+			continue
+
+		card.reveal()
+		revealed += 1
+
+	return revealed
+
+
+## Whether anything in this group is still face-down.
+func has_face_down_cards() -> bool:
+	for card in _table_cards:
+		if is_instance_valid(card) and card.face_down:
+			return true
+	return false
 
 
 # --- Trash ---
@@ -174,7 +201,12 @@ func _on_card_trashed(card: ChallengeCard) -> void:
 
 
 func _spawn_card(
-	entry: int, is_secondary: bool, is_curse_card: bool, slot: Vector2, flip: bool
+	entry: int,
+	is_secondary: bool,
+	is_curse_card: bool,
+	slot: Vector2,
+	flip: bool,
+	face_down: bool = false
 ) -> ChallengeCard:
 	var card := CHALLENGE_CARD.instantiate() as ChallengeCard
 	card.is_curse = is_curse_card
@@ -187,10 +219,12 @@ func _spawn_card(
 	card.position = slot
 
 	var front := _texture_for(entry, is_secondary)
-	if flip:
+	if face_down:
+		card.set_face_down(front)
+	elif flip:
 		card.play_flip(front)
 	else:
-		card.texture = front
+		card.set_face_up(front)
 
 	card.request_trash.connect(_on_card_trashed)
 	_table_cards.append(card)
@@ -228,6 +262,7 @@ func generate_card_group_data() -> CardGroupData:
 					"curse": card.is_curse,
 					"x": card.position.x,
 					"y": card.position.y,
+					"face_down": card.face_down,
 				}
 			)
 		)
@@ -273,8 +308,11 @@ func _restore_card(saved: Dictionary) -> void:
 	var is_secondary: bool = saved.get("secondary", false)
 	var is_curse_card: bool = saved.get("curse", false)
 	var pos := Vector2(saved.get("x", 0.0), saved.get("y", 0.0))
+	# Saves predating face-down dealing have no flag; those tables were all
+	# face-up, so that is the right default for them.
+	var face_down: bool = saved.get("face_down", false)
 
-	var card := _spawn_card(entry, is_secondary, is_curse_card, pos, false)
+	var card := _spawn_card(entry, is_secondary, is_curse_card, pos, false, face_down)
 	if is_curse_card:
 		_curse_card = card
 

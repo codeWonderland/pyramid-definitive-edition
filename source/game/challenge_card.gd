@@ -29,6 +29,11 @@ const TILT_RESPONSE: float = 14.0
 var deck_entry: int = 0
 var deck_is_secondary: bool = false
 var back_texture: Texture2D = null
+## The card's face, kept while it is showing its back so it can be flipped over
+## later. Set through set_face_down/set_face_up/play_flip rather than directly.
+var front_texture: Texture2D = null
+## True while this card is showing its back. Face-down cards still drag normally.
+var face_down: bool = false
 
 var hovering: bool = false
 
@@ -181,8 +186,34 @@ func _end_press() -> void:
 		self.request_trash.emit(self)
 
 
+## Show this card face-down, remembering its face for a later reveal. Falls back
+## to the face when the pack has no back image, so a card is never blank.
+func set_face_down(front: Texture2D) -> void:
+	front_texture = front
+	face_down = true
+	texture = back_texture if back_texture != null else front
+
+
+## Show this card face-up straight away, with no animation.
+func set_face_up(front: Texture2D) -> void:
+	front_texture = front
+	face_down = false
+	texture = front
+
+
+## Flip a face-down card over. Does nothing to a card that is already face-up,
+## so revealing the whole table twice is harmless.
+func reveal() -> void:
+	if not face_down:
+		return
+
+	play_flip(front_texture)
+
+
 ## Deal this card face-up with a quick flip (back -> front).
 func play_flip(front: Texture2D) -> void:
+	front_texture = front
+	face_down = false
 	_flipping = true
 	if back_texture != null:
 		texture = back_texture
