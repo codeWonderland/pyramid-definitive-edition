@@ -1,5 +1,8 @@
 class_name Game extends Control
 
+## Run name used when the mod word bank has nothing usable in it, so broken mod
+## data costs the player a flavourful title rather than the whole screen.
+const FALLBACK_TITLE: String = "The Pyramid"
 const DICE_TEXTURES = [
 	preload("res://assets/sprites/ui/icons/d1.png"),
 	preload("res://assets/sprites/ui/icons/d2.png"),
@@ -229,23 +232,32 @@ func _on_save_closed() -> void:
 
 
 func _set_title() -> void:
-	var adjective = WordBankLoader.adjectives.pick_random()
-	var noun = WordBankLoader.nouns.pick_random()
-
-	_title.text = (
-		("The {adjective} Pyramid of {noun}")
-		. format(
-			{
-				adjective = adjective,
-				noun = noun,
-			}
-		)
-	)
+	_title.text = _random_run_name()
 
 	if _title.text.length() > 45:
 		_title.theme_type_variation = &"MediumTitle"
 	else:
 		_title.theme_type_variation = &"BigTitle"
+
+
+## Rolls a run name from the mod word bank. WordBankLoader is warn-and-continue
+## by design, so a missing or malformed word_bank.json legitimately leaves it
+## empty - picking from an empty list errors out, so fall back to a plain name
+## instead. Falls back if either list is empty, since half a name reads worse
+## than none.
+func _random_run_name() -> String:
+	if WordBankLoader.adjectives.is_empty() or WordBankLoader.nouns.is_empty():
+		return FALLBACK_TITLE
+
+	return (
+		("The {adjective} Pyramid of {noun}")
+		. format(
+			{
+				adjective = WordBankLoader.adjectives.pick_random(),
+				noun = WordBankLoader.nouns.pick_random(),
+			}
+		)
+	)
 
 
 func _on_quit_confirmed() -> void:

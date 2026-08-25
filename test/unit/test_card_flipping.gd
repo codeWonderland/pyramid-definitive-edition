@@ -9,14 +9,8 @@ const CARD_GROUP_SCENE: PackedScene = preload("res://source/game/card_group.tscn
 const CHALLENGE_CARD: PackedScene = preload("res://source/game/challenge_card.tscn")
 const GAME_SCENE: PackedScene = preload("res://source/game/game.tscn")
 
-var _saved_adjectives: Array = []
-var _saved_nouns: Array = []
-
 
 func after_each() -> void:
-	if not _saved_adjectives.is_empty() or not _saved_nouns.is_empty():
-		WordBankLoader.adjectives = _saved_adjectives
-		WordBankLoader.nouns = _saved_nouns
 	RunManager.popup_open = false
 
 
@@ -299,13 +293,6 @@ func test_saves_predating_face_down_load_face_up() -> void:
 
 
 func _make_table() -> Game:
-	# The table rolls a run name on load, and WordBankLoader is empty here
-	# because no mod data was loaded, so stand in for it.
-	_saved_adjectives = WordBankLoader.adjectives
-	_saved_nouns = WordBankLoader.nouns
-	WordBankLoader.adjectives = ["Test"]
-	WordBankLoader.nouns = ["Testing"]
-
 	RunManager.clear()
 	RunManager.num_games = 3
 	var packs: Array[PackData] = [_make_pack(), _make_pack(), _make_pack()]
