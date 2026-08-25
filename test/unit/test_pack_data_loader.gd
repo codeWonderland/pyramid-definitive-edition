@@ -103,3 +103,47 @@ func test_deduplicates_case_insensitively_keeping_first_spelling() -> void:
 		["Roguelike", "Deckbuilder"],
 		"case variants collapse to the first spelling the author used"
 	)
+
+
+# --- Writing metadata (save_tags) ---
+
+
+func test_save_then_load_round_trips() -> void:
+	var tags: Array[String] = ["Roguelike", "Deckbuilder"]
+
+	assert_true(PackDataLoader.save_tags(_tag_root, tags), "save reports success")
+	assert_eq(PackDataLoader.load_tags(_tag_root), tags, "tags survive a save/load round trip")
+
+
+func test_save_writes_readable_json() -> void:
+	PackDataLoader.save_tags(_tag_root, ["Roguelike"] as Array[String])
+
+	var path := _tag_root.path_join(PackDataLoader.METADATA_FILE)
+	var json := JSON.new()
+	assert_eq(json.parse(FileAccess.get_file_as_string(path)), OK, "written file is valid JSON")
+	assert_eq(json.data, {"tags": ["Roguelike"]}, "written document has the expected shape")
+
+
+func test_saving_empty_tags_removes_the_file() -> void:
+	PackDataLoader.save_tags(_tag_root, ["Roguelike"] as Array[String])
+	var path := _tag_root.path_join(PackDataLoader.METADATA_FILE)
+	assert_true(FileAccess.file_exists(path), "metadata file written")
+
+	PackDataLoader.save_tags(_tag_root, [] as Array[String])
+
+	assert_false(FileAccess.file_exists(path), "clearing every tag removes the metadata file")
+	assert_eq(PackDataLoader.load_tags(_tag_root), [], "and the pack reads back as untagged")
+
+
+func test_saving_empty_tags_with_no_existing_file_is_safe() -> void:
+	assert_true(PackDataLoader.save_tags(_tag_root, [] as Array[String]), "no-op save succeeds")
+	assert_eq(PackDataLoader.load_tags(_tag_root), [], "still untagged")
+
+
+func test_save_overwrites_previous_tags() -> void:
+	PackDataLoader.save_tags(_tag_root, ["Roguelike", "Deckbuilder"] as Array[String])
+	PackDataLoader.save_tags(_tag_root, ["Metroidvania"] as Array[String])
+
+	assert_eq(
+		PackDataLoader.load_tags(_tag_root), ["Metroidvania"], "a later save replaces the old tags"
+	)
