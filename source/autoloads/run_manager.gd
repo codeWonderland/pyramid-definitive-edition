@@ -91,10 +91,19 @@ func get_random_loadout() -> Array[PackData]:
 	var pool := selected_packs.duplicate()
 	pool.shuffle()
 
+	# Culling off: every slot is an independent roll over the whole selection,
+	# so the same pack can come up as many times as chance allows.
+	if not UserSettingsManager.duplicate_culling:
+		for _index in range(num_games):
+			loadout.append(pool.pick_random())
+		return loadout
+
+	# Culling on: no repeats while an undrafted pack is still available.
 	if num_games <= pool.size():
 		return pool.slice(0, num_games)
 
-	# Fewer packs selected than games: use them all, then pad with random repeats.
+	# Fewer packs selected than games: use them all, then pad with random
+	# repeats, since by then there is nothing undrafted left to prefer.
 	loadout = pool.duplicate()
 	for _index in range(num_games - pool.size()):
 		loadout.append(pool.pick_random())
