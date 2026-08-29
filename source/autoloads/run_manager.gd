@@ -5,6 +5,9 @@ signal packs_updated
 # Raised when any card grab begins/ends, so the trash zone can show/hide.
 signal card_drag_started
 signal card_drag_ended
+## Raised when a card asks to be looked at up close. Routed through here rather
+## than up the CardGroup -> collection -> table chain, like the drag signals.
+signal card_inspect_requested(card_texture: Texture2D)
 
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
@@ -55,6 +58,12 @@ func begin_card_drag() -> void:
 
 func end_card_drag() -> void:
 	self.card_drag_ended.emit()
+
+
+## Ask the table to show `card_texture` up close. Passing the texture the card is
+## currently showing means a face-down card inspects as its back, with no peeking.
+func request_card_inspect(card_texture: Texture2D) -> void:
+	self.card_inspect_requested.emit(card_texture)
 
 
 func set_trash_zone_rect(rect: Rect2) -> void:

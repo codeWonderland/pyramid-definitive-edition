@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://c7besnigoyson"]
 
+[ext_resource type="PackedScene" uid="uid://bq7xk2mvn8dc1" path="res://source/game/card_inspector.tscn" id="99_ci003"]
 [ext_resource type="Script" uid="uid://3qo2fobue4c5" path="res://source/game/game.gd" id="1_e4lxu"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="2_bq0n3"]
 [ext_resource type="Texture2D" uid="uid://277dathaiayc" path="res://assets/sprites/ui/buttons/back_button.png" id="3_bq0n3"]
@@ -216,3 +217,8 @@ unique_name_in_owner = true
 visible = false
 z_index = 3
 layout_mode = 0
+
+[node name="CardInspector" parent="." unique_id=1174360001 instance=ExtResource("99_ci003")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2

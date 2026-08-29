@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://bq7xk2mvn8dc1"]
+
+[ext_resource type="Script" uid="uid://d2e5oxkpw2n3t" path="res://source/game/card_inspector.gd" id="1_ci001"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_ci002"]
+
+[node name="CardInspector" type="PanelContainer"]
+offset_right = 48.0
+offset_bottom = 48.0
+script = ExtResource("1_ci001")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+mouse_filter = 2
+
+[node name="CardImage" type="TextureRect" parent="Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("2_ci002")
