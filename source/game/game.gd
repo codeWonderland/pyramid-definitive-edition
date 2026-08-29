@@ -33,6 +33,7 @@ const DICE_TEXTURES = [
 @onready var _quit_dialog: QuitDialog = %QuitDialog
 @onready var _confirm_save_dialog: ConfirmSaveDialog = %ConfirmSaveDialog
 @onready var _save_game_dialog: SaveGameDialog = %SaveGameDialog
+@onready var _card_inspector: CardInspector = %CardInspector
 
 
 func _ready() -> void:
@@ -56,6 +57,8 @@ func _ready() -> void:
 	_quit_dialog.closing.connect(_on_popup_closing)
 	_confirm_save_dialog.closing.connect(_on_save_closed)
 	_quit_dialog.confirm_quit.connect(_on_quit_confirmed)
+	_card_inspector.closing.connect(_on_popup_closing)
+	RunManager.card_inspect_requested.connect(_on_card_inspect_requested)
 	_confirm_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
 	# Scene Setup
@@ -99,6 +102,7 @@ func _setup_card_table() -> void:
 		_quit_dialog,
 		_confirm_save_dialog,
 		_save_game_dialog,
+		_card_inspector,
 	]:
 		popup.z_as_relative = false
 		popup.z_index = 4096
@@ -220,6 +224,15 @@ func _show_coop_rules() -> void:
 	RunManager.popup_open = true
 
 	_coop_rules.show()
+
+
+## Right-clicking a card asks the table to show it up close.
+func _on_card_inspect_requested(card_texture: Texture2D) -> void:
+	if RunManager.popup_open:
+		return
+
+	RunManager.popup_open = true
+	_card_inspector.show_card(card_texture)
 
 
 func _on_popup_closing() -> void:

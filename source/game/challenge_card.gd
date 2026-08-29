@@ -118,6 +118,13 @@ func _physics_process(_delta: float) -> void:
 
 
 func _on_gui_input(event: InputEvent) -> void:
+	# Right-click inspects the card, matching what right-click already means on
+	# the draft screen. Ignored mid-drag so a stray click can't interrupt one.
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed and not RunManager.popup_open and not _dragging:
+			RunManager.request_card_inspect(texture)
+		return
+
 	# Begin a potential click/drag on left-press. Motion and release are handled
 	# in _input() so we keep receiving events even when the cursor leaves the
 	# card's rect during a fast drag.
