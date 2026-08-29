@@ -137,6 +137,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Flip All (F)"
 
+[node name="CaptureBanner" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174380001]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Save Banner (B)"
+
 [node name="RerollGames" type="Button" parent="MarginContainer/Bottom" unique_id=1515219405]
 unique_name_in_owner = true
 layout_mode = 1

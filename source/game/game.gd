@@ -24,6 +24,7 @@ const DICE_TEXTURES = [
 @onready var _die: TextureRect = %Die
 @onready var _roll_die_button: Button = %RollDie
 @onready var _flip_cards_button: Button = %FlipCards
+@onready var _capture_banner_button: Button = %CaptureBanner
 @onready var _reroll_packs_button: Button = %RerollGames
 @onready var _bottom_right: VBoxContainer = %BottomRight
 @onready var _multiplayer_rules_button: Button = %MultiplayerRulesButton
@@ -46,6 +47,7 @@ func _ready() -> void:
 	_close_button.pressed.connect(_close_game)
 	_roll_die_button.pressed.connect(_roll_die)
 	_flip_cards_button.pressed.connect(_flip_all_cards)
+	_capture_banner_button.pressed.connect(_capture_banner)
 	_reroll_packs_button.pressed.connect(_reroll_packs)
 	_multiplayer_rules_button.pressed.connect(_show_multiplayer_rules)
 	_coop_rules_button.pressed.connect(_show_coop_rules)
@@ -178,6 +180,57 @@ func _update_flip_button() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("FlipCards"):
 		_flip_all_cards()
+
+	if event.is_action_pressed("CaptureBanner"):
+		_capture_banner()
+
+
+## Saves a wide image of the run for sharing. The table UI is hidden for the
+## grab so the banner shows the run and its cards rather than the buttons.
+func _capture_banner() -> void:
+	if RunManager.popup_open:
+		return
+
+	var hidden_ui := _hide_ui_for_capture()
+
+	# Wait for the frame that is actually drawn without the UI before grabbing it.
+	await RenderingServer.frame_post_draw
+	var frame := get_viewport().get_texture().get_image()
+
+	for control in hidden_ui:
+		control.show()
+
+	var focus_center_y := _card_group_collection.get_global_rect().get_center().y
+	var banner := BannerCapture.crop_to_banner(frame, focus_center_y)
+
+	var path := BannerCapture.output_directory().path_join(
+		BannerCapture.file_name(Time.get_datetime_dict_from_system())
+	)
+	if banner.save_png(path) != OK:
+		push_error("Game: couldn't write banner to %s" % path)
+		return
+
+	print("Saved run banner to %s" % path)
+
+
+## Hides the table furniture for a capture, returning what was hidden so it can
+## be put back. Only things already visible are touched, so restoring never
+## reveals a control that was hidden for its own reasons.
+func _hide_ui_for_capture() -> Array[Control]:
+	var hidden: Array[Control] = []
+
+	for control in [
+		_back_button,
+		_top_right,
+		_bottom_left,
+		_reroll_packs_button,
+		_bottom_right,
+	]:
+		if control.visible:
+			control.hide()
+			hidden.append(control)
+
+	return hidden
 
 
 func _roll_die() -> void:
