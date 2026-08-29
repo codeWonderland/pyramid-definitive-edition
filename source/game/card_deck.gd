@@ -6,10 +6,14 @@ class_name CardDeck extends RefCounted
 ##   curse card   -> -(index in pack.curses) - 1            (entry <  0)
 ## Secondary piles only ever hold primary-style (>= 0) entries.
 ##
-## Core invariant for primary piles: the next drawable card (the top) is always
-## a primary. Drawing a primary reveals at most one curse (which the caller flies
-## to the curse slot); any further consecutive curses are recycled to the bottom
-## so two curses never surface back-to-back.
+## Core invariant for either pile: the next drawable card (the top) is never a
+## curse. Drawing reveals at most one curse (which the caller flies to the curse
+## slot); any further consecutive curses are recycled to the bottom so two curses
+## never surface back-to-back.
+##
+## Curses normally ride the secondary pile. A pack with no secondaries has no
+## secondary pile for them to live in, so there they ride the primary pile
+## instead - either way only one pile carries them.
 
 ## Guards the recycle loop against a pile that somehow contains no primary.
 const _RECYCLE_SAFETY: int = 4096
@@ -42,7 +46,8 @@ func is_empty() -> bool:
 	return cards.is_empty()
 
 
-func has_primary() -> bool:
+## Whether anything in the pile can still be drawn as a normal card.
+func has_non_curse() -> bool:
 	for entry in cards:
 		if not is_curse(entry):
 			return true
@@ -54,53 +59,83 @@ func peek() -> int:
 	return cards[0]
 
 
-func build_primary(num_primaries: int, num_curses: int) -> void:
+## Curses only belong here when the pack has no secondary pile to carry them.
+func build_primary(num_primaries: int, num_curses: int = 0) -> void:
+	_build(num_primaries, num_curses)
+
+
+## The usual home for curses.
+func build_secondary(num_secondaries: int, num_curses: int = 0) -> void:
+	_build(num_secondaries, num_curses)
+
+
+func _build(num_cards: int, num_curses: int) -> void:
 	cards = []
-	for i in range(num_primaries):
+	for i in range(num_cards):
 		cards.append(encode_primary(i))
 	for c in range(num_curses):
 		cards.append(encode_curse(c))
 	cards.shuffle()
-	_ensure_top_primary()
-
-
-func build_secondary(num_secondaries: int) -> void:
-	cards = []
-	for i in range(num_secondaries):
-		cards.append(encode_primary(i))
-	cards.shuffle()
+	_ensure_top_non_curse()
 
 
 ## Draw the top primary. Returns:
-##   { "primary": <entry> }                 when no curse is revealed
+##   { "primary": <entry> }                   when no curse is revealed
 ##   { "primary": <entry>, "curse": <entry> } when the card under it is a curse
-##   {}                                       when no primary can be drawn
-## After this call the top is guaranteed to be a primary again (or the pile is
-## out of primaries).
+##   {}                                       when nothing can be drawn
+## After this call the top is guaranteed not to be a curse (or the pile is out
+## of ordinary cards).
 func draw_primary() -> Dictionary:
-	_ensure_top_primary()
+	return _draw_revealing_curse("primary")
+
+
+## Draw the top of a secondary pile, with the same shape as draw_primary(): this
+## is where curses normally surface.
+func draw_secondary() -> Dictionary:
+	return _draw_revealing_curse("secondary")
+
+
+func _draw_revealing_curse(key: String) -> Dictionary:
+	_ensure_top_non_curse()
 	if is_empty() or is_curse(cards[0]):
 		return {}
 
-	var primary: int = cards.pop_front()
-	var result := {"primary": primary}
+	var drawn: int = cards.pop_front()
+	var result := {key: drawn}
 
 	# The card now exposed: if it's a curse, it flies to the curse slot. Recycle
 	# any further consecutive curses so they don't surface stacked.
 	if not is_empty() and is_curse(cards[0]):
-		var curse: int = cards.pop_front()
-		result["curse"] = curse
-		_ensure_top_primary()
+		result["curse"] = cards.pop_front()
+		_ensure_top_non_curse()
 
 	return result
 
 
-## Draw the top of a secondary pile. Returns the entry, or -1 if empty.
-func draw_secondary() -> int:
-	if is_empty():
-		return -1
-	var entry: int = cards.pop_front()
-	return entry
+## Removes every curse from this pile and hands them back, for moving them to
+## the pile that should be carrying them.
+func extract_curses() -> Array[int]:
+	var curses: Array[int] = []
+	var kept: Array[int] = []
+
+	for entry in cards:
+		if is_curse(entry):
+			curses.append(entry)
+		else:
+			kept.append(entry)
+
+	cards = kept
+	return curses
+
+
+## Shuffles extra entries into this pile, keeping the top-is-never-a-curse rule.
+func add_shuffled(entries: Array[int]) -> void:
+	if entries.is_empty():
+		return
+
+	cards.append_array(entries)
+	cards.shuffle()
+	_ensure_top_non_curse()
 
 
 ## Send a trashed card (encoded entry) to the bottom of the pile.
@@ -116,10 +151,10 @@ func from_array(state: Array[int]) -> void:
 	cards = state.duplicate()
 
 
-## Rotate leading curses to the bottom until the top is a primary. No-op if the
-## pile has no primaries (so an all-curse remainder doesn't loop forever).
-func _ensure_top_primary() -> void:
-	if not has_primary():
+## Rotate leading curses to the bottom until the top is an ordinary card. No-op
+## if the pile has none left (so an all-curse remainder doesn't loop forever).
+func _ensure_top_non_curse() -> void:
+	if not has_non_curse():
 		return
 
 	var guard := 0

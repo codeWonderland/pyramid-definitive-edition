@@ -49,9 +49,17 @@ func _clear_table() -> void:
 func _setup_new() -> void:
 	_clear_table()
 	_primary_deck = CardDeck.new()
-	_primary_deck.build_primary(pack.primaries.size(), pack.curses.size())
 	_secondary_deck = CardDeck.new()
-	_secondary_deck.build_secondary(pack.secondaries.size())
+
+	if _curses_ride_secondary():
+		_primary_deck.build_primary(pack.primaries.size())
+		_secondary_deck.build_secondary(pack.secondaries.size(), pack.curses.size())
+	else:
+		# No secondary pile for curses to live in, so they stay with the
+		# primaries; otherwise a pack with curses and no secondaries would
+		# quietly lose them.
+		_primary_deck.build_primary(pack.primaries.size(), pack.curses.size())
+		_secondary_deck.build_secondary(pack.secondaries.size())
 
 	_build_piles()
 	_deal_initial()
@@ -66,6 +74,12 @@ func _deal_initial() -> void:
 		_draw_secondary_card(false, false, true)
 	else:
 		_secondary_pile.hide()
+
+
+## Curses belong to the secondary pile, unless the pack has no secondaries for
+## that pile to hold.
+func _curses_ride_secondary() -> bool:
+	return pack != null and pack.secondaries.size() > 0
 
 
 func _build_piles() -> void:
@@ -118,33 +132,38 @@ func _draw_primary_card(flip: bool, start_dragging: bool, face_down: bool = fals
 
 	if result.has("curse"):
 		var curse_entry: int = result["curse"]
-		_reveal_curse(curse_entry, face_down)
+		_reveal_curse(curse_entry, face_down, false)
 
 	_primary_pile.set_remaining(_primary_deck.size())
 
 
 func _draw_secondary_card(flip: bool, start_dragging: bool, face_down: bool = false) -> void:
-	var entry := _secondary_deck.draw_secondary()
-	if entry == -1:
+	var result := _secondary_deck.draw_secondary()
+	if result.is_empty():
 		_secondary_pile.set_remaining(0)
 		return
 
+	var entry: int = result["secondary"]
 	var card := _spawn_card(entry, true, false, _slot_position(true), flip, face_down)
 	if start_dragging:
 		card.begin_drag_from_pile()
 
+	if result.has("curse"):
+		var curse_entry: int = result["curse"]
+		_reveal_curse(curse_entry, face_down, true)
+
 	_secondary_pile.set_remaining(_secondary_deck.size())
 
 
-func _reveal_curse(curse_entry: int, face_down: bool = false) -> void:
+func _reveal_curse(curse_entry: int, face_down: bool = false, from_secondary: bool = false) -> void:
 	# Only one curse is shown at a time; retire the previous one.
 	if _curse_card != null and is_instance_valid(_curse_card):
 		_table_cards.erase(_curse_card)
 		_curse_card.queue_free()
 
-	# Fly the curse from the primary pile to the curse slot.
+	# Fly the curse out of whichever pile actually surfaced it.
 	var card := _spawn_card(
-		curse_entry, false, true, _slot_position(false), not face_down, face_down
+		curse_entry, false, true, _slot_position(from_secondary), not face_down, face_down
 	)
 	_curse_card = card
 
@@ -291,6 +310,8 @@ func load_from_card_group_data(data: CardGroupData) -> void:
 	_secondary_deck = CardDeck.new()
 	_secondary_deck.from_array(data.secondary_deck)
 
+	_migrate_curses_from_save()
+
 	_build_piles()
 	for saved in data.table_cards:
 		_restore_card(saved)
@@ -301,6 +322,16 @@ func load_from_card_group_data(data: CardGroupData) -> void:
 		_secondary_pile.hide()
 
 	_loading_from_save = false
+
+
+## Saves written before curses moved to the secondary pile have them encoded in
+## the primary deck, where the draw path no longer looks for them - and where a
+## curse index would be read as a primary index. Move them across on load.
+func _migrate_curses_from_save() -> void:
+	if not _curses_ride_secondary():
+		return
+
+	_secondary_deck.add_shuffled(_primary_deck.extract_curses())
 
 
 func _restore_card(saved: Dictionary) -> void:
