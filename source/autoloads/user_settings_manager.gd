@@ -4,6 +4,7 @@ signal music_volume_updated
 signal sfx_volume_updated
 signal background_set
 signal duplicate_culling_updated
+signal auto_update_mods_updated
 
 const SAVE_PATH = "user://settings.cfg"
 const DB_LOWER_LIMIT: int = 30
@@ -18,6 +19,9 @@ var background: String = "Default"
 ## When on, a draft avoids rolling the same pack twice until every selected pack
 ## has been used once. See RunManager.get_random_loadout().
 var duplicate_culling: bool = true
+## When on, the updater downloads and applies new mod data on boot instead of
+## stopping to ask. See Updater._check_update_data().
+var auto_update_mods: bool = true
 
 # updater
 var latest_version: String = ""
@@ -61,6 +65,12 @@ func update_duplicate_culling(new_value: bool) -> void:
 	self.duplicate_culling_updated.emit()
 
 
+func update_auto_update_mods(new_value: bool) -> void:
+	auto_update_mods = new_value
+	_save_config()
+	self.auto_update_mods_updated.emit()
+
+
 func update_latest_version(new_value: String) -> void:
 	latest_version = new_value
 	_save_config()
@@ -102,6 +112,8 @@ func _load_config() -> void:
 
 		duplicate_culling = config.get_value("settings", "duplicate_culling", true)
 
+		auto_update_mods = config.get_value("settings", "auto_update_mods", true)
+
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
 
@@ -113,6 +125,7 @@ func _save_config() -> void:
 	config.set_value("settings", "fullscreen", fullscreen)
 	config.set_value("settings", "background", background)
 	config.set_value("settings", "duplicate_culling", duplicate_culling)
+	config.set_value("settings", "auto_update_mods", auto_update_mods)
 
 	# Updater
 	config.set_value("updater", "latest_version", latest_version)

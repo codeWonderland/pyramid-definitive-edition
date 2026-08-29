@@ -7,6 +7,7 @@ class_name PauseMenu extends PopupContainer
 @onready var _background_select: OptionButton = %BackgroundSelect
 @onready var _fullscreen_toggle: CheckBox = %FullscreenToggle
 @onready var _duplicate_culling_toggle: CheckBox = %DuplicateCullingToggle
+@onready var _auto_update_toggle: CheckBox = %AutoUpdateToggle
 @onready var _mods_options: VBoxContainer = %ModsOptions
 @onready var _offical_mods_button: Button = %OfficialMods
 @onready var _local_mods_button: Button = %LocalMods
@@ -23,6 +24,7 @@ func _ready() -> void:
 	_sfx_volume.set_level(floor(UserSettingsManager.sfx_volume * 10))
 	_fullscreen_toggle.button_pressed = UserSettingsManager.fullscreen
 	_duplicate_culling_toggle.button_pressed = UserSettingsManager.duplicate_culling
+	_auto_update_toggle.button_pressed = UserSettingsManager.auto_update_mods
 	_setup_background_options()
 
 	# callbacks
@@ -31,6 +33,7 @@ func _ready() -> void:
 	_background_select.item_selected.connect(_on_background_selected)
 	_fullscreen_toggle.pressed.connect(_fullscreen_toggled)
 	_duplicate_culling_toggle.pressed.connect(_duplicate_culling_toggled)
+	_auto_update_toggle.pressed.connect(_auto_update_toggled)
 	_offical_mods_button.pressed.connect(_open_official_mods)
 	_local_mods_button.pressed.connect(_open_mod_manager)
 
@@ -49,6 +52,10 @@ func _fullscreen_toggled() -> void:
 
 func _duplicate_culling_toggled() -> void:
 	UserSettingsManager.update_duplicate_culling(!UserSettingsManager.duplicate_culling)
+
+
+func _auto_update_toggled() -> void:
+	UserSettingsManager.update_auto_update_mods(!UserSettingsManager.auto_update_mods)
 
 
 func _setup_background_options() -> void:

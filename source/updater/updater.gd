@@ -105,6 +105,11 @@ func _check_update_data(
 		_load_data()
 		return
 
+	if _should_download_without_asking():
+		_label.text = "New Updates Found!"
+		_download_updates()
+		return
+
 	if UserSettingsManager.latest_version == "":
 		_label.text = "Mod updates available, download?"
 	else:
@@ -113,6 +118,15 @@ func _check_update_data(
 	_loading_animation.hide()
 	_download_button.show()
 	_skip_button.show()
+
+
+## Whether a found update should just be applied. Boot should not sit waiting on
+## a decision the player almost always makes the same way, and extracting to a
+## temp dir before swapping already means a bad download can't damage existing
+## mods - so downloading unasked is safe. Players who want the say can turn the
+## setting off and get the old prompt back.
+func _should_download_without_asking() -> bool:
+	return UserSettingsManager.auto_update_mods
 
 
 func _download_updates() -> void:
