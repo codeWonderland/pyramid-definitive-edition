@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cbcx63u512vrk" path="res://source/menus/pack_select.gd" id="1_p0uw7"]
 [ext_resource type="Texture2D" uid="uid://277dathaiayc" path="res://assets/sprites/ui/buttons/back_button.png" id="3_wx4qi"]
 [ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_lqhju"]
+[ext_resource type="Texture2D" uid="uid://ddcisf0ivgejg" path="res://assets/sprites/ui/buttons/filter.png" id="11_filter"]
 [ext_resource type="PackedScene" uid="uid://ild1rgpwgs05" path="res://source/menus/menu_widgets/pack_select_packs.tscn" id="5_lqhju"]
 [ext_resource type="PackedScene" uid="uid://b545m6djvjs8k" path="res://source/menus/menu_widgets/pack_select_selected_packs.tscn" id="6_u4vdn"]
 [ext_resource type="PackedScene" uid="uid://cq1p8vn3xk4wa" path="res://source/menus/menu_widgets/pack_filter_panel.tscn" id="9_pfp01"]
@@ -38,51 +39,37 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleBar" type="Control" parent="MarginContainer" unique_id=1977375327]
+[node name="TitleBar" type="HBoxContainer" parent="MarginContainer" unique_id=1977375327]
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/separation = 12
 
 [node name="Back" type="TextureButton" parent="MarginContainer/TitleBar" unique_id=1040769505]
 unique_name_in_owner = true
-layout_mode = 0
-offset_bottom = 76.0
+layout_mode = 2
+size_flags_vertical = 0
 texture_normal = ExtResource("3_wx4qi")
 
 [node name="SearchBar" type="LineEdit" parent="MarginContainer/TitleBar" unique_id=1174340001]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 90.0
-offset_top = 8.0
-offset_right = -180.0
-offset_bottom = 68.0
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 placeholder_text = "Search packs..."
 clear_button_enabled = true
 
-[node name="TagFilterButton" type="Button" parent="MarginContainer/TitleBar" unique_id=1174340002]
+[node name="TagFilterButton" type="TextureButton" parent="MarginContainer/TitleBar" unique_id=1174340002]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -172.0
-offset_top = 8.0
-offset_right = -84.0
-offset_bottom = 68.0
-text = "Filters"
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "Filters"
+texture_normal = ExtResource("11_filter")
 
 [node name="Pause" type="TextureButton" parent="MarginContainer/TitleBar" unique_id=1125449630]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -76.0
-offset_bottom = 76.0
-grow_horizontal = 0
-size_flags_horizontal = 8
+layout_mode = 2
+size_flags_vertical = 0
 texture_normal = ExtResource("4_lqhju")
 
 [node name="CenterButtons" type="Control" parent="MarginContainer" unique_id=755286302]

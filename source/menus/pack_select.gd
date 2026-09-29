@@ -15,7 +15,7 @@ var _favorites_only: bool = false
 @onready var _sort_button: Button = %SortButton
 @onready var _filter_button: Button = %FilterButton
 @onready var _search_bar: LineEdit = %SearchBar
-@onready var _tag_filter_button: Button = %TagFilterButton
+@onready var _tag_filter_button: TextureButton = %TagFilterButton
 @onready var _filter_panel: PackFilterPanel = %PackFilterPanel
 
 
