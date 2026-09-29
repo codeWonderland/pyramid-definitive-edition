@@ -6,8 +6,6 @@ const LOGO_SWAY_TIME: float = 2.5
 const LOGO_PULSE_SCALE: float = 1.06
 const LOGO_PULSE_TIME: float = 1.6
 
-var _hold_scene_transition: bool = false
-
 @onready var _background: TextureRect = %Background
 @onready var _title: Label = %Title
 @onready var _start_label: Label = %StartLabel
@@ -17,7 +15,7 @@ var _hold_scene_transition: bool = false
 @onready var _settings_button: TextureButton = %Settings
 @onready var _exit_button: TextureButton = %Exit
 @onready var _credits_button: TextureButton = %Credits
-@onready var _library_button: Button = %Library
+@onready var _library_button: TextureButton = %Library
 @onready var _github_button: TextureButton = %Github
 
 
@@ -40,17 +38,37 @@ func _set_background() -> void:
 		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
+## "Press anything to start": a click anywhere that isn't one of the menu's own
+## buttons starts a run. Decided at the moment of the press. Buttons act on
+## release, so waiting to see whether a button claimed the click raced the
+## player's hold - a click held a moment too long on Library or Credits started a
+## run instead.
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed == true:
-		await get_tree().create_timer(0.2).timeout
-		if _pause_menu.visible or _load_game_dialog.visible:
-			return
+	if not (event is InputEventMouseButton and event.pressed):
+		return
 
-		if _hold_scene_transition:
-			_hold_scene_transition = false
-			return
+	if _pause_menu.visible or _load_game_dialog.visible:
+		return
 
-		_transition_scene()
+	if is_over_menu_button(event.position):
+		return
+
+	_transition_scene()
+
+
+## Whether a screen position lands on one of the menu's buttons.
+func is_over_menu_button(position: Vector2) -> bool:
+	for button in [
+		_load_game_button,
+		_settings_button,
+		_exit_button,
+		_credits_button,
+		_library_button,
+		_github_button,
+	]:
+		if button.is_visible_in_tree() and button.get_global_rect().has_point(position):
+			return true
+	return false
 
 
 func _setup_ui() -> void:
@@ -119,7 +137,6 @@ func _toggle_settings() -> void:
 		return
 
 	_pause_menu.show()
-	_hold_scene_transition = true
 
 
 func _load_game() -> void:
@@ -127,7 +144,6 @@ func _load_game() -> void:
 		return
 
 	_load_game_dialog.show()
-	_hold_scene_transition = true
 
 
 func _transition_scene() -> void:
@@ -142,7 +158,6 @@ func _close_game() -> void:
 
 
 func _open_github() -> void:
-	_hold_scene_transition = true
 	OS.shell_open("https://www.github.com/codeWonderland/pyramid-definitive-edition")
 
 
@@ -150,10 +165,8 @@ func _show_library() -> void:
 	if _pause_menu.visible or _load_game_dialog.visible:
 		return
 
-	_hold_scene_transition = true
 	get_tree().change_scene_to_packed(load("res://source/menus/library.tscn"))
 
 
 func _show_credits() -> void:
-	_hold_scene_transition = true
 	get_tree().change_scene_to_packed(load("res://source/menus/credits.tscn"))
