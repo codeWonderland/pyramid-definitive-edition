@@ -17,6 +17,7 @@ var _hold_scene_transition: bool = false
 @onready var _settings_button: TextureButton = %Settings
 @onready var _exit_button: TextureButton = %Exit
 @onready var _credits_button: TextureButton = %Credits
+@onready var _library_button: Button = %Library
 @onready var _github_button: TextureButton = %Github
 
 
@@ -27,6 +28,7 @@ func _ready() -> void:
 	_load_game_button.pressed.connect(_load_game)
 	_exit_button.pressed.connect(_close_game)
 	_credits_button.pressed.connect(_show_credits)
+	_library_button.pressed.connect(_show_library)
 	_github_button.pressed.connect(_open_github)
 
 	_set_background()
@@ -142,6 +144,14 @@ func _close_game() -> void:
 func _open_github() -> void:
 	_hold_scene_transition = true
 	OS.shell_open("https://www.github.com/codeWonderland/pyramid-definitive-edition")
+
+
+func _show_library() -> void:
+	if _pause_menu.visible or _load_game_dialog.visible:
+		return
+
+	_hold_scene_transition = true
+	get_tree().change_scene_to_packed(load("res://source/menus/library.tscn"))
 
 
 func _show_credits() -> void:
