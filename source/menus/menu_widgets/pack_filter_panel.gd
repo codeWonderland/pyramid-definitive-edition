@@ -78,6 +78,7 @@ func rebuild() -> void:
 	for tag in tags:
 		var box := CheckBox.new()
 		box.text = tag
+		box.tooltip_text = PacksManager.category_description(tag)
 		box.set_pressed_no_signal(_selected.has(tag.to_lower()))
 		box.toggled.connect(_on_tag_toggled.bind(tag))
 		_tag_list.add_child(box)
