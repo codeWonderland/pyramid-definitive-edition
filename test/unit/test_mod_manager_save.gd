@@ -144,3 +144,20 @@ func test_tags_are_saved_alongside_the_cards() -> void:
 	assert_eq(
 		PackDataLoader.load_tags(pack.folder_path), ["Roguelike"], "tags persist with the pack"
 	)
+
+
+func test_saving_keeps_metadata_the_editor_has_no_controls_for() -> void:
+	# The save path deletes and recreates the pack folder, so the record has to
+	# be written back from memory - otherwise one edit in either editor would
+	# wipe a pack's free flag, play time, rules and challenges.
+	var manager := await _manager()
+	var pack := _pack(1, 1, 0, 0)
+	pack.metadata = {"is_free": true, "estimated_time": "30m", "tags": ["Old"]}
+	pack.tags = ["Roguelike"] as Array[String]
+
+	manager._save_mod(pack)
+
+	var record := PackDataLoader.load_metadata(pack.folder_path)
+	assert_eq(record.get("is_free"), true, "the free flag survived the save")
+	assert_eq(record.get("estimated_time"), "30m", "so did the play time")
+	assert_eq(PackDataLoader.load_tags(pack.folder_path), ["Roguelike"], "and the edited tags won")
