@@ -22,6 +22,10 @@ var duplicate_culling: bool = true
 ## When on, the updater downloads and applies new mod data on boot instead of
 ## stopping to ask. See Updater._check_update_data().
 var auto_update_mods: bool = true
+## Draft screen visibility, remembered between visits since they are set once
+## rather than per run. See PlayerMarksManager.hidden_from_draft().
+var draft_show_never_draft: bool = false
+var draft_hide_unowned: bool = false
 
 # updater
 var latest_version: String = ""
@@ -71,6 +75,12 @@ func update_auto_update_mods(new_value: bool) -> void:
 	self.auto_update_mods_updated.emit()
 
 
+func update_draft_visibility(show_never_draft: bool, hide_unowned: bool) -> void:
+	draft_show_never_draft = show_never_draft
+	draft_hide_unowned = hide_unowned
+	_save_config()
+
+
 func update_latest_version(new_value: String) -> void:
 	latest_version = new_value
 	_save_config()
@@ -114,6 +124,9 @@ func _load_config() -> void:
 
 		auto_update_mods = config.get_value("settings", "auto_update_mods", true)
 
+		draft_show_never_draft = config.get_value("settings", "draft_show_never_draft", false)
+		draft_hide_unowned = config.get_value("settings", "draft_hide_unowned", false)
+
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
 
@@ -126,6 +139,8 @@ func _save_config() -> void:
 	config.set_value("settings", "background", background)
 	config.set_value("settings", "duplicate_culling", duplicate_culling)
 	config.set_value("settings", "auto_update_mods", auto_update_mods)
+	config.set_value("settings", "draft_show_never_draft", draft_show_never_draft)
+	config.set_value("settings", "draft_hide_unowned", draft_hide_unowned)
 
 	# Updater
 	config.set_value("updater", "latest_version", latest_version)

@@ -71,7 +71,45 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="TagList" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll" unique_id=1174330010]
+[node name="ScrollBody" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll" unique_id=1174330014]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ShowHeading" type="Label" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330015]
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "Draft visibility"
+
+[node name="ShowNeverDraft" type="CheckBox" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330016]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallCheckBox"
+tooltip_text = "Games you marked Never draft in the Library are hidden unless this is on"
+text = "Show never-draft games"
+
+[node name="HideUnowned" type="CheckBox" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330017]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallCheckBox"
+tooltip_text = "Hides games you marked Don't own, unless also marked Want to include anyway"
+text = "Hide games I don't own"
+
+[node name="MarksHeading" type="Label" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330018]
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "Your marks"
+
+[node name="MarkList" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330019]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CategoriesHeading" type="Label" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330020]
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "Categories"
+
+[node name="TagList" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330010]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

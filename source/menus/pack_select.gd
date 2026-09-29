@@ -72,6 +72,10 @@ func _toggle_filter_panel() -> void:
 
 
 func _on_tag_filters_changed(tags: Array[String], match_all: bool) -> void:
+	_pack_select_packs.set_mark_filters(_filter_panel.selected_marks())
+	_pack_select_packs.set_draft_visibility(
+		_filter_panel.show_never_draft(), _filter_panel.hide_unowned()
+	)
 	_pack_select_packs.set_tag_filters(tags, match_all)
 
 

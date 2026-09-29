@@ -25,7 +25,25 @@ const MARKS: Array[Dictionary] = [
 ]
 
 ## Marks that contradict each other: setting one clears the other.
-const EXCLUSIVE: Dictionary = {"owned": "dont_own", "dont_own": "owned"}
+const EXCLUSIVE: Dictionary = {
+	"owned": "dont_own",
+	"dont_own": "owned",
+	"never_draft": "include_anyway",
+	"include_anyway": "never_draft",
+}
+
+## Marks offered as filters on the draft screen. Never draft and want to include
+## anyway decide whether a game is shown at all rather than narrowing the list,
+## and favourites already have their own filter there.
+const FILTERABLE_MARKS: Array[String] = [
+	"owned",
+	"dont_own",
+	"avoid_on_stream",
+	"too_long",
+	"multiplayer_only",
+	"controller_friendly",
+	"free_game",
+]
 
 # folder path -> { mark id: true }
 var _marks: Dictionary = {}
@@ -79,6 +97,29 @@ func set_mark(folder_path: String, mark: String, on: bool) -> void:
 
 	_save()
 	self.marks_changed.emit(folder_path)
+
+
+## Whether the draft screen should leave a game out. Never draft hides a game
+## unless the player has asked to see those; with "hide games I don't own" on,
+## a game marked don't own is hidden too - unless it is also marked want to
+## include anyway, which is what that mark is for.
+func hidden_from_draft(
+	folder_path: String, show_never_draft: bool = false, hide_unowned: bool = false
+) -> bool:
+	if has_mark(folder_path, "never_draft") and not show_never_draft:
+		return true
+
+	if hide_unowned and has_mark(folder_path, "dont_own"):
+		return not has_mark(folder_path, "include_anyway")
+
+	return false
+
+
+func label_for(mark: String) -> String:
+	for known in MARKS:
+		if known["id"] == mark:
+			return known["label"]
+	return mark
 
 
 ## Every mark set on a pack, in display order.
