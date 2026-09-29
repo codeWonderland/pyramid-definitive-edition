@@ -19,6 +19,9 @@ var _sort_ascending: bool = true
 var _favorites_only: bool = false
 var _search_query: String = ""
 var _tag_filters: Array[String] = []
+var _mark_filters: Array[String] = []
+var _show_never_draft: bool = UserSettingsManager.draft_show_never_draft
+var _hide_unowned: bool = UserSettingsManager.draft_hide_unowned
 # With more than one tag ticked: true requires a pack to carry all of them,
 # false requires only one of them.
 var _match_all_tags: bool = false
@@ -29,6 +32,8 @@ func _ready() -> void:
 	get_tree().get_root().size_changed.connect(_populate)
 	# Re-sort/redraw when favorites change so favorited packs move to the top.
 	FavoritesManager.favorites_changed.connect(_populate)
+	# Marks set in the library can hide or reveal games here.
+	PlayerMarksManager.marks_changed.connect(func(_folder_path: String) -> void: _populate())
 
 
 func set_sort_ascending(ascending: bool) -> void:
@@ -45,6 +50,23 @@ func set_favorites_only(favorites_only: bool) -> void:
 
 func set_search_query(query: String) -> void:
 	_search_query = query
+	_current_page = 0
+	_populate()
+
+
+## Player-mark filters from the filter panel; combined with the tag filters under
+## the same any/all mode.
+func set_mark_filters(marks: Array[String]) -> void:
+	_mark_filters = marks.duplicate()
+	_current_page = 0
+	_populate()
+
+
+## Whether games marked never draft are shown, and whether games marked don't
+## own are hidden.
+func set_draft_visibility(show_never_draft: bool, hide_unowned: bool) -> void:
+	_show_never_draft = show_never_draft
+	_hide_unowned = hide_unowned
 	_current_page = 0
 	_populate()
 
@@ -131,7 +153,9 @@ func _ordered_packs() -> Array[PackData]:
 			continue
 		if not FuzzyMatch.matches(_search_query, pack.title):
 			continue
-		if not _matches_tag_filters(pack):
+		if PlayerMarksManager.hidden_from_draft(pack.folder_path, _show_never_draft, _hide_unowned):
+			continue
+		if not _matches_filters(pack):
 			continue
 		if favorite:
 			favorites.append(pack)
@@ -144,25 +168,28 @@ func _ordered_packs() -> Array[PackData]:
 	return ordered
 
 
-## No ticked tags means the tag filter is off, so every pack passes.
-func _matches_tag_filters(pack: PackData) -> bool:
-	if _tag_filters.is_empty():
+## No ticked tags or marks means filtering is off, so every pack passes.
+## Otherwise each ticked tag or mark is one condition, and the any/all mode
+## decides whether a pack needs one of them or every one.
+func _matches_filters(pack: PackData) -> bool:
+	if _tag_filters.is_empty() and _mark_filters.is_empty():
 		return true
 
-	# Compare case-insensitively: the ticked tag and the pack's spelling of it
-	# can differ between packs.
+	# Compare tags case-insensitively: the ticked tag and the pack's spelling of
+	# it can differ between packs.
 	var pack_tags := {}
 	for tag in pack.tags:
 		pack_tags[tag.to_lower()] = true
 
+	var results: Array[bool] = []
 	for wanted in _tag_filters:
-		var has := pack_tags.has(wanted.to_lower())
-		if _match_all_tags and not has:
-			return false
-		if not _match_all_tags and has:
-			return true
+		results.append(pack_tags.has(wanted.to_lower()))
+	for mark in _mark_filters:
+		results.append(PlayerMarksManager.has_mark(pack.folder_path, mark))
 
-	return _match_all_tags
+	if _match_all_tags:
+		return not results.has(false)
+	return results.has(true)
 
 
 func _get_card_size() -> Vector2:

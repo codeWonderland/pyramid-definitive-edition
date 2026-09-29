@@ -1,8 +1,9 @@
 class_name PackFilterPanel extends Control
 
-## Tag filter drawer for the draft screen. Slides in from the right edge with a
-## checkbox per tag declared by the loaded packs, an any/all mode toggle, and a
-## search box for when the tag list grows long.
+## Filter drawer for the draft screen. Slides in from the right edge with the
+## player's visibility options, a checkbox per player mark and per tag declared by
+## the loaded packs, an any/all mode toggle, and a search box for when the list
+## grows long.
 
 signal filters_changed(tags: Array[String], match_all: bool)
 
@@ -16,6 +17,7 @@ var _tag_search: String = ""
 # spell the same tag differently.
 var _selected: Dictionary = {}
 var _checkboxes: Array[CheckBox] = []
+var _mark_boxes: Array[CheckBox] = []
 var _slide_tween: Tween = null
 
 @onready var _backing: PanelContainer = %Backing
@@ -23,6 +25,9 @@ var _slide_tween: Tween = null
 @onready var _mode_button: Button = %ModeButton
 @onready var _search: LineEdit = %TagSearch
 @onready var _tag_list: VBoxContainer = %TagList
+@onready var _mark_list: VBoxContainer = %MarkList
+@onready var _show_never_draft: CheckBox = %ShowNeverDraft
+@onready var _hide_unowned: CheckBox = %HideUnowned
 @onready var _clear_button: Button = %ClearButton
 @onready var _empty_label: Label = %EmptyLabel
 
@@ -35,6 +40,13 @@ func _ready() -> void:
 	_search.text_changed.connect(_on_tag_search_changed)
 	_clear_button.pressed.connect(clear_filters)
 	_close_button.pressed.connect(close)
+
+	_show_never_draft.set_pressed_no_signal(UserSettingsManager.draft_show_never_draft)
+	_hide_unowned.set_pressed_no_signal(UserSettingsManager.draft_hide_unowned)
+	_show_never_draft.toggled.connect(_on_visibility_toggled)
+	_hide_unowned.toggled.connect(_on_visibility_toggled)
+
+	_build_mark_boxes()
 
 	_update_mode_label()
 	rebuild()
@@ -79,10 +91,44 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 
+## Unticks every tag and mark. The visibility options are left alone: they are
+## standing preferences, not part of narrowing down this draft.
 func clear_filters() -> void:
 	_selected.clear()
-	for box in _checkboxes:
+	for box in _checkboxes + _mark_boxes:
 		box.set_pressed_no_signal(false)
+	_emit_change()
+
+
+func selected_marks() -> Array[String]:
+	var marks: Array[String] = []
+	for box in _mark_boxes:
+		if box.button_pressed:
+			marks.append(box.get_meta("mark"))
+	return marks
+
+
+func show_never_draft() -> bool:
+	return _show_never_draft.button_pressed
+
+
+func hide_unowned() -> bool:
+	return _hide_unowned.button_pressed
+
+
+func _build_mark_boxes() -> void:
+	for mark in PlayerMarksManager.FILTERABLE_MARKS:
+		var box := CheckBox.new()
+		box.text = PlayerMarksManager.label_for(mark)
+		box.theme_type_variation = &"SmallCheckBox"
+		box.set_meta("mark", mark)
+		box.toggled.connect(func(_on: bool) -> void: _emit_change())
+		_mark_list.add_child(box)
+		_mark_boxes.append(box)
+
+
+func _on_visibility_toggled(_on: bool) -> void:
+	UserSettingsManager.update_draft_visibility(show_never_draft(), hide_unowned())
 	_emit_change()
 
 
@@ -99,6 +145,7 @@ func rebuild() -> void:
 	for tag in tags:
 		var box := CheckBox.new()
 		box.text = tag
+		box.theme_type_variation = &"SmallCheckBox"
 		box.tooltip_text = PacksManager.category_description(tag)
 		box.set_pressed_no_signal(_selected.has(tag.to_lower()))
 		box.toggled.connect(_on_tag_toggled.bind(tag))
@@ -189,7 +236,7 @@ func _on_tag_search_changed(query: String) -> void:
 ## Hides checkboxes that don't match the in-panel search. A ticked tag stays
 ## visible so the player can always see and undo what is filtering the grid.
 func _apply_tag_search() -> void:
-	for box in _checkboxes:
+	for box in _checkboxes + _mark_boxes:
 		box.visible = box.button_pressed or FuzzyMatch.matches(_tag_search, box.text)
 
 
