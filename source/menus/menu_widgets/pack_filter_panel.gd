@@ -18,6 +18,8 @@ var _selected: Dictionary = {}
 var _checkboxes: Array[CheckBox] = []
 var _slide_tween: Tween = null
 
+@onready var _backing: PanelContainer = %Backing
+@onready var _close_button: TextureButton = %Close
 @onready var _mode_button: Button = %ModeButton
 @onready var _search: LineEdit = %TagSearch
 @onready var _tag_list: VBoxContainer = %TagList
@@ -32,6 +34,7 @@ func _ready() -> void:
 	_mode_button.pressed.connect(_toggle_mode)
 	_search.text_changed.connect(_on_tag_search_changed)
 	_clear_button.pressed.connect(clear_filters)
+	_close_button.pressed.connect(close)
 
 	_update_mode_label()
 	rebuild()
@@ -51,11 +54,29 @@ func toggle() -> void:
 
 
 func open() -> void:
+	show()
 	_slide_to(-_panel_width())
 
 
 func close() -> void:
 	_slide_to(0.0)
+
+
+## While open, Escape or a click anywhere outside the drawer puts it away. The
+## outside click is consumed, so dismissing the drawer never also picks a pack.
+func _input(event: InputEvent) -> void:
+	if not is_open():
+		return
+
+	if event.is_action_pressed("Escape"):
+		close()
+		get_viewport().set_input_as_handled()
+		return
+
+	if event is InputEventMouseButton and event.pressed:
+		if not get_global_rect().has_point(event.position):
+			close()
+			get_viewport().set_input_as_handled()
 
 
 func clear_filters() -> void:
@@ -95,9 +116,15 @@ func selected_tags() -> Array[String]:
 	return tags
 
 
+## The reference width scaled to the window, but never narrower than the
+## drawer's contents need: a drawer squeezed below that grows past its own edge,
+## which pokes into the screen while it is meant to be closed.
 func _panel_width() -> float:
-	var viewport_width := get_viewport().size.x as float
-	return minf(REFERENCE_WIDTH * (viewport_width / 1920.0), viewport_width)
+	var viewport_width := get_viewport().get_visible_rect().size.x
+	var wanted := maxf(
+		REFERENCE_WIDTH * (viewport_width / 1920.0), _backing.get_combined_minimum_size().x
+	)
+	return minf(wanted, viewport_width)
 
 
 ## Re-anchors the drawer for the new viewport width, keeping it on whichever
@@ -118,6 +145,7 @@ func _snap_closed() -> void:
 	var width := _panel_width()
 	offset_left = 0.0
 	offset_right = width
+	hide()
 
 
 func _slide_to(target_left: float) -> void:
@@ -129,6 +157,10 @@ func _slide_to(target_left: float) -> void:
 	_slide_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	_slide_tween.parallel().tween_property(self, "offset_left", target_left, SLIDE_TIME)
 	_slide_tween.parallel().tween_property(self, "offset_right", target_left + width, SLIDE_TIME)
+	# Fully off-screen isn't enough - hide once closed so nothing can show or
+	# catch clicks at the edge.
+	if target_left == 0.0:
+		_slide_tween.chain().tween_callback(hide)
 
 
 func _toggle_mode() -> void:

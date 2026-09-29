@@ -148,3 +148,90 @@ func test_rebuild_keeps_existing_selection() -> void:
 	panel.rebuild()
 
 	assert_eq(panel.selected_tags(), ["Roguelike"], "a ticked tag survives a rebuild")
+
+
+# --- Closed means gone, and it can always be closed ---
+
+
+func _click_at(position: Vector2) -> InputEventMouseButton:
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	click.position = position
+	return click
+
+
+func _opened() -> PackFilterPanel:
+	var panel := await _make_panel()
+	panel.open()
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+	return panel
+
+
+func test_a_closed_drawer_is_hidden() -> void:
+	var panel := await _make_panel()
+	assert_false(panel.visible, "nothing of a closed drawer can show at the screen edge")
+
+
+func test_closing_hides_the_drawer_once_it_has_slid_away() -> void:
+	var panel := await _opened()
+	assert_true(panel.visible, "visible while open")
+
+	panel.close()
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+
+	assert_false(panel.visible, "hidden again once closed")
+
+
+func test_drawer_is_never_narrower_than_its_contents() -> void:
+	# Narrower than its contents, the drawer grew past its own edge and poked
+	# into the screen while closed.
+	# (It still never exceeds the window, so on a tiny screen it is the screen.)
+	var panel := await _make_panel()
+	var screen_width := panel.get_viewport().get_visible_rect().size.x
+
+	assert_gte(
+		panel._panel_width(),
+		minf(panel._backing.get_combined_minimum_size().x, screen_width),
+		"the drawer is sized to fit what is in it"
+	)
+
+
+func test_close_button_closes_the_drawer() -> void:
+	var panel := await _opened()
+
+	panel._close_button.pressed.emit()
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+
+	assert_false(panel.is_open(), "the X closes it")
+
+
+func test_escape_closes_the_drawer() -> void:
+	var panel := await _opened()
+
+	var escape := InputEventAction.new()
+	escape.action = "Escape"
+	escape.pressed = true
+	panel._input(escape)
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+
+	assert_false(panel.is_open(), "Escape closes it")
+
+
+func test_clicking_outside_closes_the_drawer() -> void:
+	var panel := await _opened()
+
+	# Left of the drawer's own rect, which is all that matters to the check.
+	panel._input(_click_at(panel.get_global_rect().position - Vector2(20, 0)))
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+
+	assert_false(panel.is_open(), "a click beside the drawer closes it")
+
+
+func test_clicking_inside_keeps_the_drawer_open() -> void:
+	var panel := await _opened()
+
+	panel._input(_click_at(panel.get_global_rect().get_center()))
+	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
+
+	assert_true(panel.is_open(), "clicks within the drawer are for its controls")

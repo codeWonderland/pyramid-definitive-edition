@@ -55,3 +55,38 @@ func test_filters_button_opens_the_drawer() -> void:
 	await get_tree().create_timer(PackFilterPanel.SLIDE_TIME + 0.1).timeout
 
 	assert_true(screen._filter_panel.is_open(), "the Filters button slides the drawer open")
+
+
+# --- Title bar layout ---
+
+
+func _title_bar() -> PackSelect:
+	var screen := PACK_SELECT.instantiate() as PackSelect
+	add_child_autofree(screen)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	return screen
+
+
+func test_search_bar_overlaps_neither_neighbour() -> void:
+	var screen := await _title_bar()
+	var search := screen._search_bar.get_global_rect()
+
+	assert_false(
+		search.intersects(screen._back_button.get_global_rect()), "clear of the back button"
+	)
+	assert_false(
+		search.intersects(screen._tag_filter_button.get_global_rect()), "clear of the filter button"
+	)
+	assert_false(search.intersects(screen._pause_button.get_global_rect()), "clear of settings")
+
+
+func test_filter_button_matches_the_settings_button() -> void:
+	var screen := await _title_bar()
+
+	assert_true(screen._tag_filter_button is TextureButton, "an icon button, like settings")
+	assert_eq(
+		screen._tag_filter_button.size,
+		screen._pause_button.size,
+		"the same size as the settings button beside it"
+	)

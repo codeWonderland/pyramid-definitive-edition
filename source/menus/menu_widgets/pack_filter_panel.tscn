@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cq1p8vn3xk4wa"]
+[gd_scene load_steps=3 format=3 uid="uid://cq1p8vn3xk4wa"]
 
 [ext_resource type="Script" uid="uid://b6jb0qcb72trd" path="res://source/menus/menu_widgets/pack_filter_panel.gd" id="1_pfp01"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_pfp02"]
 
 [node name="PackFilterPanel" type="Control" unique_id=1174330001]
 layout_mode = 1
@@ -11,10 +12,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
 offset_right = 420.0
-grow_horizontal = 0
 script = ExtResource("1_pfp01")
 
 [node name="Backing" type="PanelContainer" parent="." unique_id=1174330002]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,10 +32,21 @@ theme_override_constants/margin_bottom = 24
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Backing/Margin/VBoxContainer" unique_id=1174330005]
+[node name="Header" type="HBoxContainer" parent="Backing/Margin/VBoxContainer" unique_id=1174330012]
 layout_mode = 2
+
+[node name="Title" type="Label" parent="Backing/Margin/VBoxContainer/Header" unique_id=1174330005]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Filters"
 theme_type_variation = &"MediumTitle"
+
+[node name="Close" type="TextureButton" parent="Backing/Margin/VBoxContainer/Header" unique_id=1174330013]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Close filters"
+texture_normal = ExtResource("2_pfp02")
 
 [node name="ModeButton" type="Button" parent="Backing/Margin/VBoxContainer" unique_id=1174330006]
 unique_name_in_owner = true
