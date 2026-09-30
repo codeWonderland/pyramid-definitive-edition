@@ -37,6 +37,7 @@ func test_load_metadata_of_a_broken_file_is_empty() -> void:
 	_write_metadata("{not json")
 
 	assert_eq(PackDataLoader.load_metadata(_tag_root), {}, "broken JSON reads as an empty record")
+	_expect_loader_warnings()
 
 
 func test_save_tags_keeps_the_rest_of_the_record() -> void:
@@ -90,3 +91,13 @@ func test_loading_a_pack_carries_its_metadata() -> void:
 	assert_not_null(pack, "the pack loaded")
 	assert_eq(pack.tags, ["Puzzle"], "with its tags")
 	assert_eq(pack.metadata.get("estimated_time"), "15m", "and the rest of its record")
+
+
+## The loader warns about broken metadata by design. Mark those warnings as
+## expected, so a test runner that counts warnings as failures (GUT 9.5, which
+## the Godot 4.5 standalone app uses) doesn't flag a test for doing its job.
+## Only PackDataLoader warnings are touched; a real error still fails.
+func _expect_loader_warnings() -> void:
+	for error in get_errors():
+		if error.error_type == 1 and error.contains_text("PackDataLoader"):
+			error.handled = true
