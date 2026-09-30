@@ -9,6 +9,8 @@ signal card_drag_ended
 ## than up the CardGroup -> collection -> table chain, like the drag signals.
 signal card_inspect_requested(card_texture: Texture2D)
 
+const TABLE_CARD_SCALE: float = 1.15
+
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
 var popup_open: bool = false
@@ -120,11 +122,13 @@ func get_random_loadout() -> Array[PackData]:
 	return loadout
 
 
+## Card size on the table at the 1280x720 reference, by how many games the run
+## has. Scaled up 15% from the original sizes to use the table's spare room.
 func get_card_size() -> Vector2:
+	var base := Vector2(105, 150)
 	if num_games == 1:
-		return Vector2(210, 300)
+		base = Vector2(210, 300)
+	elif num_games == 3:
+		base = Vector2(157.5, 225)
 
-	if num_games == 3:
-		return Vector2(157.5, 225)
-
-	return Vector2(105, 150)
+	return base * TABLE_CARD_SCALE

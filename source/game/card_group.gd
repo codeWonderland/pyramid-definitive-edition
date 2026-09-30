@@ -190,6 +190,18 @@ func reveal_all() -> int:
 	return revealed
 
 
+## The top card of this group under a screen point, or null. Cards overlap once
+## they're dragged about, so the highest one wins, as it is the one on top.
+func card_at(point: Vector2) -> ChallengeCard:
+	var top: ChallengeCard = null
+	for card in _table_cards:
+		if not is_instance_valid(card) or not card.get_global_rect().has_point(point):
+			continue
+		if top == null or card.z_index > top.z_index:
+			top = card
+	return top
+
+
 ## Whether anything in this group is still face-down.
 func has_face_down_cards() -> bool:
 	for card in _table_cards:

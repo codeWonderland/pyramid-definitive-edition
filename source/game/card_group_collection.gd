@@ -38,6 +38,18 @@ func reveal_all() -> int:
 	return revealed
 
 
+## The top card on the whole table under a screen point, or null.
+func card_at(point: Vector2) -> ChallengeCard:
+	var top: ChallengeCard = null
+	for group in _card_groups:
+		if group.pack == null:
+			continue
+		var card := group.card_at(point)
+		if card != null and (top == null or card.z_index > top.z_index):
+			top = card
+	return top
+
+
 ## Whether any group still has a face-down card.
 func has_face_down_cards() -> bool:
 	for group in _card_groups:

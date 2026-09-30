@@ -7,8 +7,15 @@ class_name TrashZone extends Control
 
 const ZONE_SIZE: float = 110.0
 const MARGIN_BOTTOM: float = 130.0
+## Gap between the zone and the control it sits above.
+const GAP: float = 16.0
+
 const IDLE_COLOR: Color = Color(0.9, 0.35, 0.35, 0.65)
 const HOT_COLOR: Color = Color(1.0, 0.4, 0.4, 1.0)
+
+## When set, the zone sits centred just above this control rather than at the
+## bottom centre of the screen, where it hid under the reroll button.
+var anchor_control: Control = null
 
 var _hot: bool = false
 
@@ -38,8 +45,14 @@ func _process(_delta: float) -> void:
 
 
 func _reposition() -> void:
-	var viewport_size := get_viewport().get_visible_rect().size
-	position = Vector2(viewport_size.x * 0.5 - ZONE_SIZE * 0.5, viewport_size.y - MARGIN_BOTTOM)
+	if anchor_control != null and is_instance_valid(anchor_control):
+		var above := anchor_control.get_global_rect()
+		global_position = Vector2(
+			above.get_center().x - ZONE_SIZE * 0.5, above.position.y - ZONE_SIZE - GAP
+		)
+	else:
+		var viewport_size := get_viewport().get_visible_rect().size
+		position = Vector2(viewport_size.x * 0.5 - ZONE_SIZE * 0.5, viewport_size.y - MARGIN_BOTTOM)
 	RunManager.set_trash_zone_rect(Rect2(global_position, size))
 
 
