@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://b736hrcerdck0"]
 
-[ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_op7tn"]
+[ext_resource type="FontVariation" uid="uid://b7oxnm1wght7" path="res://assets/fonts/oxanium.tres" id="1_op7tn"]
 [ext_resource type="Script" uid="uid://5ankxw8fjf2d" path="res://source/menus/menu_widgets/volume_changer.gd" id="1_s3o5y"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u1anv"]

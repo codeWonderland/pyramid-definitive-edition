@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://dkcfibuwqlsb5"]
 
-[ext_resource type="FontFile" uid="uid://cm0f7sh1s1552" path="res://assets/fonts/Knewave-Regular.ttf" id="1_3f3va"]
+[ext_resource type="FontVariation" uid="uid://b7oxnm1wght7" path="res://assets/fonts/oxanium.tres" id="1_3f3va"]
 [ext_resource type="Texture2D" uid="uid://bakts8eoog0cj" path="res://assets/sprites/ui/icons/confirm.png" id="1_gvtt4"]
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
@@ -115,7 +115,7 @@ bg_color = Color(0.30980393, 0.7294118, 0.8745098, 1)
 [resource]
 BigTitle/base_type = &"Label"
 BigTitle/colors/font_shadow_color = Color(0, 0, 0, 1)
-BigTitle/constants/line_spacing = -16
+BigTitle/constants/line_spacing = 0
 BigTitle/constants/outline_size = 16
 BigTitle/constants/shadow_offset_x = 8
 BigTitle/constants/shadow_offset_y = 8
@@ -138,7 +138,7 @@ CheckBox/styles/normal = ExtResource("2_axncs")
 CheckBox/styles/pressed = SubResource("StyleBoxFlat_checkbox_pressed")
 ExtraLargeTitle/base_type = &"Label"
 ExtraLargeTitle/colors/font_shadow_color = Color(0, 0, 0, 1)
-ExtraLargeTitle/constants/line_spacing = -24
+ExtraLargeTitle/constants/line_spacing = 0
 ExtraLargeTitle/constants/outline_size = 16
 ExtraLargeTitle/constants/shadow_offset_x = 8
 ExtraLargeTitle/constants/shadow_offset_y = 8
@@ -154,7 +154,7 @@ MarginContainer/constants/margin_right = 16
 MarginContainer/constants/margin_top = 16
 MediumTitle/base_type = &"Label"
 MediumTitle/colors/font_shadow_color = Color(0, 0, 0, 1)
-MediumTitle/constants/line_spacing = -16
+MediumTitle/constants/line_spacing = 0
 MediumTitle/constants/outline_size = 16
 MediumTitle/constants/shadow_offset_x = 6
 MediumTitle/constants/shadow_offset_y = 6
@@ -182,5 +182,5 @@ SelectableButton/styles/pressed = ExtResource("7_0f6i3")
 SmallCheckBox/base_type = &"CheckBox"
 SmallCheckBox/font_sizes/font_size = 22
 SmallLabel/base_type = &"Label"
-SmallLabel/constants/line_spacing = -8
+SmallLabel/constants/line_spacing = 0
 SmallLabel/font_sizes/font_size = 24
