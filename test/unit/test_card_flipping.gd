@@ -342,19 +342,6 @@ func test_flip_button_hides_once_nothing_is_left_to_flip() -> void:
 	assert_false(game._flip_cards_button.visible, "and goes away once the table is face-up")
 
 
-func test_hotkey_reveals_the_table() -> void:
-	var game := await _make_table()
-
-	var event := InputEventAction.new()
-	event.action = "FlipCards"
-	event.pressed = true
-	game._unhandled_input(event)
-	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
-
-	for card in _all_table_cards(game):
-		assert_false(card.face_down, "the FlipCards action reveals the table too")
-
-
 func test_flip_is_ignored_while_a_popup_is_open() -> void:
 	var game := await _make_table()
 	RunManager.popup_open = true

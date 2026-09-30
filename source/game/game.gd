@@ -109,7 +109,9 @@ func _setup_card_table() -> void:
 		popup.z_as_relative = false
 		popup.z_index = 4096
 
-	add_child(TrashZone.new())
+	var trash := TrashZone.new()
+	trash.anchor_control = _bottom_right
+	add_child(trash)
 
 	# The groups deal their cards as they are built, so ask once that has settled.
 	_update_flip_button.call_deferred()
@@ -160,14 +162,30 @@ func _close_game() -> void:
 	RunManager.popup_open = true
 
 
-## The table's cards are dealt face-down, so this is the reveal. Also bound to
-## the FlipCards action, since reaching for a button breaks the moment.
+## The table's cards are dealt face-down; the Flip All button turns the whole
+## table over at once. F flips a single card instead - see flip_card_at().
 func _flip_all_cards() -> void:
 	if RunManager.popup_open:
 		return
 
 	_card_group_collection.reveal_all()
 	_update_flip_button()
+
+
+## F turns over just the card under the cursor, so a hand can be revealed one
+## card at a time; the Flip All button is there for turning the lot. Returns
+## whether a card was flipped.
+func flip_card_at(point: Vector2) -> bool:
+	if RunManager.popup_open:
+		return false
+
+	var card := _card_group_collection.card_at(point)
+	if card == null or not card.face_down:
+		return false
+
+	card.reveal()
+	_update_flip_button()
+	return true
 
 
 ## The control only earns its place while something is still hidden.
@@ -179,7 +197,7 @@ func _update_flip_button() -> void:
 # consumes its keys first, so typing an "f" there must not flip the table.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("FlipCards"):
-		_flip_all_cards()
+		flip_card_at(get_global_mouse_position())
 
 	if event.is_action_pressed("CaptureBanner"):
 		_capture_banner()
