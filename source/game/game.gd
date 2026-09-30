@@ -172,20 +172,25 @@ func _flip_all_cards() -> void:
 	_update_flip_button()
 
 
-## F turns over just the card under the cursor, so a hand can be revealed one
-## card at a time; the Flip All button is there for turning the lot. Returns
-## whether a card was flipped.
+## F turns over just the card under the cursor - face-down to face-up, or back
+## again - so a hand can be revealed, or hidden, one card at a time; the Flip All
+## button is there for revealing the lot. Returns whether a card turned.
 func flip_card_at(point: Vector2) -> bool:
 	if RunManager.popup_open:
 		return false
 
 	var card := _card_group_collection.card_at(point)
-	if card == null or not card.face_down:
+	if card == null:
 		return false
 
-	card.reveal()
+	var turned := true
+	if card.face_down:
+		card.reveal()
+	else:
+		turned = card.conceal()
+
 	_update_flip_button()
-	return true
+	return turned
 
 
 ## The control only earns its place while something is still hidden.
