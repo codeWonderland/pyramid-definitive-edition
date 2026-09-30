@@ -59,18 +59,21 @@ func test_malformed_json_warns_and_yields_no_tags() -> void:
 	_write_metadata("{not json at all")
 
 	assert_eq(PackDataLoader.load_tags(_tag_root), [], "broken JSON degrades to no tags")
+	_expect_loader_warnings()
 
 
 func test_non_object_json_yields_no_tags() -> void:
 	_write_metadata('["Roguelike"]')
 
 	assert_eq(PackDataLoader.load_tags(_tag_root), [], "a bare JSON array is not valid metadata")
+	_expect_loader_warnings()
 
 
 func test_non_list_tags_yields_no_tags() -> void:
 	_write_metadata('{"tags": "Roguelike"}')
 
 	assert_eq(PackDataLoader.load_tags(_tag_root), [], "a string tags field degrades to no tags")
+	_expect_loader_warnings()
 
 
 func test_missing_tags_key_is_not_an_error() -> void:
@@ -147,3 +150,13 @@ func test_save_overwrites_previous_tags() -> void:
 	assert_eq(
 		PackDataLoader.load_tags(_tag_root), ["Metroidvania"], "a later save replaces the old tags"
 	)
+
+
+## The loader warns about broken metadata by design. Mark those warnings as
+## expected, so a test runner that counts warnings as failures (GUT 9.5, which
+## the Godot 4.5 standalone app uses) doesn't flag a test for doing its job.
+## Only PackDataLoader warnings are touched; a real error still fails.
+func _expect_loader_warnings() -> void:
+	for error in get_errors():
+		if error.error_type == 1 and error.contains_text("PackDataLoader"):
+			error.handled = true
