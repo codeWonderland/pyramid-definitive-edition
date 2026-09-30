@@ -4,6 +4,9 @@ signal backgrounds_loaded
 
 const BACKGROUNDS_PATH: String = "user://mods/pyramid-mods-main/BACKGROUNDS/"
 const DEFAULT_BACKGROUND = preload("res://assets/sprites/ui/background.png")
+## The light-blue line art that was the default before the Steam capsule look.
+## Built in rather than shipped as a mod background, so it is always available.
+const CLASSIC_BACKGROUND = preload("res://assets/sprites/ui/background_classic.png")
 
 var backgrounds: Dictionary = {}
 
@@ -13,7 +16,7 @@ func _ready() -> void:
 
 
 func load() -> void:
-	backgrounds = {"Default": DEFAULT_BACKGROUND}
+	backgrounds = {"Default": DEFAULT_BACKGROUND, "Classic": CLASSIC_BACKGROUND}
 	var backgrounds_folder = DirAccess.open(BACKGROUNDS_PATH)
 
 	if backgrounds_folder:
