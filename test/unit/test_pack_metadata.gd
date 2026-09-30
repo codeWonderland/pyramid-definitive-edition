@@ -93,6 +93,27 @@ func test_loading_a_pack_carries_its_metadata() -> void:
 	assert_eq(pack.metadata.get("estimated_time"), "15m", "and the rest of its record")
 
 
+func test_saving_an_unchanged_record_leaves_the_file_alone() -> void:
+	var original := '{\n  "tags": [ "Roguelike" ],\n  "is_free": true\n}\n'
+	_write_metadata(original)
+
+	PackDataLoader.save_tags(_tag_root, ["Roguelike"] as Array[String])
+
+	var path := _tag_root.path_join(PackDataLoader.METADATA_FILE)
+	assert_eq(FileAccess.get_file_as_string(path), original, "not rewritten, formatting and all")
+
+
+func test_whole_numbers_are_written_as_whole_numbers() -> void:
+	_write_metadata('{"objectives": {"primary_count": 22, "ratio": 1.5}, "tags": ["A"]}')
+
+	PackDataLoader.save_tags(_tag_root, ["A", "B"] as Array[String])
+
+	var written := FileAccess.get_file_as_string(_tag_root.path_join(PackDataLoader.METADATA_FILE))
+	assert_string_contains(written, '"primary_count": 22', "22, not 22.0")
+	assert_string_contains(written, '"ratio": 1.5', "real fractions are kept")
+	assert_true(written.ends_with("\n"), "ends with a newline")
+
+
 ## The loader warns about broken metadata by design. Mark those warnings as
 ## expected, so a test runner that counts warnings as failures (GUT 9.5, which
 ## the Godot 4.5 standalone app uses) doesn't flag a test for doing its job.
