@@ -77,14 +77,42 @@ func test_f_away_from_every_card_flips_nothing() -> void:
 		assert_true(card.face_down, "the table stays hidden")
 
 
-func test_f_on_a_face_up_card_does_nothing() -> void:
+func test_f_on_a_face_up_card_turns_it_back_down() -> void:
 	var game := await _make_table()
 	var target: ChallengeCard = _all_table_cards(game)[0]
-	game.flip_card_at(target.get_global_rect().get_center())
+	var point := target.get_global_rect().get_center()
+	game.flip_card_at(point)
+	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
+	assert_false(target.face_down, "first press reveals it")
+
+	assert_true(game.flip_card_at(point), "a second press turns it")
 	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
 
-	assert_false(game.flip_card_at(target.get_global_rect().get_center()), "already face-up")
-	assert_false(target.face_down, "and it stays face-up")
+	assert_true(target.face_down, "back face-down")
+	assert_eq(target.texture, target.back_texture, "showing its back again")
+
+
+func test_turning_a_card_down_brings_flip_all_back() -> void:
+	var game := await _make_table()
+	game._flip_all_cards()
+	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
+	assert_false(game._flip_cards_button.visible, "nothing hidden, no button")
+
+	var target: ChallengeCard = _all_table_cards(game)[0]
+	game.flip_card_at(target.get_global_rect().get_center())
+
+	assert_true(game._flip_cards_button.visible, "a hidden card means Flip All is useful again")
+
+
+func test_a_card_with_no_back_image_stays_face_up() -> void:
+	var game := await _make_table()
+	var target: ChallengeCard = _all_table_cards(game)[0]
+	target.reveal()
+	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
+	target.back_texture = null
+
+	assert_false(target.conceal(), "nothing to show in place of its face")
+	assert_false(target.face_down, "so it stays face-up")
 
 
 func test_the_f_key_goes_through_the_cursor_path() -> void:

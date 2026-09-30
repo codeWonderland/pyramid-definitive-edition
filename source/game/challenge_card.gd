@@ -232,6 +232,24 @@ func play_flip(front: Texture2D) -> void:
 	flip.tween_callback(func(): _flipping = false)
 
 
+## Turn a face-up card back over with the same flip, in reverse. Returns whether
+## it turned: a card whose pack has no back image stays face-up, since there is
+## nothing to show in place of its face.
+func conceal() -> bool:
+	if face_down or back_texture == null:
+		return false
+
+	face_down = true
+	_flipping = true
+
+	var flip := create_tween()
+	flip.tween_property(self, "scale:x", 0.0, FLIP_TIME * 0.5)
+	flip.tween_callback(func(): texture = back_texture)
+	flip.tween_property(self, "scale:x", 1.0, FLIP_TIME * 0.5)
+	flip.tween_callback(func(): _flipping = false)
+	return true
+
+
 ## Start dragging this card programmatically (used when a card is drawn out of a
 ## pile by dragging — it should immediately follow the cursor).
 func begin_drag_from_pile() -> void:

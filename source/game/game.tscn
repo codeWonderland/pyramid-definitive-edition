@@ -135,7 +135,7 @@ text = "Roll D6"
 [node name="FlipCards" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174350001]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Or press F over a card to flip just that one"
+tooltip_text = "Or press F over a card to flip just that one, either way"
 text = "Flip All"
 
 [node name="CaptureBanner" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174380001]
