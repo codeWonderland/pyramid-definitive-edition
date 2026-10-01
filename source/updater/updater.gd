@@ -135,11 +135,9 @@ func _check_update_data(
 	_skip_button.show()
 
 
-## Whether a found update should just be applied. Boot should not sit waiting on
-## a decision the player almost always makes the same way, and extracting to a
-## temp dir before swapping already means a bad download can't damage existing
-## mods - so downloading unasked is safe. Players who want the say can turn the
-## setting off and get the old prompt back.
+## Whether a found update should just be applied rather than offered. Off by
+## default - game updates bring new mods without a download - so players are
+## asked first unless they've turned automatic updates on.
 func _should_download_without_asking() -> bool:
 	return UserSettingsManager.auto_update_mods
 

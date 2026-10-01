@@ -32,6 +32,19 @@ func toggle(folder_path: String) -> void:
 	self.favorites_changed.emit()
 
 
+## Moves favorites to where their packs are now (see PacksManager.current_path).
+func migrate(current_path: Callable) -> void:
+	var moved := {}
+	for path in _favorites:
+		moved[current_path.call(path)] = true
+	if moved.keys() == _favorites.keys():
+		return
+
+	_favorites = moved
+	_save()
+	self.favorites_changed.emit()
+
+
 func favorite_paths() -> Array:
 	return _favorites.keys()
 

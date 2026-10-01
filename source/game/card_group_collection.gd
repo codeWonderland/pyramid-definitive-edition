@@ -75,7 +75,9 @@ func load_packs_from_save(save_data: SaveData) -> void:
 	packs = []
 
 	for pack_path in save_data.rolled_loadout_paths:
-		var pack_data: PackData = PackDataLoader.load_pack_from_path(pack_path)
+		var pack_data: PackData = PackDataLoader.load_pack_from_path(
+			PacksManager.current_path(pack_path)
+		)
 		packs.append(pack_data)
 
 	var group_count := mini(RunManager.num_games, save_data.card_groups.size())

@@ -1,8 +1,7 @@
 extends GutTest
 
-# Tests the automatic mod update setting (#42): boot no longer stops to ask
-# before downloading new mod data, and the prompt is still available to players
-# who turn the setting off.
+# Tests the automatic mod update setting (#42): off by default, so boot asks
+# before downloading new mod data, and players can turn it on to skip the prompt.
 
 const PAUSE_MENU: PackedScene = preload("res://source/menus/pause_menu.tscn")
 
@@ -20,13 +19,10 @@ func after_each() -> void:
 # --- The setting ---
 
 
-func test_defaults_to_on() -> void:
-	var config := ConfigFile.new()
-	config.load(UserSettingsManager.SAVE_PATH)
-	assert_true(
-		config.get_value("settings", "auto_update_mods", true),
-		"a settings file without the key reads as automatic updates enabled"
-	)
+func test_defaults_to_off() -> void:
+	var fresh: Node = load("res://source/autoloads/user_settings_manager.gd").new()
+	assert_false(fresh.auto_update_mods, "a player who never chose gets asked")
+	fresh.free()
 
 
 func test_update_emits_signal() -> void:
@@ -39,11 +35,16 @@ func test_update_persists_both_ways() -> void:
 	UserSettingsManager.update_auto_update_mods(false)
 	var config := ConfigFile.new()
 	assert_eq(config.load(UserSettingsManager.SAVE_PATH), OK, "settings written")
-	assert_false(config.get_value("settings", "auto_update_mods", true), "off persisted")
+	var key := UserSettingsManager.AUTO_UPDATE_KEY
+	assert_false(config.get_value("settings", key, true), "off persisted")
 
 	UserSettingsManager.update_auto_update_mods(true)
 	assert_eq(config.load(UserSettingsManager.SAVE_PATH), OK, "settings written again")
-	assert_true(config.get_value("settings", "auto_update_mods", false), "on persisted")
+	assert_true(config.get_value("settings", key, false), "on persisted")
+	assert_false(
+		config.has_section_key("settings", "auto_update_mods"),
+		"the old key, saved as on for everyone, is gone"
+	)
 
 
 # --- The settings popup ---
