@@ -184,3 +184,4 @@ SmallCheckBox/font_sizes/font_size = 22
 SmallLabel/base_type = &"Label"
 SmallLabel/constants/line_spacing = 0
 SmallLabel/font_sizes/font_size = 24
+TextEdit/font_sizes/font_size = 28
