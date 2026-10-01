@@ -23,7 +23,11 @@ var _selected: PackData = null
 @onready var _details: VBoxContainer = %Details
 @onready var _pack_name: Label = %PackName
 @onready var _tags: Label = %Tags
+@onready var _description: Label = %Description
 @onready var _facts: Label = %Facts
+@onready var _links: HBoxContainer = %Links
+@onready var _store_link: Button = %StoreLink
+@onready var _presskit_link: Button = %PresskitLink
 @onready var _rules: Label = %Rules
 @onready var _challenges: Label = %Challenges
 @onready var _marks: HFlowContainer = %Marks
@@ -37,6 +41,8 @@ func _ready() -> void:
 	_favorites_button.pressed.connect(_toggle_favorites_only)
 	FavoritesManager.favorites_changed.connect(_on_favorites_changed)
 	PlayerMarksManager.marks_changed.connect(_on_marks_changed)
+	_store_link.pressed.connect(_open_link.bind("store_url"))
+	_presskit_link.pressed.connect(_open_link.bind("presskit_url"))
 
 	get_tree().get_root().size_changed.connect(_resize)
 
@@ -147,12 +153,28 @@ func _show_details(pack: PackData) -> void:
 	var record := pack.metadata
 	_pack_name.text = _display_name(pack)
 	_tags.text = ", ".join(pack.tags) if not pack.tags.is_empty() else "No categories recorded"
+	var description = record.get("description")
+	_description.text = description.strip_edges() if description is String else ""
+	_description.visible = not _description.text.is_empty()
 	_facts.text = describe_facts(pack)
+	_store_link.visible = not PackRecord.web_link(record, "store_url").is_empty()
+	_presskit_link.visible = not PackRecord.web_link(record, "presskit_url").is_empty()
+	_links.visible = _store_link.visible or _presskit_link.visible
 	_rules.text = describe_rules(record)
 	_challenges.text = describe_challenges(record)
 	_challenges.visible = not _challenges.text.is_empty()
 	_build_marks(pack)
 	_build_cards(pack)
+
+
+## Opens one of the selected pack's links in the browser. Only web addresses are
+## ever shown as buttons (PackRecord.web_link), so only those get here.
+func _open_link(key: String) -> void:
+	if _selected == null:
+		return
+	var url := PackRecord.web_link(_selected.metadata, key)
+	if not url.is_empty():
+		OS.shell_open(url)
 
 
 ## The spreadsheet's name for the game when the pack has one; the folder otherwise.
