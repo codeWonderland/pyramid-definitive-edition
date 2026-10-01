@@ -38,7 +38,7 @@ jobs:
       # Scope to our own code only — addons/ holds the vendored GUT testing
       # framework, which follows its own formatting/lint conventions.
       - name: Check formatting
-        run: gdformat --check --diff source test
+        run: gdformat --check --diff source test tools
 
       - name: Run gdlint
-        run: gdlint source test
+        run: gdlint source test tools

@@ -3,6 +3,12 @@ class_name Updater extends Control
 const DATA_PATH: String = "https://api.github.com/repos/codeWonderland/pyramid-mods/branches/main"
 # gdlint:ignore = max-line-length
 const DOWNLOAD_PATH: String = "https://github.com/codeWonderland/pyramid-mods/archive/refs/heads/main.zip"
+# gdlint:ignore = max-line-length
+const TREE_PATH: String = "https://api.github.com/repos/codeWonderland/pyramid-mods/git/trees/%s?recursive=1"
+const RAW_FILE_PATH: String = "https://raw.githubusercontent.com/codeWonderland/pyramid-mods/%s/%s"
+## Past this many changed files, one archive download beats fetching them singly.
+const MAX_FILE_DOWNLOADS: int = 300
+const PARALLEL_DOWNLOADS: int = 6
 const NETWORK_CHECK_TIME: float = 15.0
 const INITIAL_MODS_PATH: String = "res://initial_mods/pyramid-mods/"
 const MODS_ROOT: String = "user://mods/"
@@ -13,6 +19,14 @@ const UPDATE_TEMP_PATH: String = "user://mods_update_tmp/"
 var _has_internet: bool = false
 var _internet_check_resolved: bool = false
 var _latest_version: String = ""
+var _latest_time: int = 0
+## The version being downloaded, and what's left of it to fetch.
+var _target: Dictionary = {}
+var _plan: Dictionary = {}
+var _download_queue: Array[String] = []
+var _downloads_in_flight: int = 0
+var _download_failed: bool = false
+var _downloads_finished: bool = false
 var _packs_loaded: bool = false
 var _word_bank_loaded: bool = false
 var _additional_rules_loaded: bool = false
@@ -66,7 +80,7 @@ func _resolve_internet_check() -> void:
 		return
 	_internet_check_resolved = true
 
-	_ensure_initial_mods_present()
+	_apply_bundled_mods()
 
 	if not _has_internet:
 		_label.text = "Loading..."
@@ -99,6 +113,7 @@ func _check_update_data(
 
 	var sha: String = parsed_json["commit"]["sha"]
 	_latest_version = sha
+	_latest_time = _commit_time(parsed_json)
 
 	if UserSettingsManager.latest_version == sha:
 		_label.text = "Everything is Up to Date"
@@ -129,12 +144,119 @@ func _should_download_without_asking() -> bool:
 	return UserSettingsManager.auto_update_mods
 
 
+static func _commit_time(branch: Dictionary) -> int:
+	var commit = branch["commit"].get("commit")
+	if commit is Dictionary and commit.get("committer") is Dictionary:
+		var date = commit["committer"].get("date")
+		if date is String:
+			return Time.get_unix_time_from_datetime_string(date)
+	return 0
+
+
 func _download_updates() -> void:
 	_loading_animation.show()
 	_download_button.hide()
 	_skip_button.hide()
 	_label.text = "Downloading Updates..."
 
+	# List the new version's files first, to fetch only the ones that changed.
+	_http_request.request_completed.connect(_on_tree_received, CONNECT_ONE_SHOT)
+	_http_request.request(TREE_PATH % _latest_version, [], HTTPClient.METHOD_GET)
+
+
+func _on_tree_received(
+	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+) -> void:
+	_target = {}
+	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+		var tree = JSON.parse_string(body.get_string_from_utf8())
+		_target = ModsSync.manifest_from_tree(tree, _latest_version, _latest_time)
+
+	if _target.is_empty():
+		_download_archive()
+		return
+
+	_plan = ModsSync.changes(_installed_manifest().get("files", {}), _target["files"])
+	ModsSync.clear(UPDATE_TEMP_PATH)
+	# Files the game was shipped with needn't come over the network.
+	_download_queue = ModsSync.stage_from_folder(
+		INITIAL_MODS_PATH, UPDATE_TEMP_PATH, _plan["fetch"], _target["files"]
+	)
+
+	if _download_queue.size() > MAX_FILE_DOWNLOADS:
+		ModsSync.clear(UPDATE_TEMP_PATH)
+		_download_archive()
+		return
+
+	_download_failed = false
+	_downloads_finished = false
+	_downloads_in_flight = 0
+	for i in range(mini(PARALLEL_DOWNLOADS, _download_queue.size())):
+		_download_next_file()
+	if _download_queue.is_empty() and _downloads_in_flight == 0:
+		_finish_file_downloads()
+
+
+func _download_next_file() -> void:
+	if _download_queue.is_empty() or _download_failed:
+		return
+
+	var path: String = _download_queue.pop_back()
+	var staged := UPDATE_TEMP_PATH.path_join(path)
+	DirAccess.make_dir_recursive_absolute(staged.get_base_dir())
+
+	var request := HTTPRequest.new()
+	request.download_file = staged
+	add_child(request)
+	request.request_completed.connect(_on_file_downloaded.bind(request), CONNECT_ONE_SHOT)
+	_downloads_in_flight += 1
+	if request.request(RAW_FILE_PATH % [_latest_version, ModsSync.url_path(path)]) != OK:
+		_on_file_downloaded(HTTPRequest.RESULT_CANT_CONNECT, 0, [], [], request)
+
+
+func _on_file_downloaded(
+	result: int,
+	response_code: int,
+	_headers: PackedStringArray,
+	_body: PackedByteArray,
+	request: HTTPRequest
+) -> void:
+	request.queue_free()
+	_downloads_in_flight -= 1
+	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
+		_download_failed = true
+
+	_download_next_file()
+	if _downloads_in_flight == 0 and (_download_queue.is_empty() or _download_failed):
+		_finish_file_downloads()
+
+
+func _finish_file_downloads() -> void:
+	# A request failing as it starts can land here before the first batch is out.
+	if _downloads_finished:
+		return
+	_downloads_finished = true
+
+	if (
+		_download_failed
+		or not ModsSync.staged_correctly(UPDATE_TEMP_PATH, _plan["fetch"], _target["files"])
+	):
+		ModsSync.clear(UPDATE_TEMP_PATH)
+		_label.text = "Issue downloading latest updates, using existing mods"
+		_load_data()
+		return
+
+	ModsSync.apply_staged(UPDATE_TEMP_PATH, REMOTE_MODS_PATH, _plan["fetch"], _plan["remove"])
+	ModsSync.clear(UPDATE_TEMP_PATH)
+	_record_installed(_target)
+
+	_label.text = "Updates Applied"
+	_load_data()
+
+
+## The whole repo as one archive - the fallback when it can't be listed, or when
+## so much changed that fetching file by file would be slower.
+func _download_archive() -> void:
 	_http_request.request_completed.connect(_apply_updates, CONNECT_ONE_SHOT)
 	_http_request.request(DOWNLOAD_PATH, [], HTTPClient.METHOD_GET)
 
@@ -175,7 +297,13 @@ func _apply_updates(
 	_cleanup_path(UPDATE_ZIP_PATH)
 
 	# Only record the new version once the swap has actually completed.
-	UserSettingsManager.update_latest_version(_latest_version)
+	if _target.is_empty():
+		_target = {
+			"commit": _latest_version,
+			"time": _latest_time,
+			"files": ModsSync.hash_folder(REMOTE_MODS_PATH),
+		}
+	_record_installed(_target)
 
 	_label.text = "Updates Applied"
 	_load_data()
@@ -290,13 +418,48 @@ func _cleanup_path(path: String) -> void:
 # === Initial Mods Functions ===
 
 
-func _ensure_initial_mods_present() -> void:
-	if _remote_mods_present():
+## Installs the mods the game shipped with: all of them on first run, and after
+## that whichever files changed when a game update brings newer mods - so a Steam
+## update delivers new mods without the game downloading anything.
+func _apply_bundled_mods() -> void:
+	var bundled := ModsSync.read_manifest(ModsSync.BUNDLED_MANIFEST_PATH)
+
+	if not _remote_mods_present():
+		_label.text = "Setting up initial mods..."
+		DirAccess.make_dir_recursive_absolute(REMOTE_MODS_PATH)
+		_copy_directory_recursive(INITIAL_MODS_PATH, REMOTE_MODS_PATH)
+		# Recording the version means first boot won't download the same mods again.
+		if not bundled.is_empty():
+			_record_installed(bundled)
 		return
 
-	_label.text = "Setting up initial mods..."
-	DirAccess.make_dir_recursive_absolute(REMOTE_MODS_PATH)
-	_copy_directory_recursive(INITIAL_MODS_PATH, REMOTE_MODS_PATH)
+	var installed := _installed_manifest()
+	if not ModsSync.is_newer(bundled, installed):
+		return
+
+	_label.text = "Applying mod updates..."
+	if ModsSync.sync_from_folder(
+		INITIAL_MODS_PATH, REMOTE_MODS_PATH, UPDATE_TEMP_PATH, installed, bundled
+	):
+		_record_installed(bundled)
+
+
+## What's installed. An install from before manifests were kept is hashed once to
+## find out, and counts as older than any version with a time.
+func _installed_manifest() -> Dictionary:
+	var installed := ModsSync.read_manifest(ModsSync.INSTALLED_MANIFEST_PATH)
+	if installed.is_empty():
+		installed = {
+			"commit": UserSettingsManager.latest_version,
+			"time": 0,
+			"files": ModsSync.hash_folder(REMOTE_MODS_PATH),
+		}
+	return installed
+
+
+func _record_installed(manifest: Dictionary) -> void:
+	ModsSync.write_manifest(ModsSync.INSTALLED_MANIFEST_PATH, manifest)
+	UserSettingsManager.update_latest_version(manifest["commit"])
 
 
 func _remote_mods_present() -> bool:
