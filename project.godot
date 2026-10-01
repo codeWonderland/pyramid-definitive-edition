@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Pyramid Definitive Edition"
-config/version="1.4.0"
+config/version="1.5.0"
 run/main_scene="uid://ctf5sb112jkcq"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.019607844, 0.07450981, 0.18431373, 1)
