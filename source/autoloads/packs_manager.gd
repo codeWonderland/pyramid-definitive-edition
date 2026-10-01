@@ -25,6 +25,9 @@ func load() -> void:
 
 	all_packs += await PackDataLoader.load_packs_from_folder(PACKS_FOLDER_PATH, tree)
 	all_packs += await PackDataLoader.load_packs_from_folder(LOCAL_PACKS_FOLDER_PATH, tree)
+	# Workshop items each hold one pack folder, in Steam's own download location.
+	for item_folder in SteamWorkshop.installed_item_folders():
+		all_packs += await PackDataLoader.load_packs_from_folder(item_folder + "/", tree)
 
 	all_packs.sort_custom(PackDataLoader.sort_packs)
 	load_categories(CATEGORIES_PATH)

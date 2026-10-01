@@ -34,6 +34,7 @@ BackgroundManager="*res://source/autoloads/background_manager.tscn"
 RunManager="*res://source/autoloads/run_manager.tscn"
 FavoritesManager="*res://source/autoloads/favorites_manager.gd"
 PlayerMarksManager="*res://source/autoloads/player_marks_manager.gd"
+SteamWorkshop="*res://source/autoloads/steam_workshop.gd"
 
 [display]
 

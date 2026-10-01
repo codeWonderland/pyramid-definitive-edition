@@ -18,3 +18,7 @@ git add initial_mods/pyramid-mods initial_mods/pyramid-mods.json
 ```
 
 A test fails if the submodule moves without the manifest being regenerated. Players with automatic updates on also get newer mods from GitHub between builds, again downloading only the files that changed.
+
+## Steam builds and the Workshop
+
+Steam support (Workshop publishing and subscribed packs) comes from GodotSteam in `addons/godotsteam`. Linux and Windows exports place its two libraries beside the executable, and macOS puts them inside the app, so upload the **whole export folder** to Steam. A build without those libraries, or one not started through Steam, runs normally with the Workshop buttons hidden.
