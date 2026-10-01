@@ -238,8 +238,12 @@ func test_a_pack_with_ten_or_more_cards_saves_unchanged() -> void:
 
 func test_an_untouched_record_is_not_rewritten() -> void:
 	var folder := _write_pack("Alpha")
+	# Already consistent with the pack's three primaries and one curse, so saving
+	# has nothing to fill in.
 	var record := (
-		'{\n\t"is_free": true,\n\t"objectives": {\n\t\t"primary_count": 22\n\t},\n'
+		'{\n\t"id": "alpha",\n\t"is_free": true,\n\t"objectives": {\n'
+		+ '\t\t"curse_count": 1,\n\t\t"has_curse": true,\n'
+		+ '\t\t"primary_count": 3,\n\t\t"secondary_count": 0\n\t},\n'
 		+ '\t"tags": [\n\t\t"Puzzle"\n\t]\n}\n'
 	)
 	var file := FileAccess.open(folder.path_join("pack.json"), FileAccess.WRITE)
@@ -257,7 +261,7 @@ func test_an_untouched_record_is_not_rewritten() -> void:
 func test_a_changed_record_keeps_whole_numbers_whole() -> void:
 	var folder := _write_pack("Alpha")
 	var file := FileAccess.open(folder.path_join("pack.json"), FileAccess.WRITE)
-	file.store_string('{"objectives": {"primary_count": 22}, "tags": ["Puzzle"]}')
+	file.store_string('{"players": 22, "tags": ["Puzzle"]}')
 	file.close()
 	var pack := _loaded(folder)
 	var manager := await _manager()
@@ -266,6 +270,7 @@ func test_a_changed_record_keeps_whole_numbers_whole() -> void:
 	manager._save_mod(pack)
 
 	var written := FileAccess.get_file_as_string(folder.path_join("pack.json"))
-	assert_string_contains(written, '"primary_count": 22', "22 stays 22")
+	assert_string_contains(written, '"players": 22', "22 stays 22")
+	assert_string_contains(written, '"primary_count": 3', "counts are whole numbers too")
 	assert_false(written.contains("22.0"), "not 22.0")
 	assert_true(written.ends_with("\n"), "ends with a newline, like the rest of the repo")
