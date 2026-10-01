@@ -118,10 +118,31 @@ layout_mode = 2
 theme_type_variation = &"SmallLabel"
 autowrap_mode = 2
 
+[node name="Description" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+autowrap_mode = 2
+
 [node name="Facts" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390020]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
+
+[node name="Links" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="StoreLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Links"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Store page"
+
+[node name="PresskitLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Links"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Press kit"
 
 [node name="Rules" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390021]
 unique_name_in_owner = true

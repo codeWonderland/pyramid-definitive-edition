@@ -108,6 +108,8 @@ func test_edits_are_written_back() -> void:
 	editor._price_option.select(1)
 	editor._estimated_time_line_edit.text = "30m"
 	editor._coop_text_edit.text = "Share one run"
+	editor._description_text_edit.text = "A frozen roguelite."
+	editor._store_url_line_edit.text = "https://store.steampowered.com/app/2"
 	_rows(editor)[0]._role.text = "Creator"
 	editor._add_challenge_row({})
 	await get_tree().process_frame
@@ -123,6 +125,9 @@ func test_edits_are_written_back() -> void:
 	assert_eq(record["is_free"], true)
 	assert_eq(record["estimated_time"], "30m")
 	assert_eq(record["objectives"]["co_op_rules"], "Share one run")
+	assert_eq(record["description"], "A frozen roguelite.")
+	assert_eq(record["store_url"], "https://store.steampowered.com/app/2")
+	assert_false(record.has("presskit_url"), "an empty field adds nothing")
 	var entries: Array = record["special_challenges"]["entries"]
 	assert_eq(entries.size(), 2, "the blank row is dropped")
 	assert_eq(entries[0]["id"], "temp-zero-challenge-1", "the existing id kept")

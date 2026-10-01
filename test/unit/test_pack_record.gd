@@ -124,3 +124,16 @@ func test_unknown_fields_survive() -> void:
 
 	assert_eq(record["store_link"], "https://example.com")
 	assert_eq(record["special_challenges"]["entries"][0]["source_game_name"], "Y")
+
+
+func test_only_web_links_are_offered() -> void:
+	var record := {
+		"store_url": " https://store.steampowered.com/app/1 ",
+		"presskit_url": "file:///etc/passwd",
+		"other": 5,
+	}
+
+	assert_eq(PackRecord.web_link(record, "store_url"), "https://store.steampowered.com/app/1")
+	assert_eq(PackRecord.web_link(record, "presskit_url"), "", "not a web address")
+	assert_eq(PackRecord.web_link(record, "other"), "", "not text")
+	assert_eq(PackRecord.web_link(record, "missing"), "")
