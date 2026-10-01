@@ -244,3 +244,22 @@ func test_main_menu_offers_the_library() -> void:
 
 	assert_true(is_instance_valid(menu._library_button), "Library button resolved")
 	assert_eq(menu._library_button.pressed.get_connections().size(), 1, "and wired up")
+
+
+func test_a_pack_listed_with_only_its_backs_shows_its_cards() -> void:
+	var folder := "user://__test_library_lazy"
+	DirAccess.make_dir_recursive_absolute(folder)
+	for stem in ["b1", "p1", "p2", "s1"]:
+		Image.create(4, 4, false, Image.FORMAT_RGBA8).save_png("%s/%s.png" % [folder, stem])
+	var listed := PackDataLoader.load_pack_from_path(folder, false)
+	var library := await _make()
+
+	library._show_details(listed)
+
+	assert_string_contains(library._facts.text, "2 primary · 1 secondary", "counted once loaded")
+	var thumbs := 0
+	for row in library._cards.get_children():
+		if row is HFlowContainer:
+			thumbs += row.get_child_count()
+	assert_eq(thumbs, 3, "every card shown")
+	Helpers.delete_recursive(DirAccess.open(folder))

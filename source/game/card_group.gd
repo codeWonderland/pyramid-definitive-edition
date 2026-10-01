@@ -8,6 +8,9 @@ const CARD_BASE_Z: int = 5
 var pack: PackData = null:
 	set(value):
 		pack = value
+		# Packs are listed with only their backs loaded; a drafted one needs its fronts.
+		if pack != null:
+			PackDataLoader.load_faces(pack)
 		if not _loading_from_save and pack != null:
 			_setup_new()
 

@@ -142,6 +142,8 @@ func _show_details(pack: PackData) -> void:
 	if pack == null:
 		return
 
+	# The library lists packs with only their backs loaded.
+	PackDataLoader.load_faces(pack)
 	var record := pack.metadata
 	_pack_name.text = _display_name(pack)
 	_tags.text = ", ".join(pack.tags) if not pack.tags.is_empty() else "No categories recorded"

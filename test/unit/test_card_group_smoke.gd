@@ -129,3 +129,19 @@ func test_save_load_preserves_table_and_positions() -> void:
 		assert_true(found, "a card was restored at its saved position %s" % saved_pos)
 
 	_remove_pack_from_disk()
+
+
+func test_a_pack_listed_with_only_its_backs_deals_its_fronts() -> void:
+	# The draft lists packs without their card fronts; drafting one must load them.
+	_write_pack_to_disk()
+	var group := _make_group()
+	await get_tree().process_frame
+
+	var listed := PackDataLoader.load_pack_from_path(PACK_DIR, false)
+	assert_true(listed.primaries.is_empty(), "listed without fronts")
+	group.pack = listed
+	await get_tree().process_frame
+
+	assert_eq(listed.primaries.size(), 3, "drafting loaded the primaries")
+	assert_eq(listed.secondaries.size(), 2, "and the secondaries")
+	_remove_pack_from_disk()
