@@ -7,6 +7,9 @@ signal duplicate_culling_updated
 signal auto_update_mods_updated
 
 const SAVE_PATH = "user://settings.cfg"
+## Where auto_update_mods is saved; the key it replaced, "auto_update_mods", is
+## dropped on the next save.
+const AUTO_UPDATE_KEY: String = "download_mod_updates_automatically"
 const DB_LOWER_LIMIT: int = 30
 
 var config := ConfigFile.new()
@@ -20,8 +23,10 @@ var background: String = "Default"
 ## has been used once. See RunManager.get_random_loadout().
 var duplicate_culling: bool = true
 ## When on, the updater downloads and applies new mod data on boot instead of
-## stopping to ask. See Updater._check_update_data().
-var auto_update_mods: bool = true
+## stopping to ask. See Updater._check_update_data(). Off unless the player turns
+## it on: new mods otherwise arrive with game updates, which apply them without
+## a download.
+var auto_update_mods: bool = false
 ## Draft screen visibility, remembered between visits since they are set once
 ## rather than per run. See PlayerMarksManager.hidden_from_draft().
 var draft_show_never_draft: bool = false
@@ -122,7 +127,9 @@ func _load_config() -> void:
 
 		duplicate_culling = config.get_value("settings", "duplicate_culling", true)
 
-		auto_update_mods = config.get_value("settings", "auto_update_mods", true)
+		# Stored under a new key: the old one was saved as on for every player
+		# while on was the default, and this setting starts off for everyone.
+		auto_update_mods = config.get_value("settings", AUTO_UPDATE_KEY, false)
 
 		draft_show_never_draft = config.get_value("settings", "draft_show_never_draft", false)
 		draft_hide_unowned = config.get_value("settings", "draft_hide_unowned", false)
@@ -138,7 +145,9 @@ func _save_config() -> void:
 	config.set_value("settings", "fullscreen", fullscreen)
 	config.set_value("settings", "background", background)
 	config.set_value("settings", "duplicate_culling", duplicate_culling)
-	config.set_value("settings", "auto_update_mods", auto_update_mods)
+	config.set_value("settings", AUTO_UPDATE_KEY, auto_update_mods)
+	if config.has_section_key("settings", "auto_update_mods"):
+		config.erase_section_key("settings", "auto_update_mods")
 	config.set_value("settings", "draft_show_never_draft", draft_show_never_draft)
 	config.set_value("settings", "draft_hide_unowned", draft_hide_unowned)
 

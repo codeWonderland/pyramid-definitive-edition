@@ -67,6 +67,26 @@ func _ready() -> void:
 			_marks[folder_path] = pack_marks
 
 
+## Moves marks to where their packs are now (see PacksManager.current_path). A pack
+## renamed onto one that already has marks keeps both sets.
+func migrate(current_path: Callable) -> void:
+	var moved := {}
+	var changed := false
+	for path in _marks:
+		var now: String = current_path.call(path)
+		changed = changed or now != path
+		var merged: Dictionary = moved.get(now, {})
+		merged.merge(_marks[path])
+		moved[now] = merged
+	if not changed:
+		return
+
+	_marks = moved
+	_save()
+	for path in _marks:
+		self.marks_changed.emit(path)
+
+
 func has_mark(folder_path: String, mark: String) -> bool:
 	if mark == FAVORITE:
 		return FavoritesManager.is_favorite(folder_path)

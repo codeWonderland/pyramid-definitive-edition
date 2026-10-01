@@ -50,7 +50,8 @@ func _display_save_data() -> void:
 	# of crashing the dialog.
 	var first_pack: PackData = null
 	if not save_data.card_groups.is_empty():
-		first_pack = PackDataLoader.load_pack_from_path(save_data.card_groups[0].pack_path, false)
+		var pack_path := PacksManager.current_path(save_data.card_groups[0].pack_path)
+		first_pack = PackDataLoader.load_pack_from_path(pack_path, false)
 
 	if first_pack != null and not first_pack.backs.is_empty():
 		_card.texture = first_pack.backs[0]

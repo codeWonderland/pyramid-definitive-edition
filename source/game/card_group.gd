@@ -307,7 +307,7 @@ func generate_card_group_data() -> CardGroupData:
 func load_from_card_group_data(data: CardGroupData) -> void:
 	_loading_from_save = true
 
-	pack = PackDataLoader.load_pack_from_path(data.pack_path)
+	pack = PackDataLoader.load_pack_from_path(PacksManager.current_path(data.pack_path))
 	if pack == null:
 		push_warning("CardGroup: pack no longer available at %s" % data.pack_path)
 		_loading_from_save = false
