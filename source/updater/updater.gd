@@ -503,7 +503,7 @@ func _continue() -> void:
 		can_continue = can_continue and check
 
 	if can_continue:
-		get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
+		SceneTransition.change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
 
 
 func _load_data() -> void:

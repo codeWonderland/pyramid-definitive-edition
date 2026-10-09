@@ -170,6 +170,7 @@ func bring_to_front() -> void:
 
 
 func _begin_drag() -> void:
+	Motion.settle(self)
 	_dragging = true
 	bring_to_front()
 	RunManager.begin_card_drag()
@@ -253,6 +254,7 @@ func conceal() -> bool:
 ## Start dragging this card programmatically (used when a card is drawn out of a
 ## pile by dragging — it should immediately follow the cursor).
 func begin_drag_from_pile() -> void:
+	Motion.settle(self)
 	_pressed = true
 	_dragging = true
 	_press_global_position = get_global_mouse_position()

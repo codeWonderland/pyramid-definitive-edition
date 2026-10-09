@@ -143,7 +143,7 @@ func _back() -> void:
 	if RunManager.popup_open:
 		return
 
-	get_tree().change_scene_to_packed(load("res://source/menus/num_games.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/num_games.tscn"))
 
 
 func _open_settings() -> void:
@@ -360,7 +360,7 @@ func _on_save_confirmed(should_save: bool) -> void:
 		_update_save_data()
 		_save_game_dialog.show()
 	else:
-		get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+		SceneTransition.change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
 
 
 func _update_save_data() -> void:

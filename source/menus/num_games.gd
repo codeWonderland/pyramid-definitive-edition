@@ -32,9 +32,9 @@ func _back_to_pack_select() -> void:
 	# if we loaded from a save and we don't have packs
 	# we go to the updater instead of pack select
 	if PacksManager.all_packs.size() == 0:
-		get_tree().change_scene_to_packed(load("res://source/updater/updater.tscn"))
+		SceneTransition.change_scene_to_packed(load("res://source/updater/updater.tscn"))
 	else:
-		get_tree().change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
+		SceneTransition.change_scene_to_packed(load("res://source/menus/pack_select.tscn"))
 
 
 func _pause() -> void:
@@ -50,4 +50,4 @@ func _select_num_games(num_games: int) -> void:
 
 	RunManager.num_games = num_games
 
-	get_tree().change_scene_to_packed(load("res://source/game/game.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/game/game.tscn"))

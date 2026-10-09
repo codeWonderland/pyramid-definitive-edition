@@ -62,7 +62,7 @@ func _on_delete_confirmed() -> void:
 
 
 func _on_save_confirmed() -> void:
-	get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
 
 
 func _on_overwrite_confirmed() -> void:
