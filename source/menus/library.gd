@@ -78,7 +78,7 @@ func _set_background() -> void:
 func _back() -> void:
 	if _card_inspector.visible:
 		return
-	get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
 
 
 # --- Grid ---

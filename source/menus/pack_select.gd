@@ -88,7 +88,7 @@ func _back() -> void:
 	if _pause_menu.visible:
 		return
 
-	get_tree().change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
 
 
 func _pause() -> void:
@@ -116,4 +116,4 @@ func _selection_complete() -> void:
 	if RunManager.selected_packs.size() == 0:
 		return
 
-	get_tree().change_scene_to_packed(load("res://source/menus/num_games.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/num_games.tscn"))

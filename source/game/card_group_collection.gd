@@ -1,5 +1,8 @@
 class_name CardGroupCollection extends Control
 
+## When the opening hands start landing - about as the scene fade lifts.
+const DEAL_DELAY: float = 0.2
+
 var packs: Array[PackData] = []:
 	set(value):
 		packs = value
@@ -144,5 +147,11 @@ func _update_pack_visibility() -> void:
 
 
 func _load_packs() -> void:
+	var dealt: Array = []
 	for index in range(RunManager.num_games):
 		_card_groups[index].pack = packs[index]
+		dealt.append_array(_card_groups[index].table_cards())
+
+	# The opening hands drop onto the table one after another, starting as the
+	# screen fades in. (A loaded save's table just appears where it was left.)
+	Motion.drop_in(dealt, DEAL_DELAY)

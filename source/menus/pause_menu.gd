@@ -83,4 +83,4 @@ func _open_official_mods() -> void:
 
 
 func _open_mod_manager() -> void:
-	get_tree().change_scene_to_packed(load("res://source/mod-manager/mod_manager.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/mod-manager/mod_manager.tscn"))

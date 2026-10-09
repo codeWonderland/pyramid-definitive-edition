@@ -42,6 +42,12 @@ func _make_table() -> Game:
 	add_child_autofree(game)
 	await get_tree().process_frame
 	await get_tree().process_frame
+	# Let the opening hands finish dropping onto the table, as a player would.
+	var cards := _all_table_cards(game)
+	var deal_time := (
+		CardGroupCollection.DEAL_DELAY + Motion.TIME + Motion.STAGGER * cards.size() + 0.1
+	)
+	await get_tree().create_timer(deal_time).timeout
 	return game
 
 

@@ -55,4 +55,4 @@ func _on_load_confirmed() -> void:
 
 	RunManager.save_data = save_data
 
-	get_tree().change_scene_to_packed(load("res://source/game/game.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/game/game.tscn"))

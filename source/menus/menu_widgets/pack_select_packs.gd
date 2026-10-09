@@ -28,7 +28,7 @@ var _match_all_tags: bool = false
 
 
 func _ready() -> void:
-	_populate()
+	_populate(true)
 	get_tree().get_root().size_changed.connect(_populate)
 	# Re-sort/redraw when favorites change so favorited packs move to the top.
 	FavoritesManager.favorites_changed.connect(_populate)
@@ -81,15 +81,17 @@ func set_tag_filters(tags: Array[String], match_all: bool) -> void:
 
 func prev_page() -> void:
 	_current_page = (_current_page - 1 + _page_count()) % _page_count()
-	_populate()
+	_populate(true)
 
 
 func next_page() -> void:
 	_current_page = (_current_page + 1) % _page_count()
-	_populate()
+	_populate(true)
 
 
-func _populate() -> void:
+## Rebuilds the visible page. `arrive` plays the entrance motion - for the first
+## page and for paging, not for every keystroke of a search or tick of a filter.
+func _populate(arrive: bool = false) -> void:
 	columns = _columns()
 	_current_page = clampi(_current_page, 0, _page_count() - 1)
 
@@ -103,6 +105,7 @@ func _populate() -> void:
 		child.queue_free()
 
 	# Create New Ones
+	var cards: Array = []
 	for pack_data in visible_packs:
 		var card = PACK_SELECT_CARD.instantiate()
 		card.custom_minimum_size = card_size
@@ -110,6 +113,10 @@ func _populate() -> void:
 		card.pressed.connect(_on_card_pressed)
 		card.favorite_toggled.connect(_on_card_favorite_toggled)
 		add_child(card)
+		cards.append(card)
+
+	if arrive:
+		Motion.rise_in(cards)
 
 
 ## Columns scale up on wider screens (an extra column on each side).

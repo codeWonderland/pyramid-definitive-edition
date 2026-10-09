@@ -68,6 +68,11 @@ func _setup_new() -> void:
 	_deal_initial()
 
 
+## The cards on the table now, in the order they were dealt.
+func table_cards() -> Array[ChallengeCard]:
+	return _table_cards.duplicate()
+
+
 func _deal_initial() -> void:
 	# The opening hand is dealt face-down so the whole table can be turned over
 	# at once; a curse drawn as part of it stays hidden with the rest.

@@ -147,7 +147,7 @@ func _load_game() -> void:
 
 
 func _transition_scene() -> void:
-	get_tree().change_scene_to_packed(load("res://source/updater/updater.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/updater/updater.tscn"))
 
 
 func _close_game() -> void:
@@ -165,8 +165,8 @@ func _show_library() -> void:
 	if _pause_menu.visible or _load_game_dialog.visible:
 		return
 
-	get_tree().change_scene_to_packed(load("res://source/menus/library.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/library.tscn"))
 
 
 func _show_credits() -> void:
-	get_tree().change_scene_to_packed(load("res://source/menus/credits.tscn"))
+	SceneTransition.change_scene_to_packed(load("res://source/menus/credits.tscn"))
