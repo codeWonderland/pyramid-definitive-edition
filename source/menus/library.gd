@@ -279,6 +279,8 @@ func _build_cards(pack: PackData) -> void:
 			thumb.ignore_texture_size = true
 			thumb.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 			thumb.custom_minimum_size = THUMBNAIL_SIZE * _scale()
-			thumb.pressed.connect(_card_inspector.show_card.bind(texture))
+			thumb.pressed.connect(
+				func() -> void: _card_inspector.show_card(texture, thumb.get_global_rect())
+			)
 			row.add_child(thumb)
 		_cards.add_child(row)

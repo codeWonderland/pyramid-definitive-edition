@@ -7,9 +7,13 @@ signal card_drag_started
 signal card_drag_ended
 ## Raised when a card asks to be looked at up close. Routed through here rather
 ## than up the CardGroup -> collection -> table chain, like the drag signals.
-signal card_inspect_requested(card_texture: Texture2D)
+signal card_inspect_requested(card_texture: Texture2D, from_rect: Rect2)
 
-const TABLE_CARD_SCALE: float = 1.15
+const TABLE_CARD_SCALE: float = 1.3225
+## Space between tables, and the widest a row of three tables may be, against the
+## 1280x720 reference the table scales from - leaving the screen edges clear.
+const TABLE_GAP: float = 20.0
+const MAX_ROW_WIDTH: float = 1240.0
 
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
@@ -64,8 +68,9 @@ func end_card_drag() -> void:
 
 ## Ask the table to show `card_texture` up close. Passing the texture the card is
 ## currently showing means a face-down card inspects as its back, with no peeking.
-func request_card_inspect(card_texture: Texture2D) -> void:
-	self.card_inspect_requested.emit(card_texture)
+## `from_rect` is where the card is on screen, so the close-up can grow out of it.
+func request_card_inspect(card_texture: Texture2D, from_rect: Rect2 = Rect2()) -> void:
+	self.card_inspect_requested.emit(card_texture, from_rect)
 
 
 func set_trash_zone_rect(rect: Rect2) -> void:
@@ -131,4 +136,10 @@ func get_card_size() -> Vector2:
 	elif num_games == 3:
 		base = Vector2(157.5, 225)
 
-	return base * TABLE_CARD_SCALE
+	var card := base * TABLE_CARD_SCALE
+	# Three tables share one row: grow them only as far as the row still fits.
+	if num_games == 3:
+		var widest := (MAX_ROW_WIDTH - 2 * TABLE_GAP) / 6.0
+		if card.x > widest:
+			card *= widest / card.x
+	return card

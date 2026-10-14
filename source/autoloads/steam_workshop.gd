@@ -216,7 +216,7 @@ func _display_name(pack: PackData) -> String:
 func _description(pack: PackData) -> String:
 	PackDataLoader.load_faces(pack)
 	var lines := [
-		"A challenge pack for The Pyramid: Definitive Edition.",
+		"A challenge pack for The Pyramid.",
 		"%d primary · %d secondary" % [pack.primaries.size(), pack.secondaries.size()],
 	]
 	if not pack.tags.is_empty():

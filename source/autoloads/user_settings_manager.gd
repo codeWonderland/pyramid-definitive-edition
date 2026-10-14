@@ -10,6 +10,10 @@ const SAVE_PATH = "user://settings.cfg"
 ## Where auto_update_mods is saved; the key it replaced, "auto_update_mods", is
 ## dropped on the next save.
 const AUTO_UPDATE_KEY: String = "download_mod_updates_automatically"
+## The game's name as players see it. The project keeps its original name because
+## Godot names the save folder after it, and renaming it would strand every
+## player's saves and mods.
+const WINDOW_TITLE: String = "The Pyramid"
 const DB_LOWER_LIMIT: int = 30
 
 var config := ConfigFile.new()
@@ -37,6 +41,7 @@ var latest_version: String = ""
 
 
 func _ready() -> void:
+	get_window().title = WINDOW_TITLE
 	config.load(SAVE_PATH)
 
 	_load_config()

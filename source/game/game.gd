@@ -303,12 +303,12 @@ func _show_coop_rules() -> void:
 
 
 ## Right-clicking a card asks the table to show it up close.
-func _on_card_inspect_requested(card_texture: Texture2D) -> void:
+func _on_card_inspect_requested(card_texture: Texture2D, from_rect: Rect2) -> void:
 	if RunManager.popup_open:
 		return
 
 	RunManager.popup_open = true
-	_card_inspector.show_card(card_texture)
+	_card_inspector.show_card(card_texture, from_rect)
 
 
 func _on_popup_closing() -> void:
