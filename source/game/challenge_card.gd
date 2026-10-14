@@ -10,6 +10,9 @@ signal request_trash(card: ChallengeCard)
 const DRAG_THRESHOLD: float = 6.0
 ## How long a deal/flip takes, in seconds.
 const FLIP_TIME: float = 0.22
+## How much a hovered card grows, and how fast.
+const HOVER_SCALE: float = 1.25
+const HOVER_TIME: float = 0.2
 
 # Velocity-based tilt: drag velocity (px/sec) maps to a pitch/roll lean.
 const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
@@ -50,6 +53,10 @@ var _grab_offset: Vector2 = Vector2.ZERO
 var _frame_motion: Vector2 = Vector2.ZERO
 var _pitch: float = 0.0
 var _roll: float = 0.0
+# The two factors scale is made of (see _tween_hover).
+var _hover_scale: float = 1.0
+var _flip_width: float = 1.0
+var _hover_tween: Tween = null
 var _tilt_material: ShaderMaterial
 
 
@@ -105,14 +112,12 @@ func _physics_process(_delta: float) -> void:
 		and local_mouse_pos.x <= size.x * 0.9
 	):
 		if not hovering:
-			var size_tween = create_tween()
-			size_tween.tween_property(self, "scale", Vector2(1.25, 1.25), 0.2)
+			_tween_hover(HOVER_SCALE)
 
 		hovering = true
 	else:
 		if hovering:
-			var size_tween = create_tween()
-			size_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
+			_tween_hover(1.0)
 
 		hovering = false
 
@@ -122,7 +127,7 @@ func _on_gui_input(event: InputEvent) -> void:
 	# the draft screen. Ignored mid-drag so a stray click can't interrupt one.
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.pressed and not RunManager.popup_open and not _dragging:
-			RunManager.request_card_inspect(texture)
+			RunManager.request_card_inspect(texture, get_global_rect())
 		return
 
 	# Begin a potential click/drag on left-press. Motion and release are handled
@@ -218,6 +223,27 @@ func reveal() -> void:
 	play_flip(front_texture)
 
 
+## Hovering grows the card and flipping narrows it, often both at once, so each is
+## kept as its own factor and scale is their product. Tweening scale directly let
+## a flip finish at full width on a card still grown by hover - stretched until
+## the cursor left.
+func _tween_hover(to: float) -> void:
+	if _hover_tween != null and _hover_tween.is_valid():
+		_hover_tween.kill()
+	_hover_tween = create_tween()
+	_hover_tween.tween_method(_set_hover_scale, _hover_scale, to, HOVER_TIME)
+
+
+func _set_hover_scale(value: float) -> void:
+	_hover_scale = value
+	scale = Vector2(_hover_scale * _flip_width, _hover_scale)
+
+
+func _set_flip_width(value: float) -> void:
+	_flip_width = value
+	scale = Vector2(_hover_scale * _flip_width, _hover_scale)
+
+
 ## Deal this card face-up with a quick flip (back -> front).
 func play_flip(front: Texture2D) -> void:
 	front_texture = front
@@ -227,9 +253,9 @@ func play_flip(front: Texture2D) -> void:
 		texture = back_texture
 
 	var flip := create_tween()
-	flip.tween_property(self, "scale:x", 0.0, FLIP_TIME * 0.5)
+	flip.tween_method(_set_flip_width, 1.0, 0.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): texture = front)
-	flip.tween_property(self, "scale:x", 1.0, FLIP_TIME * 0.5)
+	flip.tween_method(_set_flip_width, 0.0, 1.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): _flipping = false)
 
 
@@ -244,9 +270,9 @@ func conceal() -> bool:
 	_flipping = true
 
 	var flip := create_tween()
-	flip.tween_property(self, "scale:x", 0.0, FLIP_TIME * 0.5)
+	flip.tween_method(_set_flip_width, 1.0, 0.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): texture = back_texture)
-	flip.tween_property(self, "scale:x", 1.0, FLIP_TIME * 0.5)
+	flip.tween_method(_set_flip_width, 0.0, 1.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): _flipping = false)
 	return true
 

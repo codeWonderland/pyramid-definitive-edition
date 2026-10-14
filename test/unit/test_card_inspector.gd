@@ -107,7 +107,7 @@ func test_a_face_down_card_inspects_as_its_back() -> void:
 	card.set_face_down(_texture(Color.RED))
 
 	var seen: Array = []
-	RunManager.card_inspect_requested.connect(func(tex): seen.append(tex))
+	RunManager.card_inspect_requested.connect(func(tex, _rect): seen.append(tex))
 	card._on_gui_input(_right_click())
 
 	assert_eq(seen.size(), 1, "the request went out")
@@ -139,6 +139,7 @@ func test_clicking_the_overlay_dismisses_it() -> void:
 	click.button_index = MOUSE_BUTTON_LEFT
 	click.pressed = true
 	inspector._on_clicked(click)
+	await get_tree().create_timer(CardInspector.CLOSE_TIME + 0.1).timeout
 
 	assert_false(inspector.visible, "clicking puts the card away")
 
@@ -156,6 +157,37 @@ func test_dismissing_emits_closing() -> void:
 	inspector._on_clicked(click)
 
 	assert_signal_emitted(inspector, "closing")
+
+
+func test_the_card_grows_out_of_where_it_was_and_shrinks_back() -> void:
+	var inspector := INSPECTOR.instantiate() as CardInspector
+	add_child_autofree(inspector)
+	await get_tree().process_frame
+	var from := Rect2(100, 200, 70, 100)
+
+	inspector.show_card(_texture(Color.RED), from)
+	assert_eq(inspector._card_image.position, from.position, "starts where the card was")
+	await get_tree().create_timer(CardInspector.OPEN_TIME + 0.1).timeout
+
+	var screen := inspector.get_viewport_rect().size
+	var shown: Rect2 = inspector._card_image.get_rect()
+	assert_almost_eq(
+		shown.size.y, screen.y * CardInspector.HEIGHT_SHARE, 1.0, "fills most of the height"
+	)
+	assert_almost_eq(shown.get_center(), screen / 2, Vector2.ONE, "centred")
+	assert_eq(inspector._backdrop.modulate.a, 1.0, "the screen behind is dimmed")
+
+	inspector._close()
+	await get_tree().create_timer(CardInspector.CLOSE_TIME + 0.1).timeout
+	assert_eq(inspector._card_image.get_rect(), from, "back where it came from")
+	assert_false(inspector.visible)
+
+
+func test_there_is_no_window_or_close_button() -> void:
+	var inspector := INSPECTOR.instantiate() as CardInspector
+	add_child_autofree(inspector)
+
+	assert_null(inspector.get_node_or_null("%Close"), "no close button")
 
 
 # --- Wired into the table ---
@@ -179,7 +211,7 @@ func test_closing_the_inspector_releases_the_popup_flag() -> void:
 	await get_tree().process_frame
 
 	game._card_inspector._close()
-	await get_tree().process_frame
+	await get_tree().create_timer(CardInspector.CLOSE_TIME + 0.1).timeout
 
 	assert_false(game._card_inspector.visible, "overlay hidden")
 	assert_false(RunManager.popup_open, "and the table is interactive again")

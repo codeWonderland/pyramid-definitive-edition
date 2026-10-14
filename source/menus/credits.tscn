@@ -47,8 +47,7 @@ alignment = 1
 [node name="MainTitle" type="Label" parent="ScrollingContainer"]
 layout_mode = 2
 theme_type_variation = &"ExtraLargeTitle"
-text = "The Pyramid:
-Definitive Edition"
+text = "The Pyramid"
 horizontal_alignment = 1
 
 [node name="CreditsSection" type="VBoxContainer" parent="ScrollingContainer"]
