@@ -5,8 +5,12 @@ class_name HowToPlay extends PopupContainer
 ## player reaches that screen, and not again until they ask for the cards back
 ## in the settings menu.
 
-## How wide the card is, against the 1920x1080 reference.
+## How wide the card is, against the 1920x1080 reference, and how wide its text
+## runs inside the margins.
 const WIDTH: float = 900.0
+const TEXT_WIDTH: float = 820.0
+## The tallest the card may be, as a share of the screen.
+const MAX_HEIGHT_SHARE: float = 0.9
 ## How long to wait after arriving, so the card comes up once the scene fade has
 ## lifted rather than under it.
 const ARRIVAL_DELAY: float = 0.45
@@ -21,6 +25,9 @@ const ARRIVAL_DELAY: float = 0.45
 func _ready() -> void:
 	super._ready()
 	_got_it.pressed.connect(_close)
+	# Wrapped text only knows its height once it knows its width, so the card's
+	# height settles a frame or two after its tips go in: follow it.
+	minimum_size_changed.connect(_resize)
 
 
 ## Shows the card if this player hasn't seen it yet. Returns whether it will.
@@ -51,6 +58,8 @@ func show_page() -> void:
 		var line := Label.new()
 		line.text = "•  " + tip
 		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		# Measured at the width it will have, not as one word per line.
+		line.custom_minimum_size.x = TEXT_WIDTH
 		line.theme_type_variation = &"SmallLabel"
 		_tips.add_child(line)
 
@@ -68,7 +77,11 @@ func _close() -> void:
 func _resize() -> void:
 	var screen_size := get_viewport().get_visible_rect().size
 	var scale_mult := minf(screen_size.x / 1920.0, screen_size.y / 1080.0)
+	var height := get_combined_minimum_size().y
+	# Shrink to fit rather than run off the screen.
+	var tallest := screen_size.y * MAX_HEIGHT_SHARE
+	if height * scale_mult > tallest:
+		scale_mult = tallest / height
 	scale = Vector2(scale_mult, scale_mult)
-	size = Vector2(WIDTH, 0)
-	size = Vector2(WIDTH, get_combined_minimum_size().y)
+	size = Vector2(WIDTH, height)
 	position = screen_size / 2 - size * scale / 2
