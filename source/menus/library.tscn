@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://277dathaiayc" path="res://assets/sprites/ui/buttons/back_button.png" id="3_lib03"]
 [ext_resource type="PackedScene" uid="uid://bq7xk2mvn8dc1" path="res://source/game/card_inspector.tscn" id="4_lib04"]
 
+[ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
+[ext_resource type="Resource" path="res://source/menus/how_to_play/pages/library.tres" id="htp_page"]
 [node name="Library" type="Control" unique_id=1174390001]
 layout_mode = 3
 anchors_preset = 15
@@ -176,3 +178,10 @@ layout_mode = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
+
+[node name="HowToPlay" parent="." instance=ExtResource("htp_scene")]
+unique_name_in_owner = true
+visible = false
+z_index = 4096
+layout_mode = 0
+page = ExtResource("htp_page")

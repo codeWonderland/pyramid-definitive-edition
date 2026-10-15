@@ -17,9 +17,11 @@ var _favorites_only: bool = false
 @onready var _search_bar: LineEdit = %SearchBar
 @onready var _tag_filter_button: TextureButton = %TagFilterButton
 @onready var _filter_panel: PackFilterPanel = %PackFilterPanel
+@onready var _how_to_play: HowToPlay = %HowToPlay
 
 
 func _ready() -> void:
+	_how_to_play.show_if_new()
 	_back_button.pressed.connect(_back)
 	_pause_button.pressed.connect(_pause)
 	_next.pressed.connect(_next_page)

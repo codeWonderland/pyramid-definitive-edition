@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://source/menus/how_to_play/how_to_play.gd" id="1_htp"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_close"]
+
+[node name="HowToPlay" type="PanelContainer"]
+visible = false
+offset_right = 900.0
+offset_bottom = 48.0
+script = ExtResource("1_htp")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
+
+[node name="Rows" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Heading" type="Label" parent="Margin/Rows"]
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "How to play"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MediumTitle"
+horizontal_alignment = 1
+
+[node name="Tips" type="VBoxContainer" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="GotIt" type="Button" parent="Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Got it"
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("2_close")

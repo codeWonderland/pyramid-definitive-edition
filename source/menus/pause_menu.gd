@@ -8,6 +8,7 @@ class_name PauseMenu extends PopupContainer
 @onready var _fullscreen_toggle: CheckBox = %FullscreenToggle
 @onready var _duplicate_culling_toggle: CheckBox = %DuplicateCullingToggle
 @onready var _auto_update_toggle: CheckBox = %AutoUpdateToggle
+@onready var _show_tips_again: Button = %ShowTipsAgain
 @onready var _mods_options: VBoxContainer = %ModsOptions
 @onready var _offical_mods_button: Button = %OfficialMods
 @onready var _local_mods_button: Button = %LocalMods
@@ -34,6 +35,7 @@ func _ready() -> void:
 	_fullscreen_toggle.pressed.connect(_fullscreen_toggled)
 	_duplicate_culling_toggle.pressed.connect(_duplicate_culling_toggled)
 	_auto_update_toggle.pressed.connect(_auto_update_toggled)
+	_show_tips_again.pressed.connect(_on_show_tips_again)
 	_offical_mods_button.pressed.connect(_open_official_mods)
 	_local_mods_button.pressed.connect(_open_mod_manager)
 
@@ -52,6 +54,12 @@ func _fullscreen_toggled() -> void:
 
 func _duplicate_culling_toggled() -> void:
 	UserSettingsManager.update_duplicate_culling(!UserSettingsManager.duplicate_culling)
+
+
+func _on_show_tips_again() -> void:
+	UserSettingsManager.reset_how_to_play()
+	_show_tips_again.text = "They'll show again on each screen"
+	_show_tips_again.disabled = true
 
 
 func _auto_update_toggled() -> void:

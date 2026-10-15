@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HowToPlayPage" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://source/menus/how_to_play/how_to_play_page.gd" id="1_page"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"library"
+title = "The Library"
+tips = Array[String](["Click a game to see its details, rules and every card in its pack. Click a card to see it up close.", "Mark games you own, love or want to skip. Never-draft games are hidden from the draft, and every mark can be used as a draft filter."])

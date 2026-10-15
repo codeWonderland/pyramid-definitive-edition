@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://cq1p8vn3xk4wa" path="res://source/menus/menu_widgets/pack_filter_panel.tscn" id="9_pfp01"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="10_gnfts"]
 
+[ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
+[ext_resource type="Resource" path="res://source/menus/how_to_play/pages/draft.tres" id="htp_page"]
 [node name="PackSelect" type="Control" unique_id=594107462]
 layout_mode = 3
 anchors_preset = 15
@@ -184,3 +186,10 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+
+[node name="HowToPlay" parent="." instance=ExtResource("htp_scene")]
+unique_name_in_owner = true
+visible = false
+z_index = 4096
+layout_mode = 0
+page = ExtResource("htp_page")

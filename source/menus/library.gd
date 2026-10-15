@@ -33,6 +33,7 @@ var _selected: PackData = null
 @onready var _marks: HFlowContainer = %Marks
 @onready var _cards: VBoxContainer = %Cards
 @onready var _card_inspector: CardInspector = %CardInspector
+@onready var _how_to_play: HowToPlay = %HowToPlay
 
 
 func _ready() -> void:
@@ -56,6 +57,7 @@ func _ready() -> void:
 		await PacksManager.load()
 
 	_build_grid()
+	_how_to_play.show_if_new()
 
 
 ## How much smaller than the 1920x1080 reference the window is.

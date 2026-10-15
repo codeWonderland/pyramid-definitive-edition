@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HowToPlayPage" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://source/menus/how_to_play/how_to_play_page.gd" id="1_page"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"draft"
+title = "Drafting"
+tips = Array[String](["Click a game to add it to your draft. Click it again in your picks to take it back out.", "Right-click a game to favorite it. Favorites come first, and \"Filter: All\" switches to just your favorites.", "Search by name, or open the filters to narrow the list by category or by the marks you've set in the Library.", "Press Done Drafting when you've picked your games."])
