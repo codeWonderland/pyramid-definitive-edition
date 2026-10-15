@@ -11,6 +11,8 @@ const GRID_CARD_HEIGHT: float = 220.0
 const THUMBNAIL_SIZE: Vector2 = Vector2(84, 120)
 
 var _favorites_only: bool = false
+## The widest mark label's natural width - the narrowest a mark tile can be.
+var _marks_natural_width: float = 0.0
 var _selected: PackData = null
 
 @onready var _background: TextureRect = %Background
@@ -22,14 +24,21 @@ var _selected: PackData = null
 @onready var _placeholder: Label = %Placeholder
 @onready var _details: VBoxContainer = %Details
 @onready var _pack_name: Label = %PackName
-@onready var _tags: Label = %Tags
-@onready var _description: Label = %Description
-@onready var _facts: Label = %Facts
-@onready var _links: HBoxContainer = %Links
+@onready var _tag_chips: HFlowContainer = %TagChips
+@onready var _pills: HFlowContainer = %Pills
+@onready var _time_pill: PanelContainer = %TimePill
+@onready var _play_time: Label = %PlayTime
+@onready var _free_pill: PanelContainer = %FreePill
+@onready var _rules_row: HBoxContainer = %RulesRow
+@onready var _versus_tile: PanelContainer = %VersusTile
+@onready var _versus_rule: Label = %VersusRule
+@onready var _coop_tile: PanelContainer = %CoopTile
+@onready var _coop_rule: Label = %CoopRule
+@onready var _about_row: HBoxContainer = %AboutRow
 @onready var _store_link: Button = %StoreLink
 @onready var _presskit_link: Button = %PresskitLink
-@onready var _rules: Label = %Rules
-@onready var _challenges: Label = %Challenges
+@onready var _description_box: PanelContainer = %DescriptionBox
+@onready var _description: Label = %Description
 @onready var _marks: HFlowContainer = %Marks
 @onready var _cards: VBoxContainer = %Cards
 @onready var _card_inspector: CardInspector = %CardInspector
@@ -46,6 +55,7 @@ func _ready() -> void:
 	_presskit_link.pressed.connect(_open_link.bind("presskit_url"))
 
 	get_tree().get_root().size_changed.connect(_resize)
+	_marks.resized.connect(_fit_marks)
 
 	_set_background()
 	_update_favorites_label()
@@ -171,17 +181,26 @@ func _show_details(pack: PackData) -> void:
 	PackDataLoader.load_faces(pack)
 	var record := pack.metadata
 	_pack_name.text = _display_name(pack)
-	_tags.text = ", ".join(pack.tags) if not pack.tags.is_empty() else "No categories recorded"
+	_build_tag_chips(pack)
+
+	_play_time.text = play_time(record)
+	_time_pill.visible = not _play_time.text.is_empty()
+	_free_pill.visible = record.get("is_free") == true
+	_pills.visible = _time_pill.visible or _free_pill.visible
+
+	_versus_rule.text = rule(record, "versus_tertiary")
+	_coop_rule.text = rule(record, "co_op_rules")
+	_versus_tile.visible = not _versus_rule.text.is_empty()
+	_coop_tile.visible = not _coop_rule.text.is_empty()
+	_rules_row.visible = _versus_tile.visible or _coop_tile.visible
+
 	var description = record.get("description")
 	_description.text = description.strip_edges() if description is String else ""
-	_description.visible = not _description.text.is_empty()
-	_facts.text = describe_facts(pack)
+	_description_box.visible = not _description.text.is_empty()
 	_store_link.visible = not PackRecord.web_link(record, "store_url").is_empty()
 	_presskit_link.visible = not PackRecord.web_link(record, "presskit_url").is_empty()
-	_links.visible = _store_link.visible or _presskit_link.visible
-	_rules.text = describe_rules(record)
-	_challenges.text = describe_challenges(record)
-	_challenges.visible = not _challenges.text.is_empty()
+	_about_row.visible = (_description_box.visible or _store_link.visible or _presskit_link.visible)
+
 	_build_marks(pack)
 	_build_cards(pack)
 
@@ -202,61 +221,42 @@ func _display_name(pack: PackData) -> String:
 	return recorded if recorded is String and not recorded.is_empty() else pack.title
 
 
-## Price, play time and card counts. Counts come from the pack's actual images,
-## not the record, since the two can disagree and the images are what gets dealt.
-static func describe_facts(pack: PackData) -> String:
-	var facts: Array[String] = []
-	var record := pack.metadata
-
-	# Only worth saying when it's free; paid is the norm.
-	if record.get("is_free") == true:
-		facts.append("Free")
-	if record.get("estimated_time") is String and not record["estimated_time"].is_empty():
-		facts.append("About %s per run" % record["estimated_time"])
-
-	var counts := "%d primary · %d secondary" % [pack.primaries.size(), pack.secondaries.size()]
-	if pack.curses.size() > 0:
-		counts += " · %d curse" % pack.curses.size() + ("s" if pack.curses.size() > 1 else "")
-	facts.append(counts)
-
-	return "\n".join(facts)
+## "About 45m per run", or "" when no time is recorded.
+static func play_time(record: Dictionary) -> String:
+	var time = record.get("estimated_time")
+	if time is String and not time.strip_edges().is_empty():
+		return "About %s per run" % time.strip_edges()
+	return ""
 
 
-static func describe_rules(record: Dictionary) -> String:
+## One of the record's rules (versus_tertiary, co_op_rules), or "" when missing.
+static func rule(record: Dictionary, key: String) -> String:
 	var objectives = record.get("objectives")
 	if not (objectives is Dictionary):
-		return "No versus or co-op rules recorded"
-
-	var lines: Array[String] = []
-	if objectives.get("versus_tertiary") is String and not objectives["versus_tertiary"].is_empty():
-		lines.append("Versus: %s" % objectives["versus_tertiary"])
-	if objectives.get("co_op_rules") is String and not objectives["co_op_rules"].is_empty():
-		lines.append("Co-op: %s" % objectives["co_op_rules"])
-
-	return "\n".join(lines) if not lines.is_empty() else "No versus or co-op rules recorded"
-
-
-## Dev and creator challenges, credited to whoever made them. Empty when none.
-static func describe_challenges(record: Dictionary) -> String:
-	var special = record.get("special_challenges")
-	if not (special is Dictionary and special.get("entries") is Array):
 		return ""
+	var text = objectives.get(key)
+	return text.strip_edges() if text is String else ""
 
-	var lines: Array[String] = []
-	for entry in special["entries"]:
-		if not (entry is Dictionary and entry.get("text") is String):
-			continue
 
-		var line: String = "• %s" % entry["text"]
-		var contributor = entry.get("contributor")
-		if contributor is Dictionary and contributor.get("handle") is String:
-			var role = contributor.get("role")
-			line += (" (%s%s)" % [contributor["handle"], ", %s" % role if role is String else ""])
-		lines.append(line)
+## A card section's heading, with how many cards it holds - counted from the
+## images, which are what gets dealt, not from the record.
+static func cards_heading(group: String, count: int) -> String:
+	return "%s (%d)" % [group, count]
 
-	if lines.is_empty():
-		return ""
-	return "Dev & creator challenges\n" + "\n".join(lines)
+
+func _build_tag_chips(pack: PackData) -> void:
+	for child in _tag_chips.get_children():
+		_tag_chips.remove_child(child)
+		child.queue_free()
+
+	for tag in pack.tags:
+		var chip := PanelContainer.new()
+		chip.theme_type_variation = &"LibraryChip"
+		var label := Label.new()
+		label.text = tag
+		label.theme_type_variation = &"SmallLabel"
+		chip.add_child(label)
+		_tag_chips.add_child(chip)
 
 
 func _build_marks(pack: PackData) -> void:
@@ -264,15 +264,36 @@ func _build_marks(pack: PackData) -> void:
 		_marks.remove_child(child)
 		child.queue_free()
 
+	# Equal-size toggles: solid when the mark is on.
 	for mark in PlayerMarksManager.MARKS:
-		var box := CheckBox.new()
-		box.text = mark["label"]
-		box.theme_type_variation = &"SmallCheckBox"
-		box.set_pressed_no_signal(PlayerMarksManager.has_mark(pack.folder_path, mark["id"]))
-		box.toggled.connect(
+		var toggle := Button.new()
+		toggle.toggle_mode = true
+		toggle.text = mark["label"]
+		toggle.theme_type_variation = &"LibraryMark"
+		toggle.set_pressed_no_signal(PlayerMarksManager.has_mark(pack.folder_path, mark["id"]))
+		toggle.toggled.connect(
 			func(on: bool) -> void: PlayerMarksManager.set_mark(pack.folder_path, mark["id"], on)
 		)
-		_marks.add_child(box)
+		_marks.add_child(toggle)
+
+	_marks_natural_width = 0.0
+	for toggle in _marks.get_children():
+		_marks_natural_width = maxf(_marks_natural_width, toggle.get_combined_minimum_size().x)
+	_fit_marks()
+
+
+## Lays the marks out as equal tiles that fill each row, as the design has them:
+## as many per row as fit the panel at the widest label's width, stretched to
+## share the row evenly.
+func _fit_marks() -> void:
+	var count := _marks.get_child_count()
+	if count == 0 or _marks.size.x <= 0.0:
+		return
+	var gap := float(_marks.get_theme_constant("h_separation"))
+	var per_row := clampi(floori((_marks.size.x + gap) / (_marks_natural_width + gap)), 1, count)
+	var width := floorf((_marks.size.x - gap * (per_row - 1)) / per_row)
+	for toggle in _marks.get_children():
+		toggle.custom_minimum_size.x = maxf(width, _marks_natural_width)
 
 
 func _build_cards(pack: PackData) -> void:
@@ -288,7 +309,7 @@ func _build_cards(pack: PackData) -> void:
 			continue
 
 		var heading := Label.new()
-		heading.text = group[0]
+		heading.text = cards_heading(group[0], textures.size())
 		heading.theme_type_variation = &"SmallLabel"
 		_cards.add_child(heading)
 

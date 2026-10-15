@@ -133,7 +133,10 @@ func test_clicking_a_card_shows_its_details() -> void:
 
 	assert_true(library._details.visible, "details shown")
 	assert_eq(library._pack_name.text, "A to Z Trivia", "the spreadsheet's name, not the folder")
-	assert_eq(library._tags.text, "Puzzle, Miscellaneous", "its categories")
+	var chips: Array = []
+	for chip in library._tag_chips.get_children():
+		chips.append(chip.get_child(0).text)
+	assert_eq(chips, ["Puzzle", "Miscellaneous"], "its categories, as chips")
 
 
 func test_a_pack_without_a_record_uses_its_folder_name() -> void:
@@ -142,39 +145,30 @@ func test_a_pack_without_a_record_uses_its_folder_name() -> void:
 	library._show_details(PacksManager.all_packs[1])
 
 	assert_eq(library._pack_name.text, "hollow knight", "falls back to the folder")
-	assert_eq(library._tags.text, "No categories recorded", "and says so")
+	assert_eq(library._tag_chips.get_child_count(), 0, "no chips")
+	assert_false(library._pills.visible, "no time or price to show")
+	assert_false(library._rules_row.visible, "no rules to show")
+	assert_false(library._about_row.visible, "nothing to say about it")
 
 
-func test_facts_use_the_real_card_counts() -> void:
-	var facts := Library.describe_facts(PacksManager.all_packs[0])
+func test_the_record_fills_the_pills_and_tiles() -> void:
+	var library := await _make()
 
-	assert_string_contains(facts, "Free", "price")
-	assert_string_contains(facts, "About 15m per run", "play time")
-	assert_string_contains(facts, "3 primary · 2 secondary · 1 curse", "counted from the images")
+	library._show_details(PacksManager.all_packs[0])
 
-
-func test_rules_are_described() -> void:
-	var rules := Library.describe_rules(PacksManager.all_packs[0].metadata)
-
-	assert_string_contains(rules, "Versus: Fewest matches", "versus rule")
-	assert_string_contains(rules, "Co-op: Share a list", "co-op rule")
-	assert_eq(
-		Library.describe_rules({}), "No versus or co-op rules recorded", "or the lack of them"
-	)
+	assert_true(library._time_pill.visible)
+	assert_eq(library._play_time.text, "About 15m per run")
+	assert_true(library._free_pill.visible, "free, so said")
+	assert_eq(library._versus_rule.text, "Fewest matches")
+	assert_eq(library._coop_rule.text, "Share a list")
 
 
-func test_challenges_credit_their_author() -> void:
-	var challenges := Library.describe_challenges(PacksManager.all_packs[0].metadata)
-
-	assert_string_contains(challenges, "Win with one hand (@dev, Lead Dev)", "credited")
-	assert_eq(Library.describe_challenges({}), "", "nothing when there are none")
-
-
-func test_malformed_records_do_not_break_the_panel() -> void:
-	var junk := {"objectives": "nope", "special_challenges": {"entries": [7, {"text": 3}]}}
-
-	assert_eq(Library.describe_rules(junk), "No versus or co-op rules recorded", "bad rules")
-	assert_eq(Library.describe_challenges(junk), "", "bad challenges")
+func test_rules_and_play_time_are_read_safely() -> void:
+	assert_eq(Library.rule({}, "versus_tertiary"), "", "no rules")
+	assert_eq(Library.rule({"objectives": "nope"}, "versus_tertiary"), "", "junk rules")
+	assert_eq(Library.rule({"objectives": {"co_op_rules": 3}}, "co_op_rules"), "", "junk rule")
+	assert_eq(Library.play_time({"estimated_time": "  "}), "", "a blank time")
+	assert_eq(Library.play_time({"estimated_time": "1h"}), "About 1h per run")
 
 
 func test_cards_are_shown_grouped_by_type() -> void:
@@ -184,6 +178,8 @@ func test_cards_are_shown_grouped_by_type() -> void:
 
 	# heading + row for each of primary, secondary, curse
 	assert_eq(library._cards.get_child_count(), 6, "three groups of heading and cards")
+	assert_eq(library._cards.get_child(0).text, "Primary (3)", "counted from the images")
+	assert_eq(library._cards.get_child(4).text, "Curse (1)")
 
 
 func test_clicking_a_thumbnail_opens_the_inspector() -> void:
@@ -204,7 +200,10 @@ func test_marks_panel_offers_every_mark() -> void:
 
 	library._show_details(PacksManager.all_packs[0])
 
-	assert_eq(library._marks.get_child_count(), PlayerMarksManager.MARKS.size(), "one box each")
+	assert_eq(library._marks.get_child_count(), PlayerMarksManager.MARKS.size(), "one each")
+	var width: float = library._marks.get_child(0).custom_minimum_size.x
+	for toggle in library._marks.get_children():
+		assert_eq(toggle.custom_minimum_size.x, width, "%s is the same size" % toggle.text)
 
 
 func test_ticking_a_mark_stores_it() -> void:
@@ -212,7 +211,7 @@ func test_ticking_a_mark_stores_it() -> void:
 	var pack := PacksManager.all_packs[0]
 	library._show_details(pack)
 
-	var never_draft: CheckBox = library._marks.get_child(3)
+	var never_draft: Button = library._marks.get_child(3)
 	never_draft.button_pressed = true
 
 	assert_true(PlayerMarksManager.has_mark(pack.folder_path, "never_draft"), "stored")
@@ -223,13 +222,13 @@ func test_exclusive_marks_update_the_other_box() -> void:
 	var pack := PacksManager.all_packs[0]
 	library._show_details(pack)
 
-	(library._marks.get_child(0) as CheckBox).button_pressed = true  # Owned
+	(library._marks.get_child(0) as Button).button_pressed = true  # Owned
 	await get_tree().process_frame
-	(library._marks.get_child(1) as CheckBox).button_pressed = true  # Don't own
+	(library._marks.get_child(1) as Button).button_pressed = true  # Don't own
 	await get_tree().process_frame
 
 	assert_false(
-		(library._marks.get_child(0) as CheckBox).button_pressed,
+		(library._marks.get_child(0) as Button).button_pressed,
 		"ticking don't own visibly unticks owned"
 	)
 
@@ -256,7 +255,7 @@ func test_a_pack_listed_with_only_its_backs_shows_its_cards() -> void:
 
 	library._show_details(listed)
 
-	assert_string_contains(library._facts.text, "2 primary · 1 secondary", "counted once loaded")
+	assert_eq(library._cards.get_child(0).text, "Primary (2)", "counted once loaded")
 	var thumbs := 0
 	for row in library._cards.get_children():
 		if row is HFlowContainer:

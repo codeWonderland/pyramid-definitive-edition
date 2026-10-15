@@ -51,9 +51,9 @@ func test_a_description_and_links_are_shown_when_recorded() -> void:
 
 	library._show_details(PacksManager.all_packs[0])
 
-	assert_true(library._description.visible, "description shown")
+	assert_true(library._description_box.visible, "description shown")
 	assert_eq(library._description.text, "Name a word for every letter.", "trimmed")
-	assert_true(library._links.visible, "links row shown")
+	assert_true(library._about_row.visible, "the about row shows")
 	assert_true(library._store_link.visible, "a web link gets a button")
 	assert_false(library._presskit_link.visible, "anything else doesn't")
 
@@ -63,5 +63,5 @@ func test_nothing_extra_is_shown_without_a_description_or_links() -> void:
 
 	library._show_details(PacksManager.all_packs[1])
 
-	assert_false(library._description.visible, "no description")
-	assert_false(library._links.visible, "no links row")
+	assert_false(library._description_box.visible, "no description")
+	assert_false(library._about_row.visible, "no about row")
