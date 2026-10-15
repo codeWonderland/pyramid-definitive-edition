@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://source/menus/menu_widgets/game_count_choice.gd" id="1_gcc"]
+
+[node name="GameCountChoice" type="Button"]
+custom_minimum_size = Vector2(420, 460)
+theme_type_variation = &"MenuTextButton"
+script = ExtResource("1_gcc")
+
+[node name="Rows" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Pile" type="Control" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MediumTitle"
+horizontal_alignment = 1
