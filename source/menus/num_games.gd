@@ -1,11 +1,13 @@
 class_name NumGames extends Control
 
+const BLANK_CARD: Texture2D = preload("res://assets/sprites/ui/buttons/blank-card.png")
+
 @onready var _background: TextureRect = %Background
 @onready var _back_button: TextureButton = %Back
 @onready var _pause_button: TextureButton = %Pause
-@onready var _one_button: TextureButton = %One
-@onready var _three_button: TextureButton = %Three
-@onready var _five_button: TextureButton = %Five
+@onready var _one_button: GameCountChoice = %One
+@onready var _three_button: GameCountChoice = %Three
+@onready var _five_button: GameCountChoice = %Five
 @onready var _pause_menu: PauseMenu = %PauseMenu
 
 
@@ -16,8 +18,25 @@ func _ready() -> void:
 	_three_button.pressed.connect(_select_num_games.bind(3))
 	_five_button.pressed.connect(_select_num_games.bind(5))
 
+	var backs := _drafted_backs()
+	for choice in [_one_button, _three_button, _five_button]:
+		choice.set_backs(backs)
+	_three_button.grab_focus.call_deferred()
+
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
+
+
+## The card backs of the games the player drafted, so each choice shows their own
+## games. (A loaded save may not have them; the choices then show plain cards.)
+func _drafted_backs() -> Array[Texture2D]:
+	var backs: Array[Texture2D] = []
+	for pack in RunManager.selected_packs:
+		if pack != null and not pack.backs.is_empty():
+			backs.append(pack.backs[0])
+	if backs.is_empty():
+		backs.append(BLANK_CARD)
+	return backs
 
 
 func _set_background() -> void:
