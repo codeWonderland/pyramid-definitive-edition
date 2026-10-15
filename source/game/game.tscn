@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://b2oiqsso5at0" path="res://source/menus/popups/confirm_save_dialog.tscn" id="16_egut0"]
 [ext_resource type="PackedScene" uid="uid://bschd23pcse03" path="res://source/menus/popups/save_game_dialog.tscn" id="17_egut0"]
 
+[ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
+[ext_resource type="Resource" path="res://source/menus/how_to_play/pages/table.tres" id="htp_page"]
 [node name="Game" type="Control" unique_id=2011441010]
 layout_mode = 3
 anchors_preset = 15
@@ -228,3 +230,10 @@ layout_mode = 0
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+
+[node name="HowToPlay" parent="." instance=ExtResource("htp_scene")]
+unique_name_in_owner = true
+visible = false
+z_index = 4096
+layout_mode = 0
+page = ExtResource("htp_page")

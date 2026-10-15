@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HowToPlayPage" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://source/menus/how_to_play/how_to_play_page.gd" id="1_page"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"table"
+title = "The Table"
+tips = Array[String](["Click a pile to draw its top card, or drag one straight off the pile.", "Cards are dealt face-down. Flip All turns the whole table over, or press F over a card to flip just that one.", "Drag cards anywhere on the table. Drop one on the trash can to discard it.", "Right-click a card to see it up close.", "Roll D6 for dice challenges, Reroll Games for a fresh set, and press B to save a banner image of your run."])

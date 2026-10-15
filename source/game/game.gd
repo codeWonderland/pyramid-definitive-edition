@@ -35,6 +35,7 @@ const DICE_TEXTURES = [
 @onready var _confirm_save_dialog: ConfirmSaveDialog = %ConfirmSaveDialog
 @onready var _save_game_dialog: SaveGameDialog = %SaveGameDialog
 @onready var _card_inspector: CardInspector = %CardInspector
+@onready var _how_to_play: HowToPlay = %HowToPlay
 
 
 func _ready() -> void:
@@ -60,6 +61,13 @@ func _ready() -> void:
 	_confirm_save_dialog.closing.connect(_on_save_closed)
 	_quit_dialog.confirm_quit.connect(_on_quit_confirmed)
 	_card_inspector.closing.connect(_on_popup_closing)
+	_how_to_play.closing.connect(_on_popup_closing)
+	# The card comes up on its own, so it claims the table when it appears.
+	_how_to_play.visibility_changed.connect(
+		func() -> void:
+			if _how_to_play.visible:
+				RunManager.popup_open = true
+	)
 	RunManager.card_inspect_requested.connect(_on_card_inspect_requested)
 	_confirm_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
@@ -105,6 +113,7 @@ func _setup_card_table() -> void:
 		_confirm_save_dialog,
 		_save_game_dialog,
 		_card_inspector,
+		_how_to_play,
 	]:
 		popup.z_as_relative = false
 		popup.z_index = 4096
@@ -115,6 +124,7 @@ func _setup_card_table() -> void:
 
 	# The groups deal their cards as they are built, so ask once that has settled.
 	_update_flip_button.call_deferred()
+	_how_to_play.show_if_new()
 
 
 func _set_background() -> void:

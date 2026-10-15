@@ -38,6 +38,8 @@ var draft_hide_unowned: bool = false
 
 # updater
 var latest_version: String = ""
+## Ids of the "How to play" cards this player has seen (see HowToPlay).
+var how_to_play_seen: Array[String] = []
 
 
 func _ready() -> void:
@@ -91,6 +93,23 @@ func update_draft_visibility(show_never_draft: bool, hide_unowned: bool) -> void
 	_save_config()
 
 
+func has_seen_how_to_play(page_id: String) -> bool:
+	return how_to_play_seen.has(page_id)
+
+
+func mark_how_to_play_seen(page_id: String) -> void:
+	if how_to_play_seen.has(page_id):
+		return
+	how_to_play_seen.append(page_id)
+	_save_config()
+
+
+## Brings every "How to play" card back, for the next visit to each screen.
+func reset_how_to_play() -> void:
+	how_to_play_seen.clear()
+	_save_config()
+
+
 func update_latest_version(new_value: String) -> void:
 	latest_version = new_value
 	_save_config()
@@ -139,6 +158,13 @@ func _load_config() -> void:
 		draft_show_never_draft = config.get_value("settings", "draft_show_never_draft", false)
 		draft_hide_unowned = config.get_value("settings", "draft_hide_unowned", false)
 
+	how_to_play_seen.clear()
+	var seen = config.get_value("how_to_play", "seen", [])
+	if seen is Array:
+		for page_id in seen:
+			if page_id is String:
+				how_to_play_seen.append(page_id)
+
 	if config.has_section("updater"):
 		latest_version = config.get_value("updater", "latest_version", "")
 
@@ -155,6 +181,8 @@ func _save_config() -> void:
 		config.erase_section_key("settings", "auto_update_mods")
 	config.set_value("settings", "draft_show_never_draft", draft_show_never_draft)
 	config.set_value("settings", "draft_hide_unowned", draft_hide_unowned)
+
+	config.set_value("how_to_play", "seen", how_to_play_seen)
 
 	# Updater
 	config.set_value("updater", "latest_version", latest_version)
