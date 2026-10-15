@@ -111,3 +111,20 @@ func test_tests_and_tools_never_get_a_card() -> void:
 	card.show_if_new()
 	await get_tree().create_timer(HowToPlay.ARRIVAL_DELAY + 0.1).timeout
 	assert_false(card.visible, "so arriving shows nothing")
+
+
+func test_the_card_fits_its_tips_and_the_screen() -> void:
+	# Sizing used to run before the wrapped tips knew their width, measuring
+	# them a word per line: a card thousands of pixels tall, its text off-screen.
+	var card := _card(PAGES[1])
+	await get_tree().process_frame
+
+	card.show_page()
+	for i in range(3):
+		await get_tree().process_frame
+
+	var shown := card.get_global_rect()
+	var screen := card.get_viewport_rect()
+	assert_eq(card.size.y, card.get_combined_minimum_size().y, "as tall as its tips")
+	assert_true(screen.encloses(Rect2(shown.position, card.size * card.scale)), "on screen")
+	assert_lt(card._tips.get_child(0).size.y, 200.0, "a tip wraps at the card's width")
