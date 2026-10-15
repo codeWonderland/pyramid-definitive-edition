@@ -16,6 +16,7 @@ script = ExtResource("1_pfp01")
 
 [node name="Backing" type="PanelContainer" parent="." unique_id=1174330002]
 unique_name_in_owner = true
+theme_type_variation = &"DrawerPanel"
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -98,7 +99,7 @@ text = "Hide games I don't own"
 [node name="MarksHeading" type="Label" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330018]
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
-text = "Your marks"
+text = "Your marks (click: only, hide)"
 
 [node name="MarkList" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330019]
 unique_name_in_owner = true

@@ -1,15 +1,31 @@
 class_name PackFilterPanel extends Control
 
 ## Filter drawer for the draft screen. Slides in from the right edge with the
-## player's visibility options, a checkbox per player mark and per tag declared by
-## the loaded packs, an any/all mode toggle, and a search box for when the list
-## grows long.
+## player's visibility options, a three-way filter per player mark, a checkbox per
+## tag declared by the loaded packs, an any/all mode toggle, and a search box for
+## when the list grows long.
 
 signal filters_changed(tags: Array[String], match_all: bool)
+
+## A mark filter's three states, cycled by clicking it. Marks like "Avoid on
+## stream" are mostly wanted the other way round - leave those games out - so a
+## mark can narrow the draft to its games or hide them.
+enum MarkFilter { OFF, ONLY, HIDE }
 
 ## Panel width at the 1920x1080 reference size; scaled to fit smaller screens.
 const REFERENCE_WIDTH: float = 420.0
 const SLIDE_TIME: float = 0.25
+
+const MARK_FILTER_PREFIX: Dictionary = {
+	MarkFilter.OFF: "",
+	MarkFilter.ONLY: "Only: ",
+	MarkFilter.HIDE: "Hide: ",
+}
+const MARK_FILTER_COLOR: Dictionary = {
+	MarkFilter.OFF: Color(1, 1, 1, 1),
+	MarkFilter.ONLY: Color(0.55, 0.85, 1, 1),
+	MarkFilter.HIDE: Color(1, 0.55, 0.5, 1),
+}
 
 var _match_all: bool = false
 var _tag_search: String = ""
@@ -17,7 +33,7 @@ var _tag_search: String = ""
 # spell the same tag differently.
 var _selected: Dictionary = {}
 var _checkboxes: Array[CheckBox] = []
-var _mark_boxes: Array[CheckBox] = []
+var _mark_buttons: Array[Button] = []
 var _slide_tween: Tween = null
 
 @onready var _backing: PanelContainer = %Backing
@@ -95,16 +111,37 @@ func _input(event: InputEvent) -> void:
 ## standing preferences, not part of narrowing down this draft.
 func clear_filters() -> void:
 	_selected.clear()
-	for box in _checkboxes + _mark_boxes:
+	for box in _checkboxes:
 		box.set_pressed_no_signal(false)
+	for button in _mark_buttons:
+		_set_mark_filter(button, MarkFilter.OFF)
 	_emit_change()
 
 
+## Marks whose games the draft is narrowed to.
 func selected_marks() -> Array[String]:
+	return _marks_set_to(MarkFilter.ONLY)
+
+
+## Marks whose games the draft leaves out.
+func hidden_marks() -> Array[String]:
+	return _marks_set_to(MarkFilter.HIDE)
+
+
+## Moves a mark's filter on to its next state: off, only, hide, off again.
+func cycle_mark_filter(mark: String) -> void:
+	for button in _mark_buttons:
+		if button.get_meta("mark") == mark:
+			var next: int = (int(button.get_meta("state")) + 1) % MarkFilter.size()
+			_set_mark_filter(button, next)
+	_emit_change()
+
+
+func _marks_set_to(state: int) -> Array[String]:
 	var marks: Array[String] = []
-	for box in _mark_boxes:
-		if box.button_pressed:
-			marks.append(box.get_meta("mark"))
+	for button in _mark_buttons:
+		if int(button.get_meta("state")) == state:
+			marks.append(button.get_meta("mark"))
 	return marks
 
 
@@ -118,13 +155,25 @@ func hide_unowned() -> bool:
 
 func _build_mark_boxes() -> void:
 	for mark in PlayerMarksManager.FILTERABLE_MARKS:
-		var box := CheckBox.new()
-		box.text = PlayerMarksManager.label_for(mark)
-		box.theme_type_variation = &"SmallCheckBox"
-		box.set_meta("mark", mark)
-		box.toggled.connect(func(_on: bool) -> void: _emit_change())
-		_mark_list.add_child(box)
-		_mark_boxes.append(box)
+		var button := Button.new()
+		button.theme_type_variation = &"MarkFilterButton"
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.tooltip_text = "Click to cycle: off, only these games, hide these games"
+		button.set_meta("mark", mark)
+		button.pressed.connect(cycle_mark_filter.bind(mark))
+		_mark_list.add_child(button)
+		_mark_buttons.append(button)
+		_set_mark_filter(button, MarkFilter.OFF)
+
+
+func _set_mark_filter(button: Button, state: int) -> void:
+	button.set_meta("state", state)
+	var label := PlayerMarksManager.label_for(button.get_meta("mark"))
+	button.text = MARK_FILTER_PREFIX[state] + label
+	# The state's colour is per button and changes as it's clicked - not
+	# something a static theme can say.
+	for slot in [&"font_color", &"font_hover_color", &"font_focus_color", &"font_pressed_color"]:
+		button.add_theme_color_override(slot, MARK_FILTER_COLOR[state])
 
 
 func _on_visibility_toggled(_on: bool) -> void:
@@ -236,7 +285,7 @@ func _on_tag_search_changed(query: String) -> void:
 ## Hides checkboxes that don't match the in-panel search. A ticked tag stays
 ## visible so the player can always see and undo what is filtering the grid.
 func _apply_tag_search() -> void:
-	for box in _checkboxes + _mark_boxes:
+	for box in _checkboxes + _mark_buttons:
 		box.visible = box.button_pressed or FuzzyMatch.matches(_tag_search, box.text)
 
 

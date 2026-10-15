@@ -20,6 +20,7 @@ var _favorites_only: bool = false
 var _search_query: String = ""
 var _tag_filters: Array[String] = []
 var _mark_filters: Array[String] = []
+var _hidden_marks: Array[String] = []
 var _show_never_draft: bool = UserSettingsManager.draft_show_never_draft
 var _hide_unowned: bool = UserSettingsManager.draft_hide_unowned
 # With more than one tag ticked: true requires a pack to carry all of them,
@@ -56,8 +57,10 @@ func set_search_query(query: String) -> void:
 
 ## Player-mark filters from the filter panel; combined with the tag filters under
 ## the same any/all mode.
-func set_mark_filters(marks: Array[String]) -> void:
+## `hidden` marks leave their games out, whichever mode the other filters use.
+func set_mark_filters(marks: Array[String], hidden: Array[String] = []) -> void:
 	_mark_filters = marks.duplicate()
+	_hidden_marks = hidden.duplicate()
 	_current_page = 0
 	_populate()
 
@@ -179,6 +182,10 @@ func _ordered_packs() -> Array[PackData]:
 ## Otherwise each ticked tag or mark is one condition, and the any/all mode
 ## decides whether a pack needs one of them or every one.
 func _matches_filters(pack: PackData) -> bool:
+	for mark in _hidden_marks:
+		if PlayerMarksManager.has_mark(pack.folder_path, mark):
+			return false
+
 	if _tag_filters.is_empty() and _mark_filters.is_empty():
 		return true
 
