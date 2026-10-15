@@ -8,20 +8,22 @@ const LOGO_PULSE_TIME: float = 1.6
 
 @onready var _background: TextureRect = %Background
 @onready var _title: Label = %Title
-@onready var _start_label: Label = %StartLabel
 @onready var _pause_menu: PauseMenu = %PauseMenu
-@onready var _load_game_button: TextureButton = %Load
 @onready var _load_game_dialog: LoadGameDialog = %LoadGameDialog
-@onready var _settings_button: TextureButton = %Settings
-@onready var _exit_button: TextureButton = %Exit
+@onready var _menu: VBoxContainer = %Menu
+@onready var _start_button: Button = %StartRun
+@onready var _load_game_button: Button = %LoadRun
+@onready var _library_button: Button = %Library
+@onready var _settings_button: Button = %Settings
+@onready var _exit_button: Button = %Exit
 @onready var _credits_button: TextureButton = %Credits
-@onready var _library_button: TextureButton = %Library
 @onready var _github_button: TextureButton = %Github
 
 
 func _ready() -> void:
 	RunManager.clear()
 	_setup_ui()
+	_start_button.pressed.connect(_start_run)
 	_settings_button.pressed.connect(_toggle_settings)
 	_load_game_button.pressed.connect(_load_game)
 	_exit_button.pressed.connect(_close_game)
@@ -38,39 +40,6 @@ func _set_background() -> void:
 		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
-## "Press anything to start": a click anywhere that isn't one of the menu's own
-## buttons starts a run. Decided at the moment of the press. Buttons act on
-## release, so waiting to see whether a button claimed the click raced the
-## player's hold - a click held a moment too long on Library or Credits started a
-## run instead.
-func _input(event: InputEvent) -> void:
-	if not (event is InputEventMouseButton and event.pressed):
-		return
-
-	if _pause_menu.visible or _load_game_dialog.visible:
-		return
-
-	if is_over_menu_button(event.position):
-		return
-
-	_transition_scene()
-
-
-## Whether a screen position lands on one of the menu's buttons.
-func is_over_menu_button(position: Vector2) -> bool:
-	for button in [
-		_load_game_button,
-		_settings_button,
-		_exit_button,
-		_credits_button,
-		_library_button,
-		_github_button,
-	]:
-		if button.is_visible_in_tree() and button.get_global_rect().has_point(position):
-			return true
-	return false
-
-
 func _setup_ui() -> void:
 	var og_title_pos = _title.position
 	_title.scale = Vector2.ZERO
@@ -80,7 +49,7 @@ func _setup_ui() -> void:
 	title_tween.tween_property(_title, "scale", Vector2.ONE, 0.7)
 	var title_pos_tween = create_tween()
 	title_pos_tween.tween_property(_title, "position", og_title_pos, 0.7)
-	title_tween.finished.connect(_show_label)
+	title_tween.finished.connect(_show_menu)
 
 	var title_rot_tween = create_tween()
 	title_rot_tween.tween_property(_title, "rotation_degrees", -LOGO_SWAY_DEGREES, 0.7)
@@ -119,17 +88,12 @@ func _start_logo_idle() -> void:
 	)
 
 
-func _show_label() -> void:
-	var label_tween = create_tween()
-	label_tween.tween_property(_start_label, "modulate:a", 1.0, 1.0)
-	label_tween.finished.connect(_hide_label)
-
-
-func _hide_label() -> void:
-	await get_tree().create_timer(0.3).timeout
-	var label_tween = create_tween()
-	label_tween.tween_property(_start_label, "modulate:a", 0.0, 1.0)
-	label_tween.finished.connect(_show_label)
+## The menu rises in once the logo has landed, with Start a run focused so the
+## keyboard (arrows, Enter) works from the start.
+func _show_menu() -> void:
+	_menu.show()
+	Motion.rise_in(_menu.get_children().filter(func(child: Node) -> bool: return child is Button))
+	_start_button.grab_focus()
 
 
 func _toggle_settings() -> void:
@@ -146,7 +110,10 @@ func _load_game() -> void:
 	_load_game_dialog.show()
 
 
-func _transition_scene() -> void:
+func _start_run() -> void:
+	if _pause_menu.visible or _load_game_dialog.visible:
+		return
+
 	SceneTransition.change_scene_to_packed(load("res://source/updater/updater.tscn"))
 
 
