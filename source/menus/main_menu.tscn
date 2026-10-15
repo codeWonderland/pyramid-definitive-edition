@@ -1,12 +1,8 @@
 [gd_scene format=3 uid="uid://ctf5sb112jkcq"]
 
-[ext_resource type="Texture2D" uid="uid://bsng1x587krqd" path="res://assets/sprites/ui/buttons/library.png" id="20_library"]
 [ext_resource type="Theme" uid="uid://dkcfibuwqlsb5" path="res://assets/themes/main_theme.tres" id="1_3w2xd"]
 [ext_resource type="Script" uid="uid://cbob4lq0ngk6w" path="res://source/menus/main_menu.gd" id="2_ea0ap"]
 [ext_resource type="Texture2D" uid="uid://u52jchngj51e" path="res://assets/sprites/ui/background.png" id="3_qwdd7"]
-[ext_resource type="Texture2D" uid="uid://bso3qhggdljhj" path="res://assets/sprites/ui/buttons/save.png" id="4_emlqa"]
-[ext_resource type="Texture2D" uid="uid://f2wi86f1h7bp" path="res://assets/sprites/ui/buttons/settings.png" id="4_xebgs"]
-[ext_resource type="Texture2D" uid="uid://bblsle51171hr" path="res://assets/sprites/ui/buttons/exit.png" id="5_emlqa"]
 [ext_resource type="PackedScene" uid="uid://bhjmr1eb57wwh" path="res://source/menus/pause_menu.tscn" id="6_ea0ap"]
 [ext_resource type="Texture2D" uid="uid://bwdl5x2iaqyfp" path="res://assets/sprites/ui/buttons/github.png" id="7_emlqa"]
 [ext_resource type="Texture2D" uid="uid://cwnfpyfvt1jt2" path="res://assets/sprites/ui/buttons/credits.png" id="8_1hacp"]
@@ -42,45 +38,48 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Load" type="TextureButton" parent="MarginContainer" unique_id=1750466276]
+[node name="Menu" type="VBoxContainer" parent="MarginContainer"]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-texture_normal = ExtResource("4_emlqa")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=422398039]
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 0
-alignment = 2
-
-[node name="Library" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=1174390028]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
-tooltip_text = "Library"
-texture_normal = ExtResource("20_library")
-
-[node name="Settings" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=225985219]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
-texture_normal = ExtResource("4_xebgs")
-
-[node name="Exit" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=1076728457]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
-texture_normal = ExtResource("5_emlqa")
-
-[node name="StartLabel" type="Label" parent="MarginContainer" unique_id=1928650487]
-unique_name_in_owner = true
-modulate = Color(1, 1, 1, 0)
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-text = "- Press Anything to Start -"
+theme_override_constants/separation = 4
+
+[node name="StartRun" type="Button" parent="MarginContainer/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuTextButton"
+text = "Start a run"
+
+[node name="LoadRun" type="Button" parent="MarginContainer/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuTextButton"
+text = "Load a run"
+
+[node name="Library" type="Button" parent="MarginContainer/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuTextButton"
+text = "Library"
+
+[node name="Settings" type="Button" parent="MarginContainer/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuTextButton"
+text = "Settings"
+
+[node name="Exit" type="Button" parent="MarginContainer/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuTextButton"
+text = "Exit"
+
+[node name="BottomSpace" type="Control" parent="MarginContainer/Menu"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+mouse_filter = 2
 
 [node name="Github" type="TextureButton" parent="MarginContainer" unique_id=148999680]
 unique_name_in_owner = true
