@@ -213,26 +213,23 @@ func _panel() -> PackFilterPanel:
 func test_drawer_offers_the_filterable_marks() -> void:
 	var panel := await _panel()
 
-	assert_eq(panel._mark_boxes.size(), PlayerMarksManager.FILTERABLE_MARKS.size(), "one box each")
-	assert_eq(panel._mark_boxes[0].text, "Owned", "labelled as in the library")
+	assert_eq(
+		panel._mark_buttons.size(), PlayerMarksManager.FILTERABLE_MARKS.size(), "one filter each"
+	)
+	assert_eq(panel._mark_buttons[0].text, "Owned", "labelled as in the library, off")
 
 
-func test_ticking_a_mark_is_reported() -> void:
+func test_clear_turns_mark_filters_off_but_keeps_visibility() -> void:
 	var panel := await _panel()
-
-	panel._mark_boxes[0].button_pressed = true
-
-	assert_eq(panel.selected_marks(), ["owned"], "the drawer reports it")
-
-
-func test_clear_unticks_marks_but_keeps_visibility() -> void:
-	var panel := await _panel()
-	panel._mark_boxes[0].button_pressed = true
+	panel.cycle_mark_filter("owned")
+	panel.cycle_mark_filter("avoid_on_stream")
+	panel.cycle_mark_filter("avoid_on_stream")
 	panel._show_never_draft.button_pressed = true
 
 	panel.clear_filters()
 
 	assert_eq(panel.selected_marks(), [], "marks cleared")
+	assert_eq(panel.hidden_marks(), [], "hidden ones too")
 	assert_true(panel.show_never_draft(), "visibility is a standing preference, left alone")
 
 
@@ -258,5 +255,8 @@ func test_draft_screen_wires_the_drawer_to_the_grid() -> void:
 	screen._filter_panel._show_never_draft.button_pressed = true
 	assert_eq(grid._ordered_packs().size(), 3, "the drawer's show option reaches the grid")
 
-	screen._filter_panel._mark_boxes[3].button_pressed = true  # Too long
+	screen._filter_panel.cycle_mark_filter("too_long")
 	assert_eq(_titles(grid._ordered_packs()), ["Charlie"], "and so does a mark filter")
+
+	screen._filter_panel.cycle_mark_filter("too_long")
+	assert_false(_titles(grid._ordered_packs()).has("Charlie"), "and hiding one")
