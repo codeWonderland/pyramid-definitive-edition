@@ -7,6 +7,7 @@
 
 [ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
 [ext_resource type="Resource" path="res://source/menus/how_to_play/pages/library.tres" id="htp_page"]
+[ext_resource type="Script" path="res://source/menus/library_parts/library_icon.gd" id="lib_icon"]
 [node name="Library" type="Control" unique_id=1174390001]
 layout_mode = 3
 anchors_preset = 15
@@ -102,75 +103,199 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="Details" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin" unique_id=1174390017]
+[node name="Details" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 20
 
-[node name="PackName" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390018]
+[node name="Header" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PackName" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Header"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"MediumTitle"
 autowrap_mode = 2
 
-[node name="Tags" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390019]
+[node name="TagChips" type="HFlowContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
+size_flags_vertical = 0
+alignment = 2
+
+[node name="Pills" type="HFlowContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+
+[node name="TimePill" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LibraryChip"
+
+[node name="Row" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/TimePill"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Control" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/TimePill/Row"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("lib_icon")
+kind = 0
+
+[node name="PlayTime" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/TimePill/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FreePill" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LibraryChip"
+
+[node name="Row" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/FreePill"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Control" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/FreePill/Row"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("lib_icon")
+kind = 1
+
+[node name="FreeLabel" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Pills/FreePill/Row"]
+layout_mode = 2
+text = "Free"
+
+[node name="RulesRow" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="VersusTile" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LibraryTile"
+
+[node name="Row" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/VersusTile"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Icon" type="Control" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/VersusTile/Row"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("lib_icon")
+kind = 2
+
+[node name="Text" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/VersusTile/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/VersusTile/Row/Text"]
+layout_mode = 2
+text = "Versus"
+
+[node name="VersusRule" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/VersusTile/Row/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 autowrap_mode = 2
 
-[node name="Description" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+[node name="CoopTile" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LibraryTile"
+
+[node name="Row" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/CoopTile"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Icon" type="Control" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/CoopTile/Row"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("lib_icon")
+kind = 3
+
+[node name="Text" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/CoopTile/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/CoopTile/Row/Text"]
+layout_mode = 2
+text = "Co-op"
+
+[node name="CoopRule" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/RulesRow/CoopTile/Row/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
 autowrap_mode = 2
 
-[node name="Facts" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390020]
+[node name="AboutRow" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 unique_name_in_owner = true
 layout_mode = 2
-autowrap_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Links" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
-unique_name_in_owner = true
-visible = false
+[node name="AboutTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutRow"]
 layout_mode = 2
+size_flags_horizontal = 3
+text = "About"
 
-[node name="StoreLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Links"]
+[node name="StoreLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutRow"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Store page"
+size_flags_vertical = 4
+theme_type_variation = &"LibraryLink"
+text = "Open store page"
 
-[node name="PresskitLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/Links"]
+[node name="PresskitLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutRow"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"LibraryLink"
 text = "Press kit"
 
-[node name="Rules" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390021]
+[node name="DescriptionBox" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LibraryTile"
+
+[node name="Description" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/DescriptionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 autowrap_mode = 2
 
-[node name="Challenges" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390022]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SmallLabel"
-autowrap_mode = 2
-
-[node name="MarksTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390023]
+[node name="MarksTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 layout_mode = 2
 text = "Your marks"
 
-[node name="Marks" type="HFlowContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390024]
+[node name="Marks" type="HFlowContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
 
-[node name="CardsTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390025]
+[node name="CardsTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 layout_mode = 2
 text = "Cards"
 
-[node name="Cards" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details" unique_id=1174390026]
+[node name="Cards" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 unique_name_in_owner = true
 layout_mode = 2
 

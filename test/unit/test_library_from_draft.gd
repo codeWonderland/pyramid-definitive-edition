@@ -68,5 +68,11 @@ func test_the_library_only_mentions_free() -> void:
 	var paid := _pack("Paid")
 	paid.metadata = {"is_free": false}
 
-	assert_string_contains(Library.describe_facts(free), "Free")
-	assert_false(Library.describe_facts(paid).contains("Paid"), "paid is the norm, left unsaid")
+	var library := LIBRARY.instantiate() as Library
+	add_child_autofree(library)
+	await get_tree().process_frame
+
+	library._show_details(free)
+	assert_true(library._free_pill.visible, "free is called out")
+	library._show_details(paid)
+	assert_false(library._free_pill.visible, "paid is the norm, left unsaid")
