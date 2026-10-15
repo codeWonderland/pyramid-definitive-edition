@@ -18,6 +18,10 @@ const MAX_ROW_WIDTH: float = 1240.0
 var selected_packs: Array[PackData] = []
 var num_games: int = 5
 var popup_open: bool = false
+## Set when the Library is opened from somewhere other than the main menu: where
+## its back button returns to, and which game to open on arrival.
+var library_return_scene: String = ""
+var library_focus_path: String = ""
 var save_data: SaveData = null:
 	set(value):
 		save_data = value
@@ -43,6 +47,8 @@ func clear() -> void:
 	selected_packs = []
 	num_games = 5
 	popup_open = false
+	library_return_scene = ""
+	library_focus_path = ""
 	save_data = null
 	_card_z_counter = 100
 	_trash_zone_rect = Rect2()

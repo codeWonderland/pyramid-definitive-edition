@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://wv5four7kah3" path="res://source/menus/menu_widgets/pack_select_card.gd" id="2_6c50a"]
 
 [node name="PackSelectCard" type="TextureRect"]
+tooltip_text = "Click to draft · Right-click to favorite · L to open in the Library"
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("1_tbm40")

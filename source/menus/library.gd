@@ -57,6 +57,7 @@ func _ready() -> void:
 		await PacksManager.load()
 
 	_build_grid()
+	_open_requested_pack()
 	_how_to_play.show_if_new()
 
 
@@ -80,7 +81,23 @@ func _set_background() -> void:
 func _back() -> void:
 	if _card_inspector.visible:
 		return
-	SceneTransition.change_scene_to_packed(load("res://source/menus/main_menu.tscn"))
+	var destination: String = RunManager.library_return_scene
+	RunManager.library_return_scene = ""
+	if destination.is_empty():
+		destination = "res://source/menus/main_menu.tscn"
+	SceneTransition.change_scene_to_packed(load(destination))
+
+
+## Opens the game another screen asked for (L over a game on the draft screen).
+func _open_requested_pack() -> void:
+	var wanted: String = RunManager.library_focus_path
+	RunManager.library_focus_path = ""
+	if wanted.is_empty():
+		return
+	for pack in PacksManager.all_packs:
+		if pack.folder_path == wanted:
+			_show_details(pack)
+			return
 
 
 # --- Grid ---
@@ -191,8 +208,9 @@ static func describe_facts(pack: PackData) -> String:
 	var facts: Array[String] = []
 	var record := pack.metadata
 
-	if record.get("is_free") is bool:
-		facts.append("Free" if record["is_free"] else "Paid")
+	# Only worth saying when it's free; paid is the norm.
+	if record.get("is_free") == true:
+		facts.append("Free")
 	if record.get("estimated_time") is String and not record["estimated_time"].is_empty():
 		facts.append("About %s per run" % record["estimated_time"])
 

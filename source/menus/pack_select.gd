@@ -88,6 +88,33 @@ func _set_background() -> void:
 		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
+## L over a game opens its Library entry; the Library's back button returns here,
+## with the draft as it was.
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("OpenInLibrary"):
+		return
+	if _pause_menu.visible or _how_to_play.visible or _filter_panel.is_open():
+		return
+
+	var pack := pack_under(get_global_mouse_position())
+	if pack == null:
+		return
+
+	RunManager.library_return_scene = scene_file_path
+	RunManager.library_focus_path = pack.folder_path
+	get_viewport().set_input_as_handled()
+	SceneTransition.change_scene_to_packed(load("res://source/menus/library.tscn"))
+
+
+## The game whose card is at `point`, in the grid or among the picks, or null.
+func pack_under(point: Vector2) -> PackData:
+	for container in [_pack_select_packs, _pack_select_selected_packs]:
+		for card in container.get_children():
+			if card is PackSelectCard and card.get_global_rect().has_point(point):
+				return card.pack_data
+	return null
+
+
 func _back() -> void:
 	if _pause_menu.visible:
 		return
