@@ -36,7 +36,7 @@ func _make_panel() -> PackFilterPanel:
 	return panel
 
 
-func _box_for(panel: PackFilterPanel, tag: String) -> CheckBox:
+func _box_for(panel: PackFilterPanel, tag: String) -> Button:
 	for box in panel._checkboxes:
 		if box.text == tag:
 			return box
