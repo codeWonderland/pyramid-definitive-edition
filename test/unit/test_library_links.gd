@@ -65,3 +65,22 @@ func test_nothing_extra_is_shown_without_a_description_or_links() -> void:
 
 	assert_false(library._description_box.visible, "no description")
 	assert_false(library._about_row.visible, "no about row")
+
+
+func test_only_steam_pages_get_the_store_button() -> void:
+	assert_true(Library.is_steam_link("https://store.steampowered.com/app/250900/"))
+	assert_true(Library.is_steam_link("https://s.team/a/250900"))
+	assert_true(Library.is_steam_link("http://steamcommunity.com/app/250900"))
+	assert_false(Library.is_steam_link("https://store.epicgames.com/p/hades"), "another store")
+	assert_false(
+		Library.is_steam_link("https://store.steampowered.com.evil.example/"), "a lookalike"
+	)
+	assert_false(Library.is_steam_link(""), "no link")
+
+	var library := await _make()
+	var pack: PackData = PacksManager.all_packs[0]
+	pack.metadata["store_url"] = "https://itch.io/some-game"
+	pack.metadata["presskit_url"] = "https://example.com/presskit"
+	library._show_details(pack)
+	assert_false(library._store_link.visible, "an itch.io page gets no Steam button")
+	assert_true(library._about_links.visible, "the press kit still shows")

@@ -35,6 +35,7 @@ var _selected: PackData = null
 @onready var _coop_tile: PanelContainer = %CoopTile
 @onready var _coop_rule: Label = %CoopRule
 @onready var _about_row: HBoxContainer = %AboutRow
+@onready var _about_links: HBoxContainer = %AboutLinks
 @onready var _store_link: Button = %StoreLink
 @onready var _presskit_link: Button = %PresskitLink
 @onready var _description_box: PanelContainer = %DescriptionBox
@@ -197,8 +198,9 @@ func _show_details(pack: PackData) -> void:
 	var description = record.get("description")
 	_description.text = description.strip_edges() if description is String else ""
 	_description_box.visible = not _description.text.is_empty()
-	_store_link.visible = not PackRecord.web_link(record, "store_url").is_empty()
+	_store_link.visible = is_steam_link(PackRecord.web_link(record, "store_url"))
 	_presskit_link.visible = not PackRecord.web_link(record, "presskit_url").is_empty()
+	_about_links.visible = _store_link.visible or _presskit_link.visible
 	_about_row.visible = (_description_box.visible or _store_link.visible or _presskit_link.visible)
 
 	_build_marks(pack)
@@ -221,12 +223,19 @@ func _display_name(pack: PackData) -> String:
 	return recorded if recorded is String and not recorded.is_empty() else pack.title
 
 
-## "About 45m per run", or "" when no time is recorded.
+## "~45m", or "" when no time is recorded.
 static func play_time(record: Dictionary) -> String:
 	var time = record.get("estimated_time")
 	if time is String and not time.strip_edges().is_empty():
-		return "About %s per run" % time.strip_edges()
+		return "~%s" % time.strip_edges()
 	return ""
+
+
+## Whether a store link goes to Steam. The store button carries Steam's logo, so
+## it's only offered for Steam pages.
+static func is_steam_link(url: String) -> bool:
+	var host := url.trim_prefix("https://").trim_prefix("http://").get_slice("/", 0).to_lower()
+	return host in ["store.steampowered.com", "steamcommunity.com", "s.team"]
 
 
 ## One of the record's rules (versus_tertiary, co_op_rules), or "" when missing.
