@@ -36,6 +36,7 @@ FavoritesManager="*res://source/autoloads/favorites_manager.gd"
 PlayerMarksManager="*res://source/autoloads/player_marks_manager.gd"
 SteamWorkshop="*res://source/autoloads/steam_workshop.gd"
 SceneTransition="*res://source/autoloads/scene_transition.tscn"
+PresetsManager="*res://source/autoloads/presets_manager.gd"
 
 [display]
 

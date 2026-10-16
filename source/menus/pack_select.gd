@@ -14,6 +14,8 @@ var _favorites_only: bool = false
 @onready var _done: Button = %Done
 @onready var _sort_button: Button = %SortButton
 @onready var _filter_button: Button = %FilterButton
+@onready var _presets_button: Button = %PresetsButton
+@onready var _presets_dialog: PresetsDialog = %PresetsDialog
 @onready var _search_bar: LineEdit = %SearchBar
 @onready var _tag_filter_button: TextureButton = %TagFilterButton
 @onready var _filter_panel: PackFilterPanel = %PackFilterPanel
@@ -27,6 +29,7 @@ func _ready() -> void:
 	_next.pressed.connect(_next_page)
 	_previous.pressed.connect(_prev_page)
 	_done.pressed.connect(_selection_complete)
+	_presets_button.pressed.connect(_open_presets)
 	_sort_button.pressed.connect(_toggle_sort)
 	_filter_button.pressed.connect(_toggle_filter)
 	_search_bar.text_changed.connect(_on_search_changed)
@@ -95,6 +98,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if _pause_menu.visible or _how_to_play.visible or _filter_panel.is_open():
 		return
+	if _presets_dialog.visible:
+		return
 
 	var pack := pack_under(get_global_mouse_position())
 	if pack == null:
@@ -113,6 +118,13 @@ func pack_under(point: Vector2) -> PackData:
 			if card is PackSelectCard and card.get_global_rect().has_point(point):
 				return card.pack_data
 	return null
+
+
+func _open_presets() -> void:
+	if _pause_menu.visible or _presets_dialog.visible:
+		return
+	_filter_panel.close()
+	_presets_dialog.open()
 
 
 func _back() -> void:

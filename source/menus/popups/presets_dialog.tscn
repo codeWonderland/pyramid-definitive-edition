@@ -1,0 +1,97 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://source/menus/popups/presets_dialog.gd" id="1_pd"]
+[ext_resource type="Texture2D" uid="uid://lh3dna1fipe" path="res://assets/sprites/ui/icons/close.png" id="2_close"]
+
+[node name="PresetsDialog" type="PanelContainer"]
+visible = false
+offset_right = 900.0
+offset_bottom = 48.0
+script = ExtResource("1_pd")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
+
+[node name="Rows" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Margin/Rows"]
+layout_mode = 2
+theme_type_variation = &"MediumTitle"
+text = "Presets"
+horizontal_alignment = 1
+
+[node name="SaveRow" type="HBoxContainer" parent="Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PresetName" type="LineEdit" parent="Margin/Rows/SaveRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Name your current picks"
+max_length = 40
+
+[node name="SavePicks" type="Button" parent="Margin/Rows/SaveRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Save picks"
+
+[node name="SaveHint" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Rows"]
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Lists" type="VBoxContainer" parent="Margin/Rows/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="YourTitle" type="Label" parent="Margin/Rows/Scroll/Lists"]
+layout_mode = 2
+text = "Your presets"
+
+[node name="YourList" type="VBoxContainer" parent="Margin/Rows/Scroll/Lists"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="YourEmpty" type="Label" parent="Margin/Rows/Scroll/Lists"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "None yet. Pick some games, name them above and save."
+autowrap_mode = 3
+
+[node name="FeaturedTitle" type="Label" parent="Margin/Rows/Scroll/Lists"]
+layout_mode = 2
+text = "Featured"
+
+[node name="FeaturedList" type="VBoxContainer" parent="Margin/Rows/Scroll/Lists"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="FeaturedEmpty" type="Label" parent="Margin/Rows/Scroll/Lists"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "None yet."
+
+[node name="Close" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("2_close")
