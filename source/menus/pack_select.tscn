@@ -151,32 +151,30 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Done Drafting"
 
-[node name="SortButton" type="Button" parent="MarginContainer/BottomButtons" unique_id=2055669498]
-unique_name_in_owner = true
+[node name="LeftButtons" type="VBoxContainer" parent="MarginContainer/BottomButtons"]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = -60.0
+offset_top = -120.0
 offset_right = 196.0
 offset_bottom = -12.0
 grow_vertical = 0
-text = "Sort: A-Z"
+theme_override_constants/separation = 12
 
-[node name="PresetsButton" type="Button" parent="MarginContainer/BottomButtons"]
+[node name="PresetsButton" type="Button" parent="MarginContainer/BottomButtons/LeftButtons"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 216.0
-offset_top = -60.0
-offset_right = 396.0
-offset_bottom = -12.0
-grow_vertical = 0
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
 tooltip_text = "Save your picks, or draft a saved or featured set of games"
 text = "Presets"
+
+[node name="SortButton" type="Button" parent="MarginContainer/BottomButtons/LeftButtons" unique_id=2055669498]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Sort: A-Z"
 
 [node name="FilterButton" type="Button" parent="MarginContainer/BottomButtons" unique_id=29667247]
 unique_name_in_owner = true
