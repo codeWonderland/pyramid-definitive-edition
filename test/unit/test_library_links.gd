@@ -84,3 +84,16 @@ func test_only_steam_pages_get_the_store_button() -> void:
 	library._show_details(pack)
 	assert_false(library._store_link.visible, "an itch.io page gets no Steam button")
 	assert_true(library._about_links.visible, "the press kit still shows")
+
+
+func test_the_store_button_shows_without_a_description() -> void:
+	var library := await _make()
+	var pack: PackData = PacksManager.all_packs[1]
+	pack.metadata = {"store_url": "https://store.steampowered.com/app/367520/"}
+
+	library._show_details(pack)
+
+	assert_false(library._description_box.visible, "nothing to describe")
+	assert_true(library._about_row.visible, "the About section still shows")
+	assert_true(library._about_links.visible, "with its links")
+	assert_true(library._store_link.visible, "and the store button")
