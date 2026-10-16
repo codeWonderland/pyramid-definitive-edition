@@ -12,6 +12,7 @@
 
 [ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
 [ext_resource type="Resource" path="res://source/menus/how_to_play/pages/draft.tres" id="htp_page"]
+[ext_resource type="PackedScene" path="res://source/menus/popups/presets_dialog.tscn" id="presets_dialog"]
 [node name="PackSelect" type="Control" unique_id=594107462]
 layout_mode = 3
 anchors_preset = 15
@@ -163,6 +164,20 @@ offset_bottom = -12.0
 grow_vertical = 0
 text = "Sort: A-Z"
 
+[node name="PresetsButton" type="Button" parent="MarginContainer/BottomButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 216.0
+offset_top = -60.0
+offset_right = 396.0
+offset_bottom = -12.0
+grow_vertical = 0
+tooltip_text = "Save your picks, or draft a saved or featured set of games"
+text = "Presets"
+
 [node name="FilterButton" type="Button" parent="MarginContainer/BottomButtons" unique_id=29667247]
 unique_name_in_owner = true
 layout_mode = 1
@@ -193,3 +208,8 @@ visible = false
 z_index = 4096
 layout_mode = 0
 page = ExtResource("htp_page")
+
+[node name="PresetsDialog" parent="." instance=ExtResource("presets_dialog")]
+unique_name_in_owner = true
+z_index = 4096
+layout_mode = 0
