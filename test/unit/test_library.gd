@@ -157,7 +157,7 @@ func test_the_record_fills_the_pills_and_tiles() -> void:
 	library._show_details(PacksManager.all_packs[0])
 
 	assert_true(library._time_pill.visible)
-	assert_eq(library._play_time.text, "About 15m per run")
+	assert_eq(library._play_time.text, "~15m")
 	assert_true(library._free_pill.visible, "free, so said")
 	assert_eq(library._versus_rule.text, "Fewest matches")
 	assert_eq(library._coop_rule.text, "Share a list")
@@ -168,7 +168,7 @@ func test_rules_and_play_time_are_read_safely() -> void:
 	assert_eq(Library.rule({"objectives": "nope"}, "versus_tertiary"), "", "junk rules")
 	assert_eq(Library.rule({"objectives": {"co_op_rules": 3}}, "co_op_rules"), "", "junk rule")
 	assert_eq(Library.play_time({"estimated_time": "  "}), "", "a blank time")
-	assert_eq(Library.play_time({"estimated_time": "1h"}), "About 1h per run")
+	assert_eq(Library.play_time({"estimated_time": "1h"}), "~1h")
 
 
 func test_cards_are_shown_grouped_by_type() -> void:

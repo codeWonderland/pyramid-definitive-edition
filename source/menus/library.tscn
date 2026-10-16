@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
 [ext_resource type="Resource" path="res://source/menus/how_to_play/pages/library.tres" id="htp_page"]
 [ext_resource type="Script" path="res://source/menus/library_parts/library_icon.gd" id="lib_icon"]
+[ext_resource type="Texture2D" uid="uid://besm3j84kburi" path="res://assets/sprites/ui/icons/steam.svg" id="steam_icon"]
 [node name="Library" type="Control" unique_id=1174390001]
 layout_mode = 3
 anchors_preset = 15
@@ -256,30 +257,40 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "About"
 
-[node name="StoreLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutRow"]
-unique_name_in_owner = true
+[node name="AboutBody" type="VBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"LibraryLink"
-text = "Open store page"
+theme_override_constants/separation = 10
 
-[node name="PresskitLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"LibraryLink"
-text = "Press kit"
-
-[node name="DescriptionBox" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
+[node name="DescriptionBox" type="PanelContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutBody"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"LibraryTile"
 
-[node name="Description" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/DescriptionBox"]
+[node name="Description" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutBody/DescriptionBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SmallLabel"
 autowrap_mode = 2
+
+[node name="AboutLinks" type="HBoxContainer" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutBody"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StoreLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutBody/AboutLinks"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Opens the game's Steam page in your browser"
+theme_type_variation = &"LibraryLink"
+theme_override_constants/icon_max_width = 32
+text = "Open store page"
+icon = ExtResource("steam_icon")
+
+[node name="PresskitLink" type="Button" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details/AboutBody/AboutLinks"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LibraryLink"
+text = "Press kit"
 
 [node name="MarksTitle" type="Label" parent="Margin/Columns/Detail/DetailScroll/DetailMargin/Details"]
 layout_mode = 2
