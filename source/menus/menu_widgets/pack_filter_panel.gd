@@ -32,7 +32,8 @@ var _tag_search: String = ""
 # Ticked tags, keyed by their lowercased form so the set survives packs that
 # spell the same tag differently.
 var _selected: Dictionary = {}
-var _checkboxes: Array[CheckBox] = []
+# Category toggles, styled like the library's marks (LibraryMark).
+var _checkboxes: Array[Button] = []
 var _mark_buttons: Array[Button] = []
 var _slide_tween: Tween = null
 
@@ -42,8 +43,8 @@ var _slide_tween: Tween = null
 @onready var _search: LineEdit = %TagSearch
 @onready var _tag_list: VBoxContainer = %TagList
 @onready var _mark_list: VBoxContainer = %MarkList
-@onready var _show_never_draft: CheckBox = %ShowNeverDraft
-@onready var _hide_unowned: CheckBox = %HideUnowned
+@onready var _show_never_draft: Button = %ShowNeverDraft
+@onready var _hide_unowned: Button = %HideUnowned
 @onready var _clear_button: Button = %ClearButton
 @onready var _empty_label: Label = %EmptyLabel
 
@@ -192,9 +193,10 @@ func rebuild() -> void:
 	_empty_label.visible = tags.is_empty()
 
 	for tag in tags:
-		var box := CheckBox.new()
+		var box := Button.new()
+		box.toggle_mode = true
 		box.text = tag
-		box.theme_type_variation = &"SmallCheckBox"
+		box.theme_type_variation = &"LibraryMark"
 		box.tooltip_text = PacksManager.category_description(tag)
 		box.set_pressed_no_signal(_selected.has(tag.to_lower()))
 		box.toggled.connect(_on_tag_toggled.bind(tag))

@@ -82,17 +82,19 @@ layout_mode = 2
 theme_type_variation = &"SmallLabel"
 text = "Draft visibility"
 
-[node name="ShowNeverDraft" type="CheckBox" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330016]
+[node name="ShowNeverDraft" type="Button" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330016]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"SmallCheckBox"
+toggle_mode = true
+theme_type_variation = &"LibraryMark"
 tooltip_text = "Games you marked Never draft in the Library are hidden unless this is on"
 text = "Show never-draft games"
 
-[node name="HideUnowned" type="CheckBox" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330017]
+[node name="HideUnowned" type="Button" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330017]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"SmallCheckBox"
+toggle_mode = true
+theme_type_variation = &"LibraryMark"
 tooltip_text = "Hides games you marked Don't own, unless also marked Want to include anyway"
 text = "Hide games I don't own"
 
