@@ -9,6 +9,7 @@ const BLANK_CARD: Texture2D = preload("res://assets/sprites/ui/buttons/blank-car
 @onready var _three_button: GameCountChoice = %Three
 @onready var _five_button: GameCountChoice = %Five
 @onready var _pause_menu: PauseMenu = %PauseMenu
+@onready var _layout: MarginContainer = %MarginContainer
 
 
 func _ready() -> void:
@@ -25,6 +26,8 @@ func _ready() -> void:
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
+	get_tree().get_root().size_changed.connect(_resize)
+	_resize()
 
 
 ## The card backs of the games the player drafted, so each choice shows their own
@@ -37,6 +40,18 @@ func _drafted_backs() -> Array[Texture2D]:
 	if backs.is_empty():
 		backs.append(BLANK_CARD)
 	return backs
+
+
+## The screen is laid out for 1920x1080 and scales with the window from there, so
+## it fits the 1280x720 default instead of running off its edges. The layout is
+## scaled whole - a container resets its children's scale - and sized so that,
+## scaled, it still fills the window.
+func _resize() -> void:
+	var screen_size := get_viewport().get_visible_rect().size
+	var scale_mult := minf(screen_size.x / 1920.0, screen_size.y / 1080.0)
+	_layout.scale = Vector2(scale_mult, scale_mult)
+	_layout.position = Vector2.ZERO
+	_layout.size = screen_size / scale_mult
 
 
 func _set_background() -> void:

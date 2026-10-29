@@ -31,12 +31,10 @@ expand_mode = 2
 stretch_mode = 6
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=462539219]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
 
 [node name="Menu" type="VBoxContainer" parent="MarginContainer"]
 unique_name_in_owner = true
@@ -96,6 +94,8 @@ size_flags_vertical = 8
 texture_normal = ExtResource("8_1hacp")
 
 [node name="Control" type="Control" parent="." unique_id=931090940]
+unique_name_in_owner = true
+pivot_offset_ratio = Vector2(0.5, 0.5)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
