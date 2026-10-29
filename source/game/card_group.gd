@@ -205,7 +205,7 @@ func card_at(point: Vector2) -> ChallengeCard:
 	for card in _table_cards:
 		if not is_instance_valid(card) or not card.get_global_rect().has_point(point):
 			continue
-		if top == null or card.z_index > top.z_index:
+		if top == null or card.is_drawn_above(top):
 			top = card
 	return top
 

@@ -13,6 +13,9 @@ const FLIP_TIME: float = 0.22
 ## How much a hovered card grows, and how fast.
 const HOVER_SCALE: float = 1.25
 const HOVER_TIME: float = 0.2
+## Where a hovered card is lifted to: the top of the cards' z band (2-1900), so it
+## shows over every other card while hovered.
+const HOVER_Z: int = 1900
 
 # Velocity-based tilt: drag velocity (px/sec) maps to a pitch/roll lean.
 const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
@@ -25,7 +28,6 @@ const MAX_TILT: float = 0.4
 const TILT_RESPONSE: float = 14.0
 
 @export var is_curse: bool = false
-@export var accounting_for_curse: bool = false
 
 # Deck bookkeeping set by the owning CardGroup so a trashed card can be routed
 # back to the right pile. deck_entry is a CardDeck-encoded int.
@@ -57,6 +59,8 @@ var _roll: float = 0.0
 var _hover_scale: float = 1.0
 var _flip_width: float = 1.0
 var _hover_tween: Tween = null
+# The z-index the card returns to when it stops being hovered.
+var _rest_z: int = 0
 var _tilt_material: ShaderMaterial
 
 
@@ -93,33 +97,29 @@ func _process(delta: float) -> void:
 	_tilt_material.set_shader_parameter("pitch", _pitch)
 
 
-func _physics_process(_delta: float) -> void:
-	# While dragging or flipping, transform is driven by those; skip hover.
-	if _dragging or _flipping:
+## Hovers or un-hovers the card. The table decides which card that is - only the
+## top one under the cursor - so overlapping cards never all grow at once. A
+## hovered card is lifted above the rest while it's hovered, so its grown edges
+## don't slip under a neighbouring game's cards, and drops back after.
+func set_hovered(on: bool) -> void:
+	if _dragging or _flipping or on == hovering:
 		return
-
-	var local_mouse_pos := get_local_mouse_position()
-	var mouse_over_card := Rect2(Vector2.ZERO, size).has_point(local_mouse_pos)
-
-	if (
-		mouse_over_card
-		and (
-			(is_curse and local_mouse_pos.y >= size.y * 0.25)
-			or (!is_curse and accounting_for_curse and local_mouse_pos.y <= size.y * 0.50)
-			or (!is_curse and !accounting_for_curse)
-		)
-		and local_mouse_pos.x >= size.x * 0.1
-		and local_mouse_pos.x <= size.x * 0.9
-	):
-		if not hovering:
-			_tween_hover(HOVER_SCALE)
-
-		hovering = true
+	hovering = on
+	_tween_hover(HOVER_SCALE if on else 1.0)
+	if on:
+		_rest_z = z_index
+		z_index = HOVER_Z
 	else:
-		if hovering:
-			_tween_hover(1.0)
+		z_index = _rest_z
 
-		hovering = false
+
+## Whether this card is drawn over `other`: a higher z-index wins, and on a tie,
+## the one later in the tree - which is what the screen shows, and what mouse
+## clicks already go by.
+func is_drawn_above(other: ChallengeCard) -> bool:
+	if z_index != other.z_index:
+		return z_index > other.z_index
+	return is_greater_than(other)
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -171,7 +171,9 @@ func _input(event: InputEvent) -> void:
 ## z-index on grab"). z_as_relative is off so the index is scene-global.
 func bring_to_front() -> void:
 	z_as_relative = false
+	set_hovered(false)
 	z_index = RunManager.next_card_z_index()
+	_rest_z = z_index
 
 
 func _begin_drag() -> void:

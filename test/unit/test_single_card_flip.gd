@@ -48,6 +48,12 @@ func _make_table() -> Game:
 		CardGroupCollection.DEAL_DELAY + Motion.TIME + Motion.STAGGER * cards.size() + 0.1
 	)
 	await get_tree().create_timer(deal_time).timeout
+	# These tests aim at points, not the cursor: stop the table hovering whatever
+	# card the idle cursor happens to rest on, which in a tiny headless window
+	# overlaps everything.
+	game._card_group_collection.set_physics_process(false)
+	for card in _all_table_cards(game):
+		card.set_hovered(false)
 	return game
 
 
@@ -62,9 +68,11 @@ func _all_table_cards(game: Game) -> Array:
 func test_f_flips_only_the_card_under_the_cursor() -> void:
 	var game := await _make_table()
 	var cards := _all_table_cards(game)
-	var target: ChallengeCard = cards[0]
+	# Whichever card is drawn on top there - in a small window, tables overlap.
+	var point: Vector2 = cards[0].get_global_rect().get_center()
+	var target: ChallengeCard = game._card_group_collection.card_at(point)
 
-	assert_true(game.flip_card_at(target.get_global_rect().get_center()), "a card was flipped")
+	assert_true(game.flip_card_at(point), "a card was flipped")
 	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
 
 	assert_false(target.face_down, "the card under the cursor turned over")
@@ -85,8 +93,8 @@ func test_f_away_from_every_card_flips_nothing() -> void:
 
 func test_f_on_a_face_up_card_turns_it_back_down() -> void:
 	var game := await _make_table()
-	var target: ChallengeCard = _all_table_cards(game)[0]
-	var point := target.get_global_rect().get_center()
+	var point: Vector2 = _all_table_cards(game)[0].get_global_rect().get_center()
+	var target: ChallengeCard = game._card_group_collection.card_at(point)
 	game.flip_card_at(point)
 	await get_tree().create_timer(ChallengeCard.FLIP_TIME + 0.1).timeout
 	assert_false(target.face_down, "first press reveals it")
