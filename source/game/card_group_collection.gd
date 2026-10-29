@@ -9,6 +9,7 @@ var packs: Array[PackData] = []:
 		if not _loading_from_save:
 			_load_packs()
 var _loading_from_save: bool = false
+var _card_dragging: bool = false
 
 @onready var _card_groups: Array[CardGroup] = [
 	%CardGroup,
@@ -20,6 +21,8 @@ var _loading_from_save: bool = false
 
 
 func _ready() -> void:
+	RunManager.card_drag_started.connect(func() -> void: _card_dragging = true)
+	RunManager.card_drag_ended.connect(func() -> void: _card_dragging = false)
 	_resize()
 	get_tree().get_root().size_changed.connect(_resize)
 
@@ -48,9 +51,23 @@ func card_at(point: Vector2) -> ChallengeCard:
 		if group.pack == null:
 			continue
 		var card := group.card_at(point)
-		if card != null and (top == null or card.z_index > top.z_index):
+		if card != null and (top == null or card.is_drawn_above(top)):
 			top = card
 	return top
+
+
+## Hovers only the top card under the cursor - the one a click or F would act on
+## - and none while a card is being dragged.
+func _physics_process(_delta: float) -> void:
+	var top: ChallengeCard = null
+	if not _card_dragging:
+		top = card_at(get_global_mouse_position())
+	for group in _card_groups:
+		if group.pack == null:
+			continue
+		for card in group.table_cards():
+			if is_instance_valid(card):
+				card.set_hovered(card == top)
 
 
 ## Whether any group still has a face-down card.
