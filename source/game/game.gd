@@ -132,21 +132,17 @@ func _set_background() -> void:
 		_background.texture = BackgroundManager.backgrounds[UserSettingsManager.background]
 
 
+## The table's buttons and title are laid out for 1920x1080 and scale with the
+## window both ways from there - at the 1280x720 default they were left at full
+## size, and crowded the cards.
 func _resize() -> void:
 	var screen_size = get_viewport().size as Vector2
-	var scale_mult = screen_size.x / 1280.0
-
-	if screen_size.y / 720.0 < scale_mult:
-		scale_mult = screen_size.y / 720.0
-
-	if scale_mult <= 1.0:
-		var new_scale = Vector2(scale_mult, scale_mult)
-		_title.scale = new_scale
-		_back_button.scale = new_scale
-		_top_right.scale = new_scale
-		_bottom_left.scale = new_scale
-		_reroll_packs_button.scale = new_scale
-		_bottom_right.scale = new_scale
+	var scale_mult := minf(screen_size.x / 1920.0, screen_size.y / 1080.0)
+	var new_scale := Vector2(scale_mult, scale_mult)
+	for control in [
+		_title, _back_button, _top_right, _bottom_left, _reroll_packs_button, _bottom_right
+	]:
+		control.scale = new_scale
 
 
 func _back() -> void:

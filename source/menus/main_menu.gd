@@ -11,6 +11,8 @@ const LOGO_PULSE_TIME: float = 1.6
 @onready var _pause_menu: PauseMenu = %PauseMenu
 @onready var _load_game_dialog: LoadGameDialog = %LoadGameDialog
 @onready var _menu: VBoxContainer = %Menu
+@onready var _layout: MarginContainer = %MarginContainer
+@onready var _title_holder: Control = %Control
 @onready var _start_button: Button = %StartRun
 @onready var _load_game_button: Button = %LoadRun
 @onready var _library_button: Button = %Library
@@ -22,6 +24,8 @@ const LOGO_PULSE_TIME: float = 1.6
 
 func _ready() -> void:
 	RunManager.clear()
+	_resize()
+	get_tree().get_root().size_changed.connect(_resize)
 	_setup_ui()
 	_start_button.pressed.connect(_start_run)
 	_settings_button.pressed.connect(_toggle_settings)
@@ -33,6 +37,18 @@ func _ready() -> void:
 
 	_set_background()
 	UserSettingsManager.background_set.connect(_set_background)
+
+
+## The menu is laid out for 1920x1080 and scales with the window from there, so
+## at the 1280x720 default it doesn't crowd the title. The layout is scaled whole
+## and sized so that, scaled, it still fills the window.
+func _resize() -> void:
+	var screen_size := get_viewport().get_visible_rect().size
+	var scale_mult := minf(screen_size.x / 1920.0, screen_size.y / 1080.0)
+	_layout.scale = Vector2(scale_mult, scale_mult)
+	_layout.position = Vector2.ZERO
+	_layout.size = screen_size / scale_mult
+	_title_holder.scale = Vector2(scale_mult, scale_mult)
 
 
 func _set_background() -> void:
