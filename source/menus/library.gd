@@ -9,6 +9,12 @@ const PACK_SELECT_CARD: PackedScene = preload(
 # Sizes at the 1920x1080 reference; scaled to the window like the other screens.
 const GRID_CARD_HEIGHT: float = 220.0
 const THUMBNAIL_SIZE: Vector2 = Vector2(84, 120)
+## Below this width (panel pixels) the Versus and Co-op tiles stack.
+const RULES_SIDE_BY_SIDE_WIDTH: float = 760.0
+
+## Whether Your marks is open. Kept for the session, so it stays as the player left
+## it while they move between games.
+static var marks_open: bool = false
 
 var _favorites_only: bool = false
 ## The widest mark label's natural width - the narrowest a mark tile can be.
@@ -29,7 +35,7 @@ var _selected: PackData = null
 @onready var _time_pill: PanelContainer = %TimePill
 @onready var _play_time: Label = %PlayTime
 @onready var _free_pill: PanelContainer = %FreePill
-@onready var _rules_row: HBoxContainer = %RulesRow
+@onready var _rules_row: BoxContainer = %RulesRow
 @onready var _versus_tile: PanelContainer = %VersusTile
 @onready var _versus_rule: Label = %VersusRule
 @onready var _coop_tile: PanelContainer = %CoopTile
@@ -41,6 +47,8 @@ var _selected: PackData = null
 @onready var _description_box: PanelContainer = %DescriptionBox
 @onready var _description: Label = %Description
 @onready var _marks: HFlowContainer = %Marks
+@onready var _marks_toggle: Button = %MarksToggle
+@onready var _chevron: LibraryIcon = %Chevron
 @onready var _cards: VBoxContainer = %Cards
 @onready var _card_inspector: CardInspector = %CardInspector
 @onready var _how_to_play: HowToPlay = %HowToPlay
@@ -57,6 +65,10 @@ func _ready() -> void:
 
 	get_tree().get_root().size_changed.connect(_resize)
 	_marks.resized.connect(_fit_marks)
+	_marks_toggle.set_pressed_no_signal(marks_open)
+	_marks_toggle.toggled.connect(_set_marks_open)
+	_set_marks_open(marks_open)
+	_rules_row.resized.connect(_stack_rules)
 
 	_set_background()
 	_update_favorites_label()
@@ -289,6 +301,23 @@ func _build_marks(pack: PackData) -> void:
 	for toggle in _marks.get_children():
 		_marks_natural_width = maxf(_marks_natural_width, toggle.get_combined_minimum_size().x)
 	_fit_marks()
+
+
+## Opens or closes Your marks, like an FAQ entry.
+func _set_marks_open(open: bool) -> void:
+	marks_open = open
+	_marks.visible = open
+	_chevron.rotation_degrees = 90.0 if open else 0.0
+	if open:
+		_fit_marks.call_deferred()
+
+
+## Puts the Versus and Co-op tiles one above the other when the panel is too narrow
+## for them side by side - their rules wrap to a word a line otherwise.
+func _stack_rules() -> void:
+	var stacked := _rules_row.size.x < RULES_SIDE_BY_SIDE_WIDTH
+	if _rules_row.vertical != stacked:
+		_rules_row.vertical = stacked
 
 
 ## Lays the marks out as equal tiles that fill each row, as the design has them:

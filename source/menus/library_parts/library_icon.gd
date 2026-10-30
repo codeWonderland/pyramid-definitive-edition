@@ -5,7 +5,7 @@ class_name LibraryIcon extends Control
 ## they stay crisp at any size and pick up the theme's text colour. Stand-ins
 ## until there's final icon art: swap a node's script for a TextureRect then.
 
-enum Kind { CLOCK, CONTROLLER, VERSUS, COOP, OPEN }
+enum Kind { CLOCK, CONTROLLER, VERSUS, COOP, OPEN, CHEVRON }
 
 const LINE: float = 3.0
 
@@ -48,6 +48,17 @@ func _draw() -> void:
 			for dx in [-s * 0.2, s * 0.2]:
 				draw_circle(c + Vector2(dx, -s * 0.16), s * 0.12, color)
 				draw_arc(c + Vector2(dx, s * 0.32), s * 0.2, PI, TAU, 16, color, LINE, true)
+		Kind.CHEVRON:
+			# Points right; turn it to point down for "open".
+			var r := s * 0.28
+			draw_polyline(
+				PackedVector2Array(
+					[c + Vector2(-r * 0.5, -r), c + Vector2(r * 0.5, 0), c + Vector2(-r * 0.5, r)]
+				),
+				color,
+				LINE + 1,
+				true
+			)
 		Kind.OPEN:
 			var box := Rect2(c - Vector2(s * 0.4, s * 0.3), Vector2(s * 0.7, s * 0.7))
 			draw_polyline(
