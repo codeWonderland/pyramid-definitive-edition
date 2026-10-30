@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://1w2t3sh58d3j"]
+[gd_scene load_steps=4 format=3 uid="uid://1w2t3sh58d3j"]
 
 [ext_resource type="Texture2D" uid="uid://cahirlfplrq8v" path="res://assets/sprites/testing/b1.png" id="1_740tw"]
 [ext_resource type="Script" uid="uid://btnartyborq1i" path="res://source/game/challenge_card.gd" id="1_kle6q"]
+[ext_resource type="Script" uid="uid://bkt2qjcomohbd" path="res://source/game/result_badge.gd" id="2_badge"]
 
 [node name="ChallengeCard" type="TextureRect"]
 custom_minimum_size = Vector2(105, 150)
@@ -12,3 +13,9 @@ texture = ExtResource("1_740tw")
 expand_mode = 3
 stretch_mode = 5
 script = ExtResource("1_kle6q")
+
+[node name="ResultBadge" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+script = ExtResource("2_badge")

@@ -7,7 +7,8 @@ class_name CardGroupData extends Resource
 @export var primary_deck: Array[int] = []
 @export var secondary_deck: Array[int] = []
 # Cards currently on the table. Each entry:
-#   { "entry": int, "secondary": bool, "curse": bool, "x": float, "y": float }
+#   { "entry": int, "secondary": bool, "curse": bool, "x": float, "y": float,
+#     "face_down": bool, "result": int (ChallengeCard.Result) }
 @export var table_cards: Array[Dictionary] = []
 
 # --- Legacy fields (older saves predate the deck model) ---

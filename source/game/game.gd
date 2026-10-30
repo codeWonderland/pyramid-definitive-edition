@@ -3,6 +3,8 @@ class_name Game extends Control
 ## Run name used when the mod word bank has nothing usable in it, so broken mod
 ## data costs the player a flavourful title rather than the whole screen.
 const FALLBACK_TITLE: String = "The Pyramid"
+## What a challenge marked met is worth.
+const POINTS_PER_CHALLENGE: int = 1
 const DICE_TEXTURES = [
 	preload("res://assets/sprites/ui/icons/d1.png"),
 	preload("res://assets/sprites/ui/icons/d2.png"),
@@ -21,6 +23,7 @@ const DICE_TEXTURES = [
 @onready var _close_button: TextureButton = %Close
 @onready var _card_group_collection: CardGroupCollection = %CardGroupCollection
 @onready var _bottom_left: VBoxContainer = %BottomLeft
+@onready var _score: Label = %Score
 @onready var _die: TextureRect = %Die
 @onready var _roll_die_button: Button = %RollDie
 @onready var _flip_cards_button: Button = %FlipCards
@@ -69,6 +72,7 @@ func _ready() -> void:
 				RunManager.popup_open = true
 	)
 	RunManager.card_inspect_requested.connect(_on_card_inspect_requested)
+	_card_group_collection.results_changed.connect(_update_score)
 	_confirm_save_dialog.save_confirmed.connect(_on_save_confirmed)
 
 	# Scene Setup
@@ -124,6 +128,7 @@ func _setup_card_table() -> void:
 
 	# The groups deal their cards as they are built, so ask once that has settled.
 	_update_flip_button.call_deferred()
+	_update_score.call_deferred()
 	_how_to_play.show_if_new()
 
 
@@ -202,6 +207,18 @@ func flip_card_at(point: Vector2) -> bool:
 ## The control only earns its place while something is still hidden.
 func _update_flip_button() -> void:
 	_flip_cards_button.visible = _card_group_collection.has_face_down_cards()
+
+
+## A point for each challenge marked met, with the misses alongside. Shown once
+## anything is marked, so a fresh table isn't cluttered with "Score: 0".
+func _update_score() -> void:
+	var counts := _card_group_collection.tally()
+	var met: int = counts["met"]
+	var missed: int = counts["missed"]
+	_score.visible = met + missed > 0
+	_score.text = "Score: %d" % (met * POINTS_PER_CHALLENGE)
+	if missed > 0:
+		_score.text += " · %d missed" % missed
 
 
 # _unhandled_input rather than _input: a focused LineEdit (the save-name field)
@@ -288,6 +305,7 @@ func _reroll_packs() -> void:
 
 	_resize()
 	_update_flip_button.call_deferred()
+	_update_score.call_deferred()
 
 
 func _show_multiplayer_rules() -> void:
