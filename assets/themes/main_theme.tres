@@ -211,6 +211,9 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_library_heading"]
+content_margin_left = 40.0
+
 [resource]
 BigTitle/base_type = &"Label"
 BigTitle/colors/font_shadow_color = Color(0, 0, 0, 1)
@@ -255,6 +258,18 @@ DrawerPanel/base_type = &"PanelContainer"
 DrawerPanel/styles/panel = SubResource("StyleBoxFlat_drawer")
 LibraryChip/base_type = &"PanelContainer"
 LibraryChip/styles/panel = SubResource("StyleBoxFlat_library_chip")
+LibraryHeading/base_type = &"Button"
+LibraryHeading/colors/font_color = Color(1, 1, 1, 1)
+LibraryHeading/colors/font_focus_color = Color(1, 1, 1, 1)
+LibraryHeading/colors/font_hover_color = Color(0.094, 0.678, 1, 1)
+LibraryHeading/colors/font_hover_pressed_color = Color(0.094, 0.678, 1, 1)
+LibraryHeading/colors/font_pressed_color = Color(1, 1, 1, 1)
+LibraryHeading/font_sizes/font_size = 32
+LibraryHeading/styles/focus = SubResource("StyleBoxEmpty_library_heading")
+LibraryHeading/styles/hover = SubResource("StyleBoxEmpty_library_heading")
+LibraryHeading/styles/hover_pressed = SubResource("StyleBoxEmpty_library_heading")
+LibraryHeading/styles/normal = SubResource("StyleBoxEmpty_library_heading")
+LibraryHeading/styles/pressed = SubResource("StyleBoxEmpty_library_heading")
 LibraryLink/base_type = &"Button"
 LibraryLink/font_sizes/font_size = 28
 LibraryLink/styles/focus = SubResource("StyleBoxFlat_focus_ring")
