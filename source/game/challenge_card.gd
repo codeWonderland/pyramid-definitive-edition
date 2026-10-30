@@ -4,6 +4,11 @@ signal pressed
 ## Emitted when this card is released over the trash zone; the owning CardGroup
 ## routes the card back to the bottom of its deck and frees it.
 signal request_trash(card: ChallengeCard)
+## Emitted when the player marks the challenge met or missed, or clears the mark.
+signal result_changed
+
+## How the player says the challenge went. A curse has no result to record.
+enum Result { NONE, MET, MISSED }
 
 ## Pixels the pointer must travel while held before a press becomes a drag.
 ## Below this, releasing counts as a click.
@@ -16,6 +21,9 @@ const HOVER_TIME: float = 0.2
 ## Where a hovered card is lifted to: the top of the cards' z band (2-1900), so it
 ## shows over every other card while hovered.
 const HOVER_Z: int = 1900
+## The result badge's size as a share of the card's width, and its inset.
+const BADGE_SHARE: float = 0.26
+const BADGE_INSET: float = 0.05
 
 # Velocity-based tilt: drag velocity (px/sec) maps to a pitch/roll lean.
 const TILT_SHADER: Shader = preload("res://source/game/card_tilt.gdshader")
@@ -41,6 +49,14 @@ var front_texture: Texture2D = null
 var face_down: bool = false
 
 var hovering: bool = false
+## How the challenge went, set through the corner badge. Kept while the card is
+## turned face-down, and saved with the table.
+var result: Result = Result.NONE:
+	set(value):
+		result = value
+		if _badge != null:
+			_badge.result = value
+			_update_badge()
 
 var _pressed: bool = false
 var _dragging: bool = false
@@ -63,8 +79,13 @@ var _hover_tween: Tween = null
 var _rest_z: int = 0
 var _tilt_material: ShaderMaterial
 
+@onready var _badge: ResultBadge = %ResultBadge
+
 
 func _ready() -> void:
+	_badge.result = result
+	_badge.clicked.connect(cycle_result)
+	_update_badge()
 	_setup_tilt_material()
 	_resize()
 	get_tree().get_root().size_changed.connect(_resize)
@@ -106,6 +127,7 @@ func set_hovered(on: bool) -> void:
 		return
 	hovering = on
 	_tween_hover(HOVER_SCALE if on else 1.0)
+	_update_badge()
 	if on:
 		_rest_z = z_index
 		z_index = HOVER_Z
@@ -207,6 +229,7 @@ func set_face_down(front: Texture2D) -> void:
 	front_texture = front
 	face_down = true
 	texture = back_texture if back_texture != null else front
+	_update_badge()
 
 
 ## Show this card face-up straight away, with no animation.
@@ -214,6 +237,7 @@ func set_face_up(front: Texture2D) -> void:
 	front_texture = front
 	face_down = false
 	texture = front
+	_update_badge()
 
 
 ## Flip a face-down card over. Does nothing to a card that is already face-up,
@@ -256,7 +280,11 @@ func play_flip(front: Texture2D) -> void:
 
 	var flip := create_tween()
 	flip.tween_method(_set_flip_width, 1.0, 0.0, FLIP_TIME * 0.5)
-	flip.tween_callback(func(): texture = front)
+	flip.tween_callback(
+		func():
+			texture = front
+			_update_badge()
+	)
 	flip.tween_method(_set_flip_width, 0.0, 1.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): _flipping = false)
 
@@ -273,10 +301,29 @@ func conceal() -> bool:
 
 	var flip := create_tween()
 	flip.tween_method(_set_flip_width, 1.0, 0.0, FLIP_TIME * 0.5)
-	flip.tween_callback(func(): texture = back_texture)
+	flip.tween_callback(
+		func():
+			texture = back_texture
+			_update_badge()
+	)
 	flip.tween_method(_set_flip_width, 0.0, 1.0, FLIP_TIME * 0.5)
 	flip.tween_callback(func(): _flipping = false)
 	return true
+
+
+## Moves the mark on one step: unmarked -> met -> missed -> unmarked.
+func cycle_result() -> void:
+	if is_curse:
+		return
+	result = ((result + 1) % Result.size()) as Result
+	self.result_changed.emit()
+
+
+## The badge only means something on a challenge you can read. Unmarked, it
+## shows only while hovered, so empty circles don't cover the cards' wording.
+func _update_badge() -> void:
+	if _badge != null:
+		_badge.visible = (not is_curse and not face_down and (hovering or result != Result.NONE))
 
 
 ## Start dragging this card programmatically (used when a card is drawn out of a
@@ -305,3 +352,8 @@ func _resize() -> void:
 
 	if _tilt_material != null:
 		_tilt_material.set_shader_parameter("card_size", size)
+
+	var badge_side := size.x * BADGE_SHARE
+	var inset := size.x * BADGE_INSET
+	_badge.size = Vector2(badge_side, badge_side)
+	_badge.position = size - _badge.size - Vector2(inset, inset)

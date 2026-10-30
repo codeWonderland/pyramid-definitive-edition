@@ -6,4 +6,4 @@
 script = ExtResource("1_page")
 id = &"table"
 title = "The Table"
-tips = Array[String](["Click a pile to draw its top card, or drag one straight off the pile.", "Cards are dealt face-down. Flip All turns the whole table over, or press F over a card to flip just that one.", "Drag cards anywhere on the table. Drop one on the trash can to discard it.", "Right-click a card to see it up close.", "Roll D6 for dice challenges, Reroll Games for a fresh set, and press B to save a banner image of your run."])
+tips = Array[String](["Click a pile to draw its top card, or drag one straight off the pile.", "Cards are dealt face-down. Flip All turns the whole table over, or press F over a card to flip just that one.", "Drag cards anywhere on the table. Drop one on the trash can to discard it.", "Right-click a card to see it up close.", "When a game is done, click the circle in a challenge's corner to mark it met or missed - click again to change it. Each one met scores a point.", "Roll D6 for dice challenges, Reroll Games for a fresh set, and press B to save a banner image of your run."])

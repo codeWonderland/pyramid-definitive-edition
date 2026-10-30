@@ -1,5 +1,9 @@
 class_name CardGroup extends Control
 
+## Emitted when a card on this table is marked met or missed, or a marked card
+## leaves the table.
+signal results_changed
+
 const CHALLENGE_CARD: PackedScene = preload("res://source/game/challenge_card.tscn")
 const CURSE_FLY_TIME: float = 0.4
 const PILE_Z: int = 2
@@ -210,6 +214,20 @@ func card_at(point: Vector2) -> ChallengeCard:
 	return top
 
 
+## How many of this table's challenges are marked met and missed, as
+## {"met": int, "missed": int}. Curses carry no mark, so never count.
+func tally() -> Dictionary:
+	var counts := {"met": 0, "missed": 0}
+	for card in _table_cards:
+		if not is_instance_valid(card):
+			continue
+		if card.result == ChallengeCard.Result.MET:
+			counts["met"] += 1
+		elif card.result == ChallengeCard.Result.MISSED:
+			counts["missed"] += 1
+	return counts
+
+
 ## Whether anything in this group is still face-down.
 func has_face_down_cards() -> bool:
 	for card in _table_cards:
@@ -233,7 +251,10 @@ func _on_card_trashed(card: ChallengeCard) -> void:
 		_primary_deck.trash_to_bottom(card.deck_entry)
 		_primary_pile.set_remaining(_primary_deck.size())
 
+	var was_marked := card.result != ChallengeCard.Result.NONE
 	card.queue_free()
+	if was_marked:
+		self.results_changed.emit()
 
 
 # --- Card spawning ---
@@ -266,6 +287,7 @@ func _spawn_card(
 		card.set_face_up(front)
 
 	card.request_trash.connect(_on_card_trashed)
+	card.result_changed.connect(func() -> void: self.results_changed.emit())
 	_table_cards.append(card)
 	return card
 
@@ -302,6 +324,7 @@ func generate_card_group_data() -> CardGroupData:
 					"x": card.position.x,
 					"y": card.position.y,
 					"face_down": card.face_down,
+					"result": card.result,
 				}
 			)
 		)
@@ -366,6 +389,10 @@ func _restore_card(saved: Dictionary) -> void:
 	var card := _spawn_card(entry, is_secondary, is_curse_card, pos, false, face_down)
 	if is_curse_card:
 		_curse_card = card
+	# Saves from before results were tracked have none: every card starts unmarked.
+	var result: int = saved.get("result", ChallengeCard.Result.NONE)
+	if not is_curse_card and result >= 0 and result < ChallengeCard.Result.size():
+		card.result = result as ChallengeCard.Result
 
 
 # --- Layout ---

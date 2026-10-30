@@ -1,5 +1,8 @@
 class_name CardGroupCollection extends Control
 
+## Emitted when any table's challenge marks change.
+signal results_changed
+
 ## When the opening hands start landing - about as the scene fade lifts.
 const DEAL_DELAY: float = 0.2
 
@@ -21,6 +24,8 @@ var _card_dragging: bool = false
 
 
 func _ready() -> void:
+	for group in _card_groups:
+		group.results_changed.connect(func() -> void: self.results_changed.emit())
 	RunManager.card_drag_started.connect(func() -> void: _card_dragging = true)
 	RunManager.card_drag_ended.connect(func() -> void: _card_dragging = false)
 	_resize()
@@ -68,6 +73,18 @@ func _physics_process(_delta: float) -> void:
 		for card in group.table_cards():
 			if is_instance_valid(card):
 				card.set_hovered(card == top)
+
+
+## The marks across every table in play, as {"met": int, "missed": int}.
+func tally() -> Dictionary:
+	var counts := {"met": 0, "missed": 0}
+	for group in _card_groups:
+		if group.pack == null or not group.visible:
+			continue
+		var group_counts := group.tally()
+		counts["met"] += group_counts["met"]
+		counts["missed"] += group_counts["missed"]
+	return counts
 
 
 ## Whether any group still has a face-down card.

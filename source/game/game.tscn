@@ -123,6 +123,14 @@ theme_override_constants/separation = 16
 alignment = 2
 pivot_offset_ratio = Vector2(0, 1)
 
+[node name="Score" type="Label" parent="MarginContainer/Bottom/BottomLeft"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+tooltip_text = "A point for every challenge marked met"
+mouse_filter = 1
+text = "Score: 0"
+
 [node name="Die" type="TextureRect" parent="MarginContainer/Bottom/BottomLeft" unique_id=2109199157]
 unique_name_in_owner = true
 visible = false
