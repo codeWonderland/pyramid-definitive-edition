@@ -152,6 +152,11 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_library_callout"]
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_library_tile"]
 content_margin_left = 18.0
 content_margin_top = 12.0
@@ -256,6 +261,8 @@ MarginContainer/constants/margin_right = 16
 MarginContainer/constants/margin_top = 16
 DrawerPanel/base_type = &"PanelContainer"
 DrawerPanel/styles/panel = SubResource("StyleBoxFlat_drawer")
+LibraryCallout/base_type = &"PanelContainer"
+LibraryCallout/styles/panel = SubResource("StyleBoxEmpty_library_callout")
 LibraryChip/base_type = &"PanelContainer"
 LibraryChip/styles/panel = SubResource("StyleBoxFlat_library_chip")
 LibraryHeading/base_type = &"Button"
@@ -274,8 +281,8 @@ LibraryLink/base_type = &"Button"
 LibraryLink/font_sizes/font_size = 28
 LibraryLink/styles/focus = SubResource("StyleBoxFlat_focus_ring")
 LibraryLink/styles/hover = SubResource("StyleBoxFlat_library_mark_hover")
-LibraryLink/styles/normal = SubResource("StyleBoxFlat_library_chip")
-LibraryLink/styles/pressed = SubResource("StyleBoxFlat_library_mark_hover")
+LibraryLink/styles/normal = SubResource("StyleBoxFlat_library_mark")
+LibraryLink/styles/pressed = SubResource("StyleBoxFlat_library_mark_on")
 LibraryMark/base_type = &"Button"
 LibraryMark/font_sizes/font_size = 22
 LibraryMark/styles/focus = SubResource("StyleBoxFlat_focus_ring")
