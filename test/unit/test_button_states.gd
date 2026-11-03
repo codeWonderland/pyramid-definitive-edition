@@ -14,10 +14,11 @@ func _style(state: String, type: String) -> StyleBox:
 	return THEME.get_stylebox(state, type)
 
 
-func _modulate(state: String, type: String) -> Color:
+## Buttons are outlined pills: a flat box with a fill and a border.
+func _pill(state: String, type: String) -> StyleBoxFlat:
 	var style := _style(state, type)
-	assert_true(style is StyleBoxTexture, "%s/%s is a texture style" % [type, state])
-	return (style as StyleBoxTexture).modulate_color
+	assert_true(style is StyleBoxFlat, "%s/%s is a flat pill" % [type, state])
+	return style as StyleBoxFlat
 
 
 # --- Button ---
@@ -41,21 +42,22 @@ func test_button_pressed_differs_from_hover_and_normal() -> void:
 	)
 
 
-func test_button_hover_is_brighter_and_pressed_is_darker() -> void:
-	var normal := _modulate("normal", "Button")
-	var hover := _modulate("hover", "Button")
-	var pressed := _modulate("pressed", "Button")
+func test_button_hover_lightens_and_pressed_fills_with_the_outline() -> void:
+	var normal := _pill("normal", "Button")
+	var hover := _pill("hover", "Button")
+	var pressed := _pill("pressed", "Button")
 
-	assert_gt(hover.r, normal.r, "hover lifts the button")
-	assert_lt(pressed.r, normal.r, "pressing pushes it down")
+	assert_gt(normal.border_width_left, 0, "the pill has an outline")
+	assert_gt(hover.bg_color.v, normal.bg_color.v, "hover lightens the fill")
+	assert_eq(pressed.bg_color, normal.border_color, "pressing fills it with the outline colour")
 
 
-func test_button_disabled_is_dimmed_and_faded() -> void:
-	var normal := _modulate("normal", "Button")
-	var disabled := _modulate("disabled", "Button")
+func test_button_disabled_is_faded() -> void:
+	var normal := _pill("normal", "Button")
+	var disabled := _pill("disabled", "Button")
 
-	assert_lt(disabled.r, normal.r, "a disabled button is dimmer")
-	assert_lt(disabled.a, normal.a, "and partly transparent")
+	assert_lt(disabled.bg_color.a, normal.bg_color.a, "a disabled button's fill is faded")
+	assert_lt(disabled.border_color.a, normal.border_color.a, "and so is its outline")
 
 
 func test_button_focus_does_not_mask_the_state_underneath() -> void:
@@ -104,11 +106,13 @@ func test_option_button_states_are_distinct() -> void:
 	)
 
 
-func test_option_button_hover_is_lighter_than_pressed() -> void:
-	var hover := (_style("hover", "OptionButton") as StyleBoxFlat).bg_color
-	var pressed := (_style("pressed", "OptionButton") as StyleBoxFlat).bg_color
-
-	assert_gt(hover.v, pressed.v, "hover is lighter than pressed, matching the buttons")
+func test_option_button_matches_the_buttons() -> void:
+	for state in ["normal", "hover", "pressed"]:
+		assert_eq(
+			_style(state, "OptionButton"),
+			_style(state, "Button"),
+			"the dropdown's %s state is the button pill" % state
+		)
 
 
 # --- SelectableButton ---

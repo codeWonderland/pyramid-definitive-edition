@@ -106,6 +106,7 @@ text = "Your marks (click: only, hide)"
 [node name="MarkList" type="VBoxContainer" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330019]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="CategoriesHeading" type="Label" parent="Backing/Margin/VBoxContainer/TagScroll/ScrollBody" unique_id=1174330020]
 layout_mode = 2
