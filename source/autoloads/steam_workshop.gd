@@ -27,6 +27,8 @@ const METADATA_KEY: String = "workshop"
 # Valve's k_EResultOK, k_EWorkshopFileTypeCommunity, visibility Public, and the
 # EItemState flags.
 const RESULT_OK: int = 1
+## k_EResultFileNotFound: updating an item that was deleted from the Workshop.
+const RESULT_FILE_NOT_FOUND: int = 9
 const FILE_TYPE_COMMUNITY: int = 0
 const VISIBILITY_PUBLIC: int = 0
 const STATE_INSTALLED: int = 4
@@ -94,6 +96,110 @@ func installed_item_folders() -> Array[String]:
 			folders.append(info["folder"])
 
 	return folders
+
+
+## This player's own published packs that are installed but have no local copy,
+## as pack folders. Packs are kept by their recorded item, not by name, so a pack
+## renamed locally isn't fetched again.
+func own_packs_missing_locally(local_root: String) -> Array[String]:
+	if _steam == null:
+		return [] as Array[String]
+	return own_pack_folders(
+		installed_item_folders(), str(_steam.call("getSteamID")), local_item_ids(local_root)
+	)
+
+
+## Copies this player's own published packs back into their local packs, so ones
+## that were lost or made elsewhere can be edited and updated - the copy keeps its
+## Workshop record, so publishing it updates the same item. Returns how many.
+func import_own_packs(local_root: String) -> int:
+	var copied := 0
+	for pack_folder in own_packs_missing_locally(local_root):
+		if not copy_pack(pack_folder, local_root).is_empty():
+			copied += 1
+	return copied
+
+
+## Whether `pack` is a Workshop item this player published, so publishing it
+## again updates that item rather than making a new one.
+func is_published(pack: PackData) -> bool:
+	return (
+		_steam != null
+		and pack != null
+		and owned_item_id(pack.metadata, str(_steam.call("getSteamID"))) != 0
+	)
+
+
+## The Workshop item a pack's metadata records, whoever published it, or "".
+static func recorded_item_id(metadata: Dictionary) -> String:
+	var record = metadata.get(METADATA_KEY)
+	if record is Dictionary and record.get("id") is String:
+		return record["id"]
+	return ""
+
+
+## The Workshop items recorded by the pack folders directly inside `root`.
+static func local_item_ids(root: String) -> Array[String]:
+	var ids: Array[String] = []
+	var dir := DirAccess.open(root)
+	if dir == null:
+		return ids
+	for folder in dir.get_directories():
+		var item_id := recorded_item_id(PackDataLoader.load_metadata(root.path_join(folder)))
+		if not item_id.is_empty():
+			ids.append(item_id)
+	return ids
+
+
+## Pack folders inside the item folders that `steam_id` published, skipping items
+## listed in `skip_ids`.
+static func own_pack_folders(
+	item_folders: Array[String], steam_id: String, skip_ids: Array[String]
+) -> Array[String]:
+	var folders: Array[String] = []
+	for item_folder in item_folders:
+		var dir := DirAccess.open(item_folder)
+		if dir == null:
+			continue
+		for pack in dir.get_directories():
+			var pack_folder := item_folder.path_join(pack)
+			var metadata := PackDataLoader.load_metadata(pack_folder)
+			var item_id := recorded_item_id(metadata)
+			var record = metadata.get(METADATA_KEY)
+			var owner = record.get("owner") if record is Dictionary else null
+			if not item_id.is_empty() and owner == steam_id and not skip_ids.has(item_id):
+				folders.append(pack_folder)
+	return folders
+
+
+## Copies a pack folder into `local_root` under its own name. Returns the copy's
+## folder, or "" when a pack of that name is already there or a file won't copy.
+static func copy_pack(pack_folder: String, local_root: String) -> String:
+	var source := DirAccess.open(pack_folder)
+	var target := local_root.path_join(pack_folder.trim_suffix("/").get_file())
+	if source == null or DirAccess.dir_exists_absolute(target):
+		return ""
+	DirAccess.make_dir_recursive_absolute(target)
+	for file_name in source.get_files():
+		if source.copy(pack_folder.path_join(file_name), target.path_join(file_name)) != OK:
+			ModsSync.clear(target)
+			return ""
+	return target
+
+
+## Workshop packs without those that a local pack already records - the local
+## copy is the one being worked on, and showing both would list the pack twice.
+static func without_local_copies(
+	item_packs: Array[PackData], local_packs: Array[PackData]
+) -> Array[PackData]:
+	var local_ids := {}
+	for pack in local_packs:
+		var item_id := recorded_item_id(pack.metadata)
+		if not item_id.is_empty():
+			local_ids[item_id] = true
+	return item_packs.filter(
+		func(pack: PackData) -> bool: return not local_ids.has(recorded_item_id(pack.metadata))
+	)
 
 
 func open_workshop() -> void:
@@ -175,7 +281,7 @@ func publish(pack: PackData) -> void:
 		_steam.call("setItemDescription", handle, _description(pack))
 		_steam.call("setItemVisibility", handle, VISIBILITY_PUBLIC)
 
-	self.publish_progress.emit("Uploading...")
+	self.publish_progress.emit("Uploading..." if created else "Uploading the update...")
 	var updated: Array = []
 	var on_updated := func(result: int, needs_agreement: bool, _file_id: int) -> void:
 		updated.assign([result, needs_agreement])
@@ -190,6 +296,15 @@ func publish(pack: PackData) -> void:
 			self.publish_progress.emit("Uploading... %d%%" % percent)
 
 	ModsSync.clear(STAGING_PATH)
+	if int(updated[0]) == RESULT_FILE_NOT_FOUND and not created:
+		# The item was deleted on the Workshop. Forget it, so the next publish
+		# makes a new one instead of failing the same way every time.
+		pack.metadata.erase(METADATA_KEY)
+		PackDataLoader.save_metadata(pack.folder_path, pack.metadata, pack.tags)
+		_finish(
+			false, "That pack's Workshop item no longer exists. Publish again to make a new one."
+		)
+		return
 	if int(updated[0]) != RESULT_OK:
 		_finish(false, "Steam rejected the upload (error %d)." % int(updated[0]))
 		return
@@ -197,10 +312,11 @@ func publish(pack: PackData) -> void:
 	# Steam keeps a new author's items hidden until they accept the Workshop
 	# agreement, which is on the item's page.
 	_steam.call("activateGameOverlayToWebPage", ITEM_URL % item_id, 0)
+	var done := "Published to the Workshop." if created else "Updated on the Workshop."
 	if bool(updated[1]):
-		_finish(true, "Published - accept the Workshop agreement on its page to make it public.")
+		_finish(true, done + " Accept the Workshop agreement on its page to make it public.")
 	else:
-		_finish(true, "Published to the Workshop.")
+		_finish(true, done)
 
 
 func _finish(succeeded: bool, message: String) -> void:

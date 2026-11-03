@@ -31,10 +31,13 @@ func load() -> void:
 	var tree = get_tree()
 
 	all_packs += await PackDataLoader.load_packs_from_folder(PACKS_FOLDER_PATH, tree)
-	all_packs += await PackDataLoader.load_packs_from_folder(LOCAL_PACKS_FOLDER_PATH, tree)
+	var local_packs := await PackDataLoader.load_packs_from_folder(LOCAL_PACKS_FOLDER_PATH, tree)
+	all_packs += local_packs
 	# Workshop items each hold one pack folder, in Steam's own download location.
+	# A player's own published pack is skipped while they have it locally.
 	for item_folder in SteamWorkshop.installed_item_folders():
 		var item_packs := await PackDataLoader.load_packs_from_folder(item_folder + "/", tree)
+		item_packs = SteamWorkshop.without_local_copies(item_packs, local_packs)
 		tag_as_workshop(item_packs)
 		all_packs += item_packs
 
