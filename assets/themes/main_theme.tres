@@ -5,7 +5,6 @@
 [ext_resource type="StyleBox" uid="uid://bt1fm0linub66" path="res://assets/themes/style_boxes/checkbox.tres" id="2_axncs"]
 [ext_resource type="StyleBox" uid="uid://u1snu468ch3a" path="res://assets/themes/style_boxes/panel_container.tres" id="2_lxams"]
 [ext_resource type="Texture2D" uid="uid://bhgkip670mh4r" path="res://assets/sprites/ui/icons/down-caret.png" id="5_4fp8c"]
-[ext_resource type="StyleBox" uid="uid://c2utbn782dhf3" path="res://assets/themes/style_boxes/selected_button.tres" id="7_0f6i3"]
 [ext_resource type="Texture2D" uid="uid://c1icm337leqt7" path="res://assets/sprites/ui/buttons/blank-card.png" id="8_card"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_card"]
@@ -332,8 +331,11 @@ PopupMenu/icons/radio_unchecked = SubResource("ImageTexture_0f6i3")
 RichTextLabel/constants/outline_size = 8
 RichTextLabel/font_sizes/normal_font_size = 32
 SelectableButton/base_type = &"Button"
-SelectableButton/styles/focus = ExtResource("7_0f6i3")
-SelectableButton/styles/pressed = ExtResource("7_0f6i3")
+SelectableButton/styles/focus = SubResource("StyleBoxFlat_focus_ring")
+SelectableButton/styles/hover = SubResource("StyleBoxFlat_library_mark_hover")
+SelectableButton/styles/hover_pressed = SubResource("StyleBoxFlat_library_mark_on")
+SelectableButton/styles/normal = SubResource("StyleBoxFlat_library_mark")
+SelectableButton/styles/pressed = SubResource("StyleBoxFlat_library_mark_on")
 SmallCheckBox/base_type = &"CheckBox"
 SmallCheckBox/font_sizes/font_size = 22
 SmallLabel/base_type = &"Label"
