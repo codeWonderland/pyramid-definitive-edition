@@ -7,6 +7,9 @@ const LOCAL_PACKS_FOLDER_PATH: String = "user://mods/local/PACKS/"
 const CATEGORIES_PATH: String = "user://mods/pyramid-mods-main/categories.json"
 ## Official packs the mods have renamed: {"renames": {"old folder": "new folder"}}.
 const RENAMES_PATH: String = "user://mods/pyramid-mods-main/renames.json"
+## The category every Steam Workshop pack gets, so the draft can filter by it.
+## Named as in the mods' categories.json, which describes it.
+const WORKSHOP_TAG: String = "Workshop Mods"
 
 var all_packs: Array[PackData]
 # Category descriptions keyed by lowercased name, for explaining a filter.
@@ -31,7 +34,9 @@ func load() -> void:
 	all_packs += await PackDataLoader.load_packs_from_folder(LOCAL_PACKS_FOLDER_PATH, tree)
 	# Workshop items each hold one pack folder, in Steam's own download location.
 	for item_folder in SteamWorkshop.installed_item_folders():
-		all_packs += await PackDataLoader.load_packs_from_folder(item_folder + "/", tree)
+		var item_packs := await PackDataLoader.load_packs_from_folder(item_folder + "/", tree)
+		tag_as_workshop(item_packs)
+		all_packs += item_packs
 
 	all_packs.sort_custom(PackDataLoader.sort_packs)
 	load_categories(CATEGORIES_PATH)
@@ -42,6 +47,17 @@ func load() -> void:
 	PlayerMarksManager.migrate(current_path)
 
 	self.packs_loaded.emit()
+
+
+## Adds the Workshop category to each pack that doesn't list it already, in any
+## case. Only in memory: the item's own files are Steam's, and stay as published.
+static func tag_as_workshop(packs: Array[PackData]) -> void:
+	for pack in packs:
+		var has_it := pack.tags.any(
+			func(tag: String) -> bool: return tag.nocasecmp_to(WORKSHOP_TAG) == 0
+		)
+		if not has_it:
+			pack.tags.append(WORKSHOP_TAG)
 
 
 ## Where a pack's folder path points now. Saves, favorites and marks remember a

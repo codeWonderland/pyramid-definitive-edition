@@ -42,36 +42,36 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-theme_override_constants/separation = 16
+theme_override_constants/separation = 4
 
 [node name="StartRun" type="Button" parent="MarginContainer/Menu"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+theme_type_variation = &"MenuTextButton"
 text = "Start a run"
 
 [node name="LoadRun" type="Button" parent="MarginContainer/Menu"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+theme_type_variation = &"MenuTextButton"
 text = "Load a run"
 
 [node name="Library" type="Button" parent="MarginContainer/Menu"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+theme_type_variation = &"MenuTextButton"
 text = "Library"
 
 [node name="Settings" type="Button" parent="MarginContainer/Menu"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+theme_type_variation = &"MenuTextButton"
 text = "Settings"
 
 [node name="Exit" type="Button" parent="MarginContainer/Menu"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
+theme_type_variation = &"MenuTextButton"
 text = "Exit"
 
 [node name="BottomSpace" type="Control" parent="MarginContainer/Menu"]
