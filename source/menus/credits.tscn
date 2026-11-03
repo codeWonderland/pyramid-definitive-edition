@@ -92,11 +92,11 @@ horizontal_alignment = 1
 
 [node name="Name" type="Label" parent="ScrollingContainer/CreditsSection3"]
 layout_mode = 2
-text = "BearTheDice
-DanEgbert
+text = "DanEgbert
 Funguy
 g0m
-Liliane Cloud
+Lillianne Cloud
+Nova
 ryan
 Strawberry!
 subsonic"
