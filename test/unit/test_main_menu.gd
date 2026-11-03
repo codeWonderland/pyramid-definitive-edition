@@ -21,7 +21,7 @@ func test_the_choices_are_text_in_order() -> void:
 	for button in menu._menu.get_children().filter(func(child): return child is Button):
 		labels.append(button.text)
 		assert_true(button is Button, "%s is a button" % button.text)
-		assert_eq(button.theme_type_variation, &"MenuTextButton", "styled as menu text")
+		assert_eq(button.theme_type_variation, &"", "styled as the standard pill button")
 	assert_eq(labels, ["Start a run", "Load a run", "Library", "Settings", "Exit"])
 
 
