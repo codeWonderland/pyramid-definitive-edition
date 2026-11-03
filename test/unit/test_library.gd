@@ -52,7 +52,7 @@ func before_each() -> void:
 					[
 						{
 							"text": "Win with one hand",
-							"contributor": {"handle": "@dev", "role": "Lead Dev"}
+							"contributor": {"handle": "@creator", "role": "Creator"}
 						}
 					]
 				},

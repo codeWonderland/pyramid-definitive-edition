@@ -36,15 +36,14 @@ func _record() -> Dictionary:
 		},
 		"special_challenges":
 		{
-			"creator_available": false,
-			"developer_available": true,
+			"creator_available": true,
 			"entries":
 			[
 				{
 					"id": "temp-zero-challenge-1",
 					"text": "Every dash evades something.",
 					"type": "secondary",
-					"contributor": {"handle": "@dev", "role": "Lead Dev"},
+					"contributor": {"handle": "@creator", "role": "Creator"},
 				}
 			]
 		},
@@ -86,8 +85,7 @@ func test_the_record_is_shown() -> void:
 	var rows := _rows(editor)
 	assert_eq(rows.size(), 1, "one challenge")
 	assert_eq(rows[0]._text.text, "Every dash evades something.")
-	assert_eq(rows[0]._handle.text, "@dev")
-	assert_eq(rows[0]._role.text, "Lead Dev")
+	assert_eq(rows[0]._handle.text, "@creator")
 	assert_eq(rows[0]._type.selected, 1, "secondary")
 
 
@@ -110,7 +108,6 @@ func test_edits_are_written_back() -> void:
 	editor._coop_text_edit.text = "Share one run"
 	editor._description_text_edit.text = "A frozen roguelite."
 	editor._store_url_line_edit.text = "https://store.steampowered.com/app/2"
-	_rows(editor)[0]._role.text = "Creator"
 	editor._add_challenge_row({})
 	await get_tree().process_frame
 	var added: ChallengeRow = _rows(editor)[1]
@@ -134,8 +131,36 @@ func test_edits_are_written_back() -> void:
 	assert_eq(entries[0]["contributor"]["role"], "Creator")
 	assert_eq(
 		entries[1],
-		{"text": "Never stop moving", "type": "primary", "contributor": {"handle": "@streamer"}}
+		{
+			"text": "Never stop moving",
+			"type": "primary",
+			"contributor": {"handle": "@streamer", "role": "Creator"}
+		},
+		"a new challenge is a creator's"
 	)
+
+
+func test_an_old_developer_challenge_is_hidden_and_dropped() -> void:
+	var record := _record()
+	(
+		record["special_challenges"]["entries"]
+		. append(
+			{
+				"id": "temp-zero-challenge-2",
+				"text": "Laser enemies last.",
+				"contributor": {"handle": "@dev", "role": "Lead Dev"},
+			}
+		)
+	)
+	var pack := _pack(record)
+	var editor := await _editor(pack)
+
+	assert_eq(_rows(editor).size(), 1, "only the creator's challenge is shown")
+	editor._write_details(pack.metadata)
+	var texts: Array = pack.metadata["special_challenges"]["entries"].map(
+		func(entry): return entry["text"]
+	)
+	assert_eq(texts, ["Every dash evades something."], "and the developer's isn't kept")
 
 
 func test_a_removed_challenge_is_gone() -> void:
@@ -177,4 +202,5 @@ func test_saving_fills_in_counts_and_challenge_kinds() -> void:
 	assert_eq(saved["objectives"]["has_curse"], false)
 	assert_eq(saved["objectives"]["curse_count"], 0)
 	assert_eq(saved["objectives"]["versus_tertiary"], "Highest score", "the rule kept")
-	assert_true(saved["special_challenges"]["developer_available"])
+	assert_true(saved["special_challenges"]["creator_available"])
+	assert_false(saved["special_challenges"].has("developer_available"))

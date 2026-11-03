@@ -73,29 +73,49 @@ func test_a_new_record_gets_an_id_from_its_name_or_folder() -> void:
 	assert_eq(kept["id"], "custom-id", "an existing id never changes")
 
 
-func test_challenge_kinds_follow_the_contributors() -> void:
+func test_creator_challenges_are_noted() -> void:
 	var record := {
 		"id": "x",
 		"special_challenges":
 		{
 			"creator_available": false,
+			"entries": [{"id": "x-challenge-1", "text": "a", "contributor": {"role": "Creator"}}]
+		}
+	}
+
+	PackRecord.finalize(record, _pack(1, 0, 0))
+
+	assert_true(record["special_challenges"]["creator_available"], "a creator's challenge")
+
+
+func test_developer_challenges_are_dropped() -> void:
+	var record := {
+		"id": "x",
+		"special_challenges":
+		{
 			"developer_available": true,
 			"entries":
 			[
 				{"id": "x-challenge-1", "text": "a", "contributor": {"role": "Creator"}},
+				{"id": "x-challenge-2", "text": "b", "contributor": {"role": "Lead Dev"}},
+				{"id": "x-challenge-3", "text": "c"},
 			]
 		}
 	}
 
 	PackRecord.finalize(record, _pack(1, 0, 0))
-	assert_true(record["special_challenges"]["creator_available"], "a creator's challenge")
-	assert_false(record["special_challenges"]["developer_available"], "no developer's")
 
-	record["special_challenges"]["entries"].append(
-		{"text": "b", "contributor": {"role": "Lead Dev"}}
+	var texts: Array = record["special_challenges"]["entries"].map(
+		func(entry): return entry["text"]
 	)
-	PackRecord.finalize(record, _pack(1, 0, 0))
-	assert_true(record["special_challenges"]["developer_available"], "any other role")
+	assert_eq(texts, ["a", "c"], "a developer's goes; a creator's and one with no role stay")
+	assert_false(record["special_challenges"].has("developer_available"), "the old flag goes too")
+
+
+func test_only_other_roles_are_developer_challenges() -> void:
+	assert_true(PackRecord.is_developer_challenge({"contributor": {"role": "Studio"}}))
+	assert_false(PackRecord.is_developer_challenge({"contributor": {"role": "Creator"}}))
+	assert_false(PackRecord.is_developer_challenge({"text": "no contributor"}))
 
 
 func test_new_challenges_get_unused_ids() -> void:
