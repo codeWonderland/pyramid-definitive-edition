@@ -24,7 +24,6 @@ var _primary_deck: CardDeck = CardDeck.new()
 var _secondary_deck: CardDeck = CardDeck.new()
 var _primary_pile: CardPile = null
 var _secondary_pile: CardPile = null
-var _back_texture: Texture2D = null
 # Every card currently on the table for this group (active, loose, curse).
 var _table_cards: Array[ChallengeCard] = []
 var _curse_card: ChallengeCard = null
@@ -95,15 +94,14 @@ func _curses_ride_secondary() -> bool:
 
 
 func _build_piles() -> void:
-	_back_texture = pack.backs[0] if pack.backs.size() > 0 else null
 	var card_size := _scaled_card_size()
 
 	_primary_pile = _make_pile(_slot_position(false))
-	_primary_pile.setup(_back_texture, card_size)
+	_primary_pile.setup(pack.back_for(PackData.Deck.PRIMARY), card_size)
 	_primary_pile.draw_requested.connect(_on_primary_draw_requested)
 
 	_secondary_pile = _make_pile(_slot_position(true))
-	_secondary_pile.setup(_back_texture, card_size)
+	_secondary_pile.setup(pack.back_for(PackData.Deck.SECONDARY), card_size)
 	_secondary_pile.draw_requested.connect(_on_secondary_draw_requested)
 
 
@@ -272,7 +270,7 @@ func _spawn_card(
 	card.is_curse = is_curse_card
 	card.deck_entry = entry
 	card.deck_is_secondary = is_secondary
-	card.back_texture = _back_texture
+	card.back_texture = pack.back_for(_deck_of(is_secondary, is_curse_card))
 	card.z_as_relative = false
 	card.z_index = CARD_BASE_Z
 	add_child(card)
@@ -290,6 +288,13 @@ func _spawn_card(
 	card.result_changed.connect(func() -> void: self.results_changed.emit())
 	_table_cards.append(card)
 	return card
+
+
+## Which deck's back a card shows. A curse has its own, wherever it was drawn from.
+static func _deck_of(is_secondary: bool, is_curse_card: bool) -> PackData.Deck:
+	if is_curse_card:
+		return PackData.Deck.CURSE
+	return PackData.Deck.SECONDARY if is_secondary else PackData.Deck.PRIMARY
 
 
 func _texture_for(entry: int, is_secondary: bool) -> Texture2D:
@@ -424,11 +429,11 @@ func _resize() -> void:
 
 	if _primary_pile != null:
 		_primary_pile.position = _slot_position(false)
-		_primary_pile.setup(_back_texture, card_size)
+		_primary_pile.setup(pack.back_for(PackData.Deck.PRIMARY), card_size)
 		_primary_pile.set_remaining(_primary_deck.size())
 	if _secondary_pile != null:
 		_secondary_pile.position = _slot_position(true)
-		_secondary_pile.setup(_back_texture, card_size)
+		_secondary_pile.setup(pack.back_for(PackData.Deck.SECONDARY), card_size)
 		_secondary_pile.set_remaining(_secondary_deck.size())
 		if pack != null and pack.secondaries.is_empty():
 			_secondary_pile.hide()
