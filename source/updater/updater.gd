@@ -10,6 +10,13 @@ const RAW_FILE_PATH: String = "https://raw.githubusercontent.com/codeWonderland/
 const MAX_FILE_DOWNLOADS: int = 300
 const PARALLEL_DOWNLOADS: int = 6
 const NETWORK_CHECK_TIME: float = 15.0
+## How long a request for update information or a single file may take before it
+## is given up on. Without one, a stalled connection spun the loading screen
+## until the game was restarted.
+const REQUEST_TIMEOUT: float = 20.0
+## The whole-repo archive is large, so it's given up on only when no data has
+## arrived for this long, rather than after a fixed time.
+const ARCHIVE_STALL_TIME: float = 30.0
 const INITIAL_MODS_PATH: String = "res://initial_mods/pyramid-mods/"
 const MODS_ROOT: String = "user://mods/"
 const REMOTE_MODS_PATH: String = "user://mods/pyramid-mods-main/"
@@ -27,6 +34,14 @@ var _download_queue: Array[String] = []
 var _downloads_in_flight: int = 0
 var _download_failed: bool = false
 var _downloads_finished: bool = false
+var _files_to_download: int = 0
+# Set when the player skips a download, so replies that still arrive are ignored.
+var _download_abandoned: bool = false
+var _file_requests: Array[HTTPRequest] = []
+var _archive_downloading: bool = false
+var _archive_last_bytes: int = 0
+var _archive_stalled_for: float = 0.0
+var _data_loading: bool = false
 var _packs_loaded: bool = false
 var _word_bank_loaded: bool = false
 var _additional_rules_loaded: bool = false
@@ -47,7 +62,8 @@ func _ready() -> void:
 	_quit_button.pressed.connect(_quit_game)
 	_download_button.pressed.connect(_download_updates)
 	_continue_button.pressed.connect(_continue)
-	_skip_button.pressed.connect(_load_data)
+	_skip_button.pressed.connect(_skip)
+	_http_request.timeout = REQUEST_TIMEOUT
 
 	_check_internet_access()
 	await get_tree().create_timer(NETWORK_CHECK_TIME).timeout
@@ -154,7 +170,8 @@ static func _commit_time(branch: Dictionary) -> int:
 func _download_updates() -> void:
 	_loading_animation.show()
 	_download_button.hide()
-	_skip_button.hide()
+	# Skipping stays possible: a slow download shouldn't keep anyone from playing.
+	_skip_button.show()
 	_label.text = "Downloading Updates..."
 
 	# List the new version's files first, to fetch only the ones that changed.
@@ -165,13 +182,19 @@ func _download_updates() -> void:
 func _on_tree_received(
 	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
+	if _download_abandoned:
+		return
 	_target = {}
 	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
 		var tree = JSON.parse_string(body.get_string_from_utf8())
 		_target = ModsSync.manifest_from_tree(tree, _latest_version, _latest_time)
 
+	# Usually GitHub's limit on requests without an account. Fetching the whole
+	# archive instead meant several minutes on the loading screen, so the update
+	# waits for the next launch.
 	if _target.is_empty():
-		_download_archive()
+		_label.text = "Couldn't list the update, using existing mods"
+		_load_data()
 		return
 
 	_plan = ModsSync.changes(_installed_manifest().get("files", {}), _target["files"])
@@ -189,6 +212,7 @@ func _on_tree_received(
 	_download_failed = false
 	_downloads_finished = false
 	_downloads_in_flight = 0
+	_files_to_download = _download_queue.size()
 	for i in range(mini(PARALLEL_DOWNLOADS, _download_queue.size())):
 		_download_next_file()
 	if _download_queue.is_empty() and _downloads_in_flight == 0:
@@ -205,7 +229,9 @@ func _download_next_file() -> void:
 
 	var request := HTTPRequest.new()
 	request.download_file = staged
+	request.timeout = REQUEST_TIMEOUT
 	add_child(request)
+	_file_requests.append(request)
 	request.request_completed.connect(_on_file_downloaded.bind(request), CONNECT_ONE_SHOT)
 	_downloads_in_flight += 1
 	if request.request(RAW_FILE_PATH % [_latest_version, ModsSync.url_path(path)]) != OK:
@@ -219,10 +245,16 @@ func _on_file_downloaded(
 	_body: PackedByteArray,
 	request: HTTPRequest
 ) -> void:
+	_file_requests.erase(request)
 	request.queue_free()
+	if _download_abandoned:
+		return
 	_downloads_in_flight -= 1
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
 		_download_failed = true
+	_label.text = progress_text(
+		_files_to_download - _download_queue.size() - _downloads_in_flight, _files_to_download
+	)
 
 	_download_next_file()
 	if _downloads_in_flight == 0 and (_download_queue.is_empty() or _download_failed):
@@ -252,23 +284,80 @@ func _finish_file_downloads() -> void:
 	_load_data()
 
 
-## The whole repo as one archive - the fallback when it can't be listed, or when
-## so much changed that fetching file by file would be slower.
+## The whole repo as one archive - for when so much changed that fetching file by
+## file would be slower. It streams to disk, and is given up on if it stalls.
 func _download_archive() -> void:
+	_http_request.download_file = UPDATE_ZIP_PATH
+	_http_request.timeout = 0.0
+	_archive_last_bytes = 0
+	_archive_stalled_for = 0.0
+	_archive_downloading = true
 	_http_request.request_completed.connect(_apply_updates, CONNECT_ONE_SHOT)
-	_http_request.request(DOWNLOAD_PATH, [], HTTPClient.METHOD_GET)
+	if _http_request.request(DOWNLOAD_PATH, [], HTTPClient.METHOD_GET) != OK:
+		_archive_downloading = false
+		_http_request.request_completed.disconnect(_apply_updates)
+		_label.text = "Issue downloading latest updates, using existing mods"
+		_load_data()
+
+
+## Watches the archive download: shows how much has arrived, and gives up on it
+## once nothing has for ARCHIVE_STALL_TIME.
+func _process(delta: float) -> void:
+	if not _archive_downloading:
+		return
+	var downloaded := _http_request.get_downloaded_bytes()
+	if downloaded != _archive_last_bytes:
+		_archive_last_bytes = downloaded
+		_archive_stalled_for = 0.0
+		_label.text = "Downloading Updates... %d MB" % (downloaded / 1048576)
+		return
+	_archive_stalled_for += delta
+	if _archive_stalled_for >= ARCHIVE_STALL_TIME:
+		_archive_downloading = false
+		_http_request.cancel_request()
+		_http_request.request_completed.disconnect(_apply_updates)
+		_cleanup_path(UPDATE_ZIP_PATH)
+		_label.text = "The update stopped downloading, using existing mods"
+		_load_data()
+
+
+## "Downloading Updates... 12 of 127", for downloads file by file.
+static func progress_text(done: int, total: int) -> String:
+	return "Downloading Updates... %d of %d" % [clampi(done, 0, total), total]
+
+
+## Gives up on any download in progress and carries on with the mods already
+## installed. Nothing is applied from a skipped download.
+func _skip() -> void:
+	_download_abandoned = true
+	_archive_downloading = false
+	_http_request.cancel_request()
+	for connection in _http_request.request_completed.get_connections():
+		_http_request.request_completed.disconnect(connection["callable"])
+	for request in _file_requests:
+		request.cancel_request()
+		request.queue_free()
+	_file_requests.clear()
+	ModsSync.clear(UPDATE_TEMP_PATH)
+	_cleanup_path(UPDATE_ZIP_PATH)
+	_load_data()
 
 
 func _apply_updates(
-	result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray
+	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
-	if result != HTTPRequest.RESULT_SUCCESS:
+	_archive_downloading = false
+	if _download_abandoned:
+		return
+	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
+		_cleanup_path(UPDATE_ZIP_PATH)
 		_label.text = "Issue downloading latest updates, using existing mods"
 		_load_data()
 		return
 
-	# Save ZIP File
-	if not _write_buffer_to_file(UPDATE_ZIP_PATH, body):
+	# The archive streams straight to UPDATE_ZIP_PATH; a body only arrives here
+	# if it wasn't, and is saved the same way.
+	if not body.is_empty() and not _write_buffer_to_file(UPDATE_ZIP_PATH, body):
 		_label.text = "Couldn't save update file, using existing mods"
 		_load_data()
 		return
@@ -507,6 +596,10 @@ func _continue() -> void:
 
 
 func _load_data() -> void:
+	# Skipping and a download finishing can both get here; the mods load once.
+	if _data_loading:
+		return
+	_data_loading = true
 	_loading_animation.show()
 	_download_button.hide()
 	_skip_button.hide()
