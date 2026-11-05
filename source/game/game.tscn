@@ -17,6 +17,7 @@
 
 [ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
 [ext_resource type="Resource" path="res://source/menus/how_to_play/pages/table.tres" id="htp_page"]
+[ext_resource type="PackedScene" path="res://source/game/banner_notice.tscn" id="banner_notice"]
 [node name="Game" type="Control" unique_id=2011441010]
 layout_mode = 3
 anchors_preset = 15
@@ -73,6 +74,19 @@ theme_type_variation = &"BigTitle"
 text = "The [Adjective] Pyramid of [Noun]"
 horizontal_alignment = 1
 autowrap_mode = 2
+pivot_offset_ratio = Vector2(0.5, 0)
+
+[node name="BannerNotice" parent="MarginContainer/Top" instance=ExtResource("banner_notice")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 96.0
+offset_right = 300.0
+offset_bottom = 216.0
+grow_horizontal = 2
 pivot_offset_ratio = Vector2(0.5, 0)
 
 [node name="TopRight" type="HBoxContainer" parent="MarginContainer/Top" unique_id=444042424]
@@ -152,6 +166,7 @@ text = "Flip All"
 [node name="CaptureBanner" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174380001]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Saves a wide picture of this run - its title and cards, without the buttons - to your Pictures folder, to share. Shortcut: B"
 text = "Save Banner (B)"
 
 [node name="RerollGames" type="Button" parent="MarginContainer/Bottom" unique_id=1515219405]

@@ -28,6 +28,7 @@ const DICE_TEXTURES = [
 @onready var _roll_die_button: Button = %RollDie
 @onready var _flip_cards_button: Button = %FlipCards
 @onready var _capture_banner_button: Button = %CaptureBanner
+@onready var _banner_notice: BannerNotice = %BannerNotice
 @onready var _reroll_packs_button: Button = %RerollGames
 @onready var _bottom_right: VBoxContainer = %BottomRight
 @onready var _multiplayer_rules_button: Button = %MultiplayerRulesButton
@@ -105,6 +106,7 @@ func _setup_card_table() -> void:
 		_bottom_left,
 		_reroll_packs_button,
 		_bottom_right,
+		_banner_notice,
 	]:
 		ui.z_as_relative = false
 		ui.z_index = 2000
@@ -145,7 +147,13 @@ func _resize() -> void:
 	var scale_mult := minf(screen_size.x / 1920.0, screen_size.y / 1080.0)
 	var new_scale := Vector2(scale_mult, scale_mult)
 	for control in [
-		_title, _back_button, _top_right, _bottom_left, _reroll_packs_button, _bottom_right
+		_title,
+		_back_button,
+		_top_right,
+		_bottom_left,
+		_reroll_packs_button,
+		_bottom_right,
+		_banner_notice,
 	]:
 		control.scale = new_scale
 
@@ -254,9 +262,11 @@ func _capture_banner() -> void:
 	)
 	if banner.save_png(path) != OK:
 		push_error("Game: couldn't write banner to %s" % path)
+		_banner_notice.show_failed(path)
 		return
 
 	print("Saved run banner to %s" % path)
+	_banner_notice.show_saved(path)
 
 
 ## Hides the table furniture for a capture, returning what was hidden so it can
@@ -271,6 +281,7 @@ func _hide_ui_for_capture() -> Array[Control]:
 		_bottom_left,
 		_reroll_packs_button,
 		_bottom_right,
+		_banner_notice,
 	]:
 		if control.visible:
 			control.hide()
