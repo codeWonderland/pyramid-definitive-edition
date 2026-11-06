@@ -45,15 +45,20 @@ static func banner_region(source_width: int, source_height: int, focus_center_y:
 	return Rect2i(left, top, band_width, band_height)
 
 
-## Where a banner should be written. Prefers the player's Pictures folder so the
-## file can actually be found; falls back to user:// when the OS has no such
-## folder (or reports one that doesn't exist).
-static func output_directory() -> String:
-	var pictures := OS.get_system_dir(OS.SYSTEM_DIR_PICTURES)
-	if pictures != "" and DirAccess.dir_exists_absolute(pictures):
-		return pictures
+## Where the save dialog starts: the player's home folder, from which they pick
+## where the banner goes. Falls back to user:// should the OS not say.
+static func home_directory() -> String:
+	var home := OS.get_environment("USERPROFILE" if OS.get_name() == "Windows" else "HOME")
+	if home != "" and DirAccess.dir_exists_absolute(home):
+		return home
 
-	return "user://"
+	return ProjectSettings.globalize_path("user://")
+
+
+## A chosen file name, always ending in .png - the banner is saved as one
+## whatever the player typed.
+static func with_png_extension(path: String) -> String:
+	return path if path.get_extension().to_lower() == "png" else path + ".png"
 
 
 ## Timestamped so repeated captures of a run never overwrite each other.
