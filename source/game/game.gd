@@ -14,6 +14,9 @@ const DICE_TEXTURES = [
 	preload("res://assets/sprites/ui/icons/d6.png"),
 ]
 
+# The banner taken while the player chooses where to save it.
+var _pending_banner: Image = null
+
 @onready var _background: TextureRect = %Background
 @onready var _back_button: TextureButton = %Back
 @onready var _title: Label = %Title
@@ -29,6 +32,7 @@ const DICE_TEXTURES = [
 @onready var _flip_cards_button: Button = %FlipCards
 @onready var _capture_banner_button: Button = %CaptureBanner
 @onready var _banner_notice: BannerNotice = %BannerNotice
+@onready var _banner_save_dialog: FileDialog = %BannerSaveDialog
 @onready var _reroll_packs_button: Button = %RerollGames
 @onready var _bottom_right: VBoxContainer = %BottomRight
 @onready var _multiplayer_rules_button: Button = %MultiplayerRulesButton
@@ -53,6 +57,8 @@ func _ready() -> void:
 	_roll_die_button.pressed.connect(_roll_die)
 	_flip_cards_button.pressed.connect(_flip_all_cards)
 	_capture_banner_button.pressed.connect(_capture_banner)
+	_banner_save_dialog.file_selected.connect(_on_banner_path_chosen)
+	_banner_save_dialog.canceled.connect(_on_banner_save_cancelled)
 	_reroll_packs_button.pressed.connect(_reroll_packs)
 	_multiplayer_rules_button.pressed.connect(_show_multiplayer_rules)
 	_coop_rules_button.pressed.connect(_show_coop_rules)
@@ -255,11 +261,28 @@ func _capture_banner() -> void:
 		control.show()
 
 	var focus_center_y := _card_group_collection.get_global_rect().get_center().y
-	var banner := BannerCapture.crop_to_banner(frame, focus_center_y)
+	_ask_where_to_save(BannerCapture.crop_to_banner(frame, focus_center_y))
 
-	var path := BannerCapture.output_directory().path_join(
-		BannerCapture.file_name(Time.get_datetime_dict_from_system())
-	)
+
+## Lets the player choose where the banner goes, starting in their home folder
+## with a timestamped name filled in. The picture is taken first, so the dialog
+## is never in it.
+func _ask_where_to_save(banner: Image) -> void:
+	_pending_banner = banner
+	_banner_save_dialog.current_dir = BannerCapture.home_directory()
+	_banner_save_dialog.current_file = BannerCapture.file_name(Time.get_datetime_dict_from_system())
+	RunManager.popup_open = true
+	_banner_save_dialog.popup_centered_ratio(0.6)
+
+
+func _on_banner_path_chosen(chosen: String) -> void:
+	RunManager.popup_open = false
+	var banner := _pending_banner
+	_pending_banner = null
+	if banner == null:
+		return
+
+	var path := BannerCapture.with_png_extension(chosen)
 	if banner.save_png(path) != OK:
 		push_error("Game: couldn't write banner to %s" % path)
 		_banner_notice.show_failed(path)
@@ -267,6 +290,12 @@ func _capture_banner() -> void:
 
 	print("Saved run banner to %s" % path)
 	_banner_notice.show_saved(path)
+
+
+## Closing the dialog without choosing saves nothing.
+func _on_banner_save_cancelled() -> void:
+	RunManager.popup_open = false
+	_pending_banner = null
 
 
 ## Hides the table furniture for a capture, returning what was hidden so it can

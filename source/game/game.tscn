@@ -166,7 +166,7 @@ text = "Flip All"
 [node name="CaptureBanner" type="Button" parent="MarginContainer/Bottom/BottomLeft" unique_id=1174380001]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Saves a wide picture of this run - its title and cards, without the buttons - to your Pictures folder, to share. Shortcut: B"
+tooltip_text = "Saves a wide picture of this run - its cards, without the buttons - wherever you choose, to share. Shortcut: B"
 text = "Save Banner (B)"
 
 [node name="RerollGames" type="Button" parent="MarginContainer/Bottom" unique_id=1515219405]
@@ -249,6 +249,15 @@ unique_name_in_owner = true
 visible = false
 z_index = 3
 layout_mode = 0
+
+[node name="BannerSaveDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Save Banner"
+ok_button_text = "Save"
+file_mode = 4
+access = 2
+filters = PackedStringArray("*.png;PNG Images;image/png")
+use_native_dialog = true
 
 [node name="CardInspector" parent="." unique_id=1174360001 instance=ExtResource("99_ci003")]
 unique_name_in_owner = true

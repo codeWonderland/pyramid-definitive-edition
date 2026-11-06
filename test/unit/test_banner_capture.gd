@@ -90,11 +90,16 @@ func test_file_names_differ_between_captures() -> void:
 	assert_ne(first, second, "a later capture does not overwrite an earlier one")
 
 
-func test_output_directory_is_usable() -> void:
-	var directory := BannerCapture.output_directory()
+func test_the_save_dialog_starts_in_the_home_folder() -> void:
+	var directory := BannerCapture.home_directory()
+	var home := OS.get_environment("USERPROFILE" if OS.get_name() == "Windows" else "HOME")
 
-	assert_ne(directory, "", "a directory was chosen")
-	assert_true(
-		DirAccess.dir_exists_absolute(directory) or directory == "user://",
-		"the chosen directory exists, or is the user:// fallback"
-	)
+	assert_true(DirAccess.dir_exists_absolute(directory), "somewhere that exists")
+	if not home.is_empty():
+		assert_eq(directory, home, "the player's home folder")
+
+
+func test_a_chosen_name_always_ends_in_png() -> void:
+	assert_eq(BannerCapture.with_png_extension("/x/run.png"), "/x/run.png")
+	assert_eq(BannerCapture.with_png_extension("/x/run.PNG"), "/x/run.PNG", "any case")
+	assert_eq(BannerCapture.with_png_extension("/x/my run"), "/x/my run.png", "added if left off")
