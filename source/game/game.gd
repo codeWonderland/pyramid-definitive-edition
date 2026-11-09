@@ -272,7 +272,10 @@ func _ask_where_to_save(banner: Image) -> void:
 	_banner_save_dialog.current_dir = BannerCapture.home_directory()
 	_banner_save_dialog.current_file = BannerCapture.file_name(Time.get_datetime_dict_from_system())
 	RunManager.popup_open = true
-	_banner_save_dialog.popup_centered_ratio(0.6)
+	# Kept inside the window at any size; the dialog's compact theme lets its
+	# rows fit at the 1280x720 default. (The system's own dialog, used where
+	# there is one, sizes itself.)
+	_banner_save_dialog.popup_centered_clamped(Vector2i(1000, 620), 0.9)
 
 
 func _on_banner_path_chosen(chosen: String) -> void:

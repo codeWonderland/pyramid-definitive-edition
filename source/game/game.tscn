@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://source/menus/how_to_play/how_to_play.tscn" id="htp_scene"]
 [ext_resource type="Resource" path="res://source/menus/how_to_play/pages/table.tres" id="htp_page"]
 [ext_resource type="PackedScene" path="res://source/game/banner_notice.tscn" id="banner_notice"]
+[ext_resource type="Theme" path="res://assets/themes/compact_dialog_theme.tres" id="compact_dialog_theme"]
 [node name="Game" type="Control" unique_id=2011441010]
 layout_mode = 3
 anchors_preset = 15
@@ -252,6 +253,7 @@ layout_mode = 0
 
 [node name="BannerSaveDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
+theme = ExtResource("compact_dialog_theme")
 title = "Save Banner"
 ok_button_text = "Save"
 file_mode = 4

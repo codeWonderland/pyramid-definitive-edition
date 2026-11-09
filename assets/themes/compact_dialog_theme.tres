@@ -1,0 +1,85 @@
+[gd_resource type="Theme" format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_compact_pill"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.2, 0.2, 0.22, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.094, 0.678, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_compact_pill_hover"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.3, 0.33, 0.42, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.094, 0.678, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_compact_pill_pressed"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.094, 0.678, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.094, 0.678, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_compact_pill_disabled"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.2, 0.2, 0.22, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.094, 0.678, 1, 0.35)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[resource]
+Button/constants/outline_size = 4
+Button/font_sizes/font_size = 18
+Button/styles/disabled = SubResource("StyleBoxFlat_compact_pill_disabled")
+Button/styles/hover = SubResource("StyleBoxFlat_compact_pill_hover")
+Button/styles/hover_pressed = SubResource("StyleBoxFlat_compact_pill_pressed")
+Button/styles/normal = SubResource("StyleBoxFlat_compact_pill")
+Button/styles/pressed = SubResource("StyleBoxFlat_compact_pill_pressed")
+ItemList/font_sizes/font_size = 18
+Label/constants/outline_size = 4
+Label/font_sizes/font_size = 18
+LineEdit/font_sizes/font_size = 18
+OptionButton/constants/outline_size = 4
+OptionButton/font_sizes/font_size = 18
+OptionButton/styles/hover = SubResource("StyleBoxFlat_compact_pill_hover")
+OptionButton/styles/normal = SubResource("StyleBoxFlat_compact_pill")
+OptionButton/styles/pressed = SubResource("StyleBoxFlat_compact_pill_pressed")
+PopupMenu/font_sizes/font_size = 18
+Tree/font_sizes/font_size = 18
